@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Basement Plan</title>
+<style type="text/css">
+body {
+	margin: 0;
+	padding: 0;
+}
+
+#svgLayer {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+}
+
+#switch {
+	position: absolute;
+	visibility: hidden;
+	border-width: 2px;
+	border-style: solid;
+	border-color: #ff9955;
+	border-radius: 5px;
+	width: 40px;
+	height: 20px;
+	z-index: 10000;
+	color: #ffffff;
+	width: 40px;
+}
+
+#on {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 20px;
+	height: 20px;
+	border-radius: 3px;
+	background-color: #00ff00;
+}
+
+#off {
+	position: absolute;
+	top: 0px;
+	left: 20px;
+	width: 20px;
+	height: 20px;
+	border-radius: 3px;
+	background-color: #ff0000;
+}
+</style>
+
+
+<script
+	src="file:///Users/drazil/Documents/workspace/luna_j2ee_ws/de.drazil.homegear/src/main/webapp/js/jquery-2.1.3.js"></script>
+<script type="text/javascript">
+	var selectedSerialNo;
+
+	function _doSwitch(serialNo, state) {
+		$.ajax({
+			url : '/homegear/switch/' + serialNo + '/' + state,
+			type : 'GET',
+			dataType : 'html',
+			success : function(data, textStatus, xhr) {
+
+				var jsonObject = $.parseJSON(data);
+				alert('OK');
+			},
+			error : function(xhr, textStatus, errorThrown) {
+				alert('ERROR!');
+			}
+		});
+	}
+
+	function doSwitch(state) {
+		_doSwitch(selectedSerialNo, state);
+	}
+
+	function getWallThermostats() {
+		$.ajax({
+			url : '/homegear/getWallThermostats',
+			type : 'GET',
+			dataType : 'html',
+			success : function(data, textStatus, xhr) {
+				var jsonObject = $.parseJSON(data);
+				alert('OK');
+			},
+			error : function(xhr, textStatus, errorThrown) {
+				alert('ERROR!');
+			}
+		});
+	}
+
+	function getSwitches() {
+		$.ajax({
+			url : '/homegear/getSwitches',
+			type : 'GET',
+			dataType : 'html',
+			success : function(data, textStatus, xhr) {
+				var jsonObject = $.parseJSON(data);
+				alert('OK');
+			},
+			error : function(xhr, textStatus, errorThrown) {
+				alert('ERROR!');
+			}
+		});
+	}
+
+	function showSwitch(id, serialNo) {
+		selectedSerialNo = serialNo;
+		var el = $("#" + id);
+		var cx = el.attr("cx");
+		var cy = el.attr("cy");
+		var sw = $("#switch");
+		var x = (parseInt(cx) - 8) + "px";
+		var y = (parseInt(cy) - 8) + "px";
+		sw.css("left", x);
+		sw.css("top", y);
+		sw.css("visibility", "visible");
+	}
+
+	function hideSwitch(id, serialNo) {
+		selectedSerialNo = null;
+		var sw = $("#switch");
+		sw.css("visibility", "hidden");
+	}
+</script>
+
+
+
+</head>
+<body style="background-color: #000000">
+	<svg id="svgLayer" width="370" height="600">
+ <defs>
+	  <style>
+rect, path {
+	fill: #222222;
+	stroke: #909090;
+	stroke-width: 2px;
+}
+
+rect:hover, path:hover {
+	fill: #444444;
+}
+</style>
+  </defs>
+  	<rect id="bathroom1" x="0" y="410" width="45" height="35" />
+	<rect id="bathroom2" x="198" y="415" width="45" height="30" />
+	<rect id="kitchen" x="243" y="380" width="62" height="65" />
+	<rect id="livingroom" x="210" y="140" width="95" height="145" />
+	<rect id="garage" x="305" y="50" width="52" height="175" />
+	<rect id="bedroom" x="0" y="325" width="75" height="85" />
+	<rect id="office1" x="75" y="325" width="50" height="85" />
+	<rect id="office2" x="125" y="325" width="50" height="85" />
+	<rect id="bathroom3" x="220" y="380" width="23" height="35" />
+	<rect id="terasse" x="170" y="140" width="40" height="185" />
+	<rect id="windfang" x="270" y="285" width="35" height="45" />
+				
+	<path id="floor"
+			d="M45,410 L175,410 L175,325 L210,325 L210,285 L270,285 L270,330 L305,330 L305,380 L220,380 L220,415 L198,415 L198,445 L45,445 L45,445 Z"
+			style="stroke-width:2" />
+		
+	<path id="stair"
+			d="M175,325 L210,325 L210,345 L195,345 L195,362 L175,362 Z"
+			style="stroke-width:2" />
+	
+	<circle id="motion1" cx="11.54cm" cy="18.63cm" r="0.2cm"
+			style="fill:#f00000" /> 
+	<circle id="motion2" cx="14.05cm" cy="11.87cm" r="0.2cm"
+			style="fill:#f00000" /> 
+	<circle id="motion3" cx="10.85cm" cy="4.37cm" r="0.2cm"
+			style="fill:#f00000" />
+	<circle id="floor_lamp1" cx="180" cy="375" r="5" style="fill:#ffe345"
+			onmouseover="showSwitch('floor_lamp1','LEQ0531814');" />
+			
+	<circle id="office1_lamp1" cx="80" cy="335" r="5" style="fill:#ffe345"
+			onmouseover="showSwitch('office1_lamp1','LEQ0531814');" />
+			
+		
+	
+	<rect id="bathroom1,window" x="0.55cm" y="20.25cm" width="1.63cm"
+			height="0.2cm" style="fill:#6060ff;stroke:#000000;stroke-width:0px" />
+	<rect id="floor,window1" x="3.06cm" y="20.25cm" width="1.63cm"
+			height="0.2cm" style="fill:#6060ff;stroke:#000000;stroke-width:0px" />
+	<rect id="floor,window2" x="5.81cm" y="20.25cm" width="1.63cm"
+			height="0.2cm" style="fill:#6060ff;stroke:#000000;stroke-width:0px" />
+	<rect id="floor,window3_l" x="15.70cm" y="14.6cm" width="0.2cm"
+			height="0.95cm" style="fill:#6060ff;stroke:#000000;stroke-width:0px" />
+	<rect id="floor,window3_r" x="15.70cm" y="15.65cm" width="0.2cm"
+			height="0.95cm" style="fill:#6060ff;stroke:#000000;stroke-width:0px" />
+	<rect id="floor,window4" x="9.2cm" y="13.95cm" width="1cm"
+			height="0.2cm" style="fill:#6060ff;stroke:#000000;stroke-width:0px" />
+	<rect id="door" x="15.70cm" y="12.0cm" width="0.2cm" height="2.1cm"
+			style="fill:#6060ff;stroke:#000000;stroke-width:0px" />
+	<rect id="garage_door_front" x="16.0cm" y="8.85cm" width="2.30cm"
+			height="0.2cm" style="fill:#6060ff;stroke:#000000;stroke-width:0px" />
+	<rect id="garage_door_back" x="16.0cm" y="0cm" width="2.30cm"
+			height="0.2cm" style="fill:#6060ff;stroke:#000000;stroke-width:0px" />
+	<rect id="livingroom,window_l" x="10.75cm" y="5.11cm" width="0.2cm"
+			height="2.96cm" style="fill:#6060ff;stroke:#000000;stroke-width:0px" />
+	<rect id="livingroom,window_r" x="10.75cm" y="8.27cm" width="0.2cm"
+			height="2.96cm" style="fill:#6060ff;stroke:#000000;stroke-width:0px" />
+	<rect id="terasse,door" x="10.75cm" y="12.1cm" width="0.2cm"
+			height="1.60cm" style="fill:#6060ff;stroke:#000000;stroke-width:0px" />
+	<rect id="bathroom2,window_l" x="10.7cm" y="20.25cm" width="0.76cm"
+			height="0.2cm" style="fill:#6060ff;stroke:#000000;stroke-width:0px" />
+	<rect id="bathroom2,window_r" x="11.56cm" y="20.25cm" width="0.76cm"
+			height="0.2cm" style="fill:#6060ff;stroke:#000000;stroke-width:0px" />
+	<rect id="bathroom3,window" x="11.85cm" y="17.4cm" width="0.5cm"
+			height="0.7cm" style="fill:#6060ff;stroke:#000000;stroke-width:0px" />
+	<rect id="kitchen,window_l" x="13.31cm" y="20.25cm" width="0.83cm"
+			height="0.2cm" style="fill:#6060ff;stroke:#000000;stroke-width:0px" />
+	<rect id="kitchen,window_r" x="14.24cm" y="20.25cm" width="0.83cm"
+			height="0.2cm" style="fill:#6060ff;stroke:#000000;stroke-width:0px" />
+	<rect id="bedroom,window_l" x="1.71cm" y="13.95cm" width="0.83cm"
+			height="0.2cm" style="fill:#6060ff;stroke:#000000;stroke-width:0px" />
+	<rect id="bedroom,window_r" x="2.64cm" y="13.95cm" width="0.83cm"
+			height="0.2cm" style="fill:#6060ff;stroke:#000000;stroke-width:0px" />
+	<rect id="office1,window" x="4.58cm" y="13.95cm" width="1.26cm"
+			height="0.2cm" style="fill:#6060ff;stroke:#000000;stroke-width:0px" />
+	<rect id="office2,window" x="6.95cm" y="13.95cm" width="1.26cm"
+			height="0.2cm" style="fill:#6060ff;stroke:#000000;stroke-width:0px" />
+		
+	</svg>
+
+	<div id="switch">
+		<div id="on" onclick="doSwitch(true);"></div>
+		<div id="off" onclick="doSwitch(false);"></div>
+	</div>
+</body>
+</html>

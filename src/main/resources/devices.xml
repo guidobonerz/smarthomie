@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<deviceConfig>
+	<devices>
+		<device id="HM-CC-RT-DN" vendor="Homematic" description="Heizungsthermostat"
+			adapterClassName="de.drazil.homegear.homematic.HomematicRemoteRadiatorThermostat">
+			<types>
+				<type id="master">
+					<fields>
+						<field id="CHANNEL0" channel="0" />
+					</fields>
+				</type>
+				<type id="value">
+					<fields>
+						<field id="PARTY_START_DAY" channel="4" readOnly="false" />
+						<field id="PARTY_START_MONTH" channel="4" readOnly="false" />
+						<field id="PARTY_START_YEAR" channel="4" readOnly="false" />
+						<field id="PARTY_STOP_DAY" channel="4" readOnly="false" />
+						<field id="PARTY_STOP_MONTH" channel="4" readOnly="false" />
+						<field id="PARTY_STOP_YEAR" channel="4" readOnly="false" />
+						<field id="PARTY_START_TIME" channel="4" readOnly="false" />
+						<field id="PARTY_STOP_TIME" channel="4" readOnly="false" />
+						<field id="PARTY_TEMPERATURE" channel="4" readOnly="false" />
+						<field id="BOOST_MODE" channel="4" readOnly="false" />
+						<field id="PARTY_MODE_SUBMIT" channel="4" readOnly="false" />
+						<field id="MANU_MODE" channel="4" readOnly="false" />
+						<field id="SET_TEMPERATURE" channel="4" readOnly="false" />
+						<field id="PARTY_START_DAY" channel="4" readOnly="false" />
+						<field id="ACTUAL_TEMPERATURE" channel="4" readOnly="false" />
+						<field id="VALVE_STATE" channel="4" readOnly="false" />
+						<field id="BOOST_STATE" channel="4" readOnly="false" />
+						<field id="BATTERY_STATE" channel="4" readOnly="false" />
+						<field id="LOWERING_MODE" channel="4" readOnly="false" />
+						<field id="COMFORT_MODE" channel="4" readOnly="false" />
+						<field id="AUTO_MODE" channel="4" readOnly="false" />
+						<field id="FAULT_REPORTING" channel="4" readOnly="false" />
+						<field id="CONTROL_MODE" channel="4" readOnly="false" />
+						<field id="WINDOW_STATE" channel="3" readOnly="false" />
+						<field id="DEVICE_IN_BOOTLOADER" channel="0" readOnly="false" />
+						<field id="CENTRAL_ADDRESS_SPOOFED" channel="0" readOnly="false" />
+						<field id="RSSI_PEER" channel="0" readOnly="false" />
+						<field id="UPDATE_PENDING" channel="0" readOnly="false" />
+						<field id="RSSI_DEVICE" channel="0" readOnly="false" />
+						<field id="INHIBIT" channel="0" readOnly="false" />
+						<field id="AES_KEY" channel="0" readOnly="false" />
+						<field id="CONFIG_PENDING" channel="0" readOnly="false" />
+						<field id="STICKY_UNREACH" channel="0" readOnly="false" />
+						<field id="LOWBAT" channel="0" readOnly="false" />
+						<field id="UNREACH" channel="0" readOnly="false" />
+					</fields>
+				</type>
+			</types>
+		</device>
+		<device id="HM-TC-IT-WM-W-EU" vendor="Homematic" description="Wandthermostat"
+			adapterClassName="de.drazil.homegear.homematic.HomematicRemoteWallThermostat">
+			<types>
+				<type id="master">
+					<fields>
+						<field id="CHANNEL0" channel="0" />
+					</fields>
+				</type>
+				<type id="value">
+					<fields>
+						<field id="PARTY_STOP_YEAR" channel="2" readOnly="false" />
+						<field id="CONTROL_MODE" channel="2" readOnly="false" />
+						<field id="LOWBAT_REPORTING" channel="2" readOnly="false" />
+						<field id="COMMUNICATION_REPORTING" channel="2" readOnly="false" />
+						<field id="BATTERY_STATE" channel="2" readOnly="false" />
+						<field id="BOOST_STATE" channel="2" readOnly="false" />
+						<field id="PARTY_START_YEAR" channel="2" readOnly="false" />
+						<field id="ACTUAL_TEMPERATURE" channel="2" readOnly="false" />
+						<field id="PARTY_START_DAY" channel="2" readOnly="false" />
+						<field id="ACTUAL_HUMIDITY" channel="2" readOnly="false" />
+						<field id="SET_TEMPERATURE" channel="2" readOnly="false" />
+						<field id="AUTO_MODE" channel="2" readOnly="false" />
+						<field id="COMFORT_MODE" channel="2" readOnly="false" />
+						<field id="WINDOW_OPEN_REPORTING" channel="2" readOnly="false" />
+						<field id="LOWERING_MODE" channel="2" readOnly="false" />
+						<field id="MANU_MODE" channel="2" readOnly="false" />
+						<field id="PARTY_MODE_SUBMIT" channel="2" readOnly="false" />
+						<field id="BOOST_MODE" channel="2" readOnly="false" />
+						<field id="PARTY_TEMPERATURE" channel="2" readOnly="false" />
+						<field id="PARTY_STOP_MONTH" channel="2" readOnly="false" />
+						<field id="PARTY_START_TIME" channel="2" readOnly="false" />
+						<field id="PARTY_STOP_TIME" channel="2" readOnly="false" />
+						<field id="PARTY_STOP_DAY" channel="2" readOnly="false" />
+						<field id="PARTY_START_MONTH" channel="2" readOnly="false" />
+						<field id="HUMIDITY" channel="1" readOnly="false" />
+						<field id="TEMPERATURE" channel="1" readOnly="false" />
+						<field id="DEVICE_IN_BOOTLOADER" channel="0" readOnly="false" />
+						<field id="CENTRAL_ADDRESS_SPOOFED" channel="0" readOnly="false" />
+						<field id="RSSI_PEER" channel="0" readOnly="false" />
+						<field id="UPDATE_PENDING" channel="0" readOnly="false" />
+						<field id="RSSI_DEVICE" channel="0" readOnly="false" />
+						<field id="INHIBIT" channel="0" readOnly="false" />
+						<field id="AES_KEY" channel="0" readOnly="false" />
+						<field id="CONFIG_PENDING" channel="0" readOnly="false" />
+						<field id="STICKY_UNREACH" channel="0" readOnly="false" />
+						<field id="LOWBAT" channel="0" readOnly="false" />
+						<field id="UNREACH" channel="0" readOnly="false" />
+						<field id="WINDOW_STATE" channel="3" readOnly="false" />
+					</fields>
+				</type>
+			</types>
+		</device>
+		<device id="HM-WDS10-TH-O" vendor="Homematic"
+			description="Outdoor Humidity/Temperature Sensor"
+			adapterClassName="de.drazil.homegear.homematic.HomematicRemoteOutdoorWeatherSensor">
+			<types>
+				<type id="value">
+					<fields>
+						<field id="HUMIDITY" channel="1" readOnly="false" />
+						<field id="TEMPERATURE" channel="1" readOnly="false" />
+						<field id="CENTRAL_ADDRESS_SPOOFED" channel="0" readOnly="false" />
+						<field id="RSSI_PEER" channel="0" readOnly="false" />
+						<field id="RSSI_DEVICE" channel="0" readOnly="false" />
+						<field id="CONFIG_PENDING" channel="0" readOnly="false" />
+						<field id="STICKY_UNREACH" channel="0" readOnly="false" />
+						<field id="LOWBAT" channel="0" readOnly="false" />
+						<field id="UNREACH" channel="0" readOnly="false" />
+					</fields>
+				</type>
+			</types>
+		</device>
+		<device id="HM-CC-VD" vendor="Homematic" description="ValveDrive"
+			adapterClassName="de.drazil.homegear.homematic.HomematicRemoteValveDrive">
+			<types>
+				<type id="master">
+					<fields>
+						<field id="CHANNEL1" channel="1" />
+					</fields>
+				</type>
+				<type id="value">
+					<fields>
+						<field id="VALVE_STATE" channel="1" readOnly="false" />
+						<field id="ERROR" channel="1" readOnly="false" />
+						<field id="LOWBAT" channel="0" readOnly="false" />
+						<field id="UNREACH" channel="0" readOnly="false" />
+						<field id="STICKY_UNREACH" channel="0" readOnly="false" />
+						<field id="CENTRAL_ADDRESS_SPOOFED" channel="0" readOnly="false" />
+						<field id="RSSI_PEER" channel="0" readOnly="false" />
+						<field id="RSSI_DEVICE" channel="0" readOnly="false" />
+						<field id="CONFIG_PENDING" channel="0" readOnly="false" />
+					</fields>
+				</type>
+			</types>
+		</device>
+		<device id="HM-ES-PMSw1-Pl" vendor="Homematic" description="PowerSwitch/EnergyMeasurement"
+			adapterClassName="de.drazil.homegear.homematic.HomematicRemoteMeteringSwitch">
+			<types>
+				<type id="value">
+					<fields>
+						<field id="DEVICE_IN_BOOTLOADER" channel="0" readOnly="false" />
+						<field id="AES_KEY" channel="0" readOnly="false" />
+						<field id="CENTRAL_ADDRESS_SPOOFED" channel="0" readOnly="false" />
+						<field id="RSSI_PEER" channel="0" readOnly="false" />
+						<field id="UPDATE_PENDING" channel="0" readOnly="false" />
+						<field id="RSSI_DEVICE" channel="0" readOnly="false" />
+						<field id="DUTYCYCLE" channel="0" readOnly="false" />
+						<field id="CONFIG_PENDING" channel="0" readOnly="false" />
+						<field id="STICKY_UNREACH" channel="0" readOnly="false" />
+						<field id="LOWBAT" channel="0" readOnly="false" />
+						<field id="UNREACH" channel="0" readOnly="false" />
+						<field id="WORKING" channel="1" readOnly="false" />
+						<field id="INSTALL_TEST" channel="1" readOnly="false" />
+						<field id="ON_TIME" channel="1" readOnly="false" />
+						<field id="INHIBIT" channel="1" readOnly="false" />
+						<field id="STATE" channel="1" readOnly="false" />
+						<field id="FREQUENCY" channel="2" readOnly="false" />
+						<field id="VOLTAGE" channel="2" readOnly="false" />
+						<field id="CURRENT" channel="2" readOnly="false" />
+						<field id="POWER" channel="2" readOnly="false" />
+						<field id="ENERGY_COUNTER" channel="2" readOnly="false" />
+						<field id="BOOT" channel="2" readOnly="false" />
+					</fields>
+				</type>
+			</types>
+		</device>
+		<device id="HM-LC-Sw1-Pl-DN-R1" vendor="Homematic" description="PowerSwitch"
+			adapterClassName="de.drazil.homegear.homematic.HomematicRemoteSwitch">
+			<types>
+				<type id="value">
+					<fields>
+						<field id="DEVICE_IN_BOOTLOADER" channel="0" readOnly="false" />
+						<field id="AES_KEY" channel="0" readOnly="false" />
+						<field id="CENTRAL_ADDRESS_SPOOFED" channel="0" readOnly="false" />
+						<field id="RSSI_PEER" channel="0" readOnly="false" />
+						<field id="UPDATE_PENDING" channel="0" readOnly="false" />
+						<field id="RSSI_DEVICE" channel="0" readOnly="false" />
+						<field id="DUTYCYCLE" channel="0" readOnly="false" />
+						<field id="CONFIG_PENDING" channel="0" readOnly="false" />
+						<field id="STICKY_UNREACH" channel="0" readOnly="false" />
+						<field id="LOWBAT" channel="0" readOnly="false" />
+						<field id="UNREACH" channel="0" readOnly="false" />
+						<field id="WORKING" channel="1" readOnly="false" />
+						<field id="INSTALL_TEST" channel="1" readOnly="false" />
+						<field id="ON_TIME" channel="1" readOnly="false" />
+						<field id="INHIBIT" channel="1" readOnly="false" />
+						<field id="STATE" channel="1" readOnly="false" />
+						<field id="FREQUENCY" channel="2" readOnly="false" />
+						<field id="VOLTAGE" channel="2" readOnly="false" />
+						<field id="CURRENT" channel="2" readOnly="false" />
+						<field id="POWER" channel="2" readOnly="false" />
+						<field id="ENERGY_COUNTER" channel="2" readOnly="false" />
+						<field id="BOOT" channel="2" readOnly="false" />
+					</fields>
+				</type>
+			</types>
+		</device>
+		<device id="HM-Sec-SD-2" vendor="Homematic" description="SmokeDetector2"
+			adapterClassName="de.drazil.homegear.homematic.HomematicSmokeDetector2">
+			<types>
+				<type id="master">
+					<fields>
+						<field id="CHANNEL0" channel="0" />
+					</fields>
+				</type>
+				<type id="value">
+					<fields>
+						<field id="STATE" channel="1" readOnly="false" />
+						<field id="LOWBAT" channel="1" readOnly="false" />
+						<field id="INSTALL_TEST" channel="1" readOnly="false" />
+						<field id="ERROR_SMOKE_CHAMBER" channel="1" readOnly="false" />
+						<field id="ERROR_ALARM_TEST" channel="1" readOnly="false" />
+						<field id="UNREACH" channel="0" readOnly="false" />
+						<field id="STICKY_UNREACH" channel="0" readOnly="false" />
+						<field id="RSSI_DEVICE" channel="0" readOnly="false" />
+						<field id="LOWBAT" channel="0" readOnly="false" />
+						<field id="DUTYCYCLE" channel="1" readOnly="false" />
+						<field id="RSSI_PEER" channel="0" readOnly="false" />
+						<field id="CONFIG_PENDING" channel="0" readOnly="false" />
+						<field id="CENTRAL_ADDRESS_SPOOFED" channel="0" readOnly="false" />
+						<field id="LAST_PACKET_RECEIVED" channel="0" readOnly="false" />
+					</fields>
+				</type>
+			</types>
+		</device>
+	</devices>
+</deviceConfig>
+
+

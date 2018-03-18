@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<devicemapping>
+	<master serialNo="LEQ0993127" name="office1">
+		<slave serialNo="LEQ0779933" />
+	</master>
+	<master serialNo="LEQ1214104" name="office2">
+		<slave serialNo="LEQ0846968" />
+	</master>
+	<master serialNo="LEQ1213732" name="bedroom">
+		<slave serialNo="LEQ0850219" />
+	</master>
+	<master serialNo="LEQ1213742" name="kitchen">
+		<slave serialNo="LEQ0850196" />
+	</master>
+	<master serialNo="LEQ0992980" name="livingroom">
+		<slave serialNo="LEQ0846847" />
+		<slave serialNo="LEQ0780213" />
+	</master>
+	<master serialNo="LEQ1214100" name="livingroom2">
+		<slave serialNo="LEQ0846786" />
+	</master>
+	<master serialNo="LEQ1215197" name="corridor">
+		<slave serialNo="LEQ0582754" />
+		<slave serialNo="LEQ0581687" />
+	</master>
+	<master serialNo="NEQ0937684" name="bathroom1">
+		<slave serialNo="LEQ0786143" />
+	</master>
+	<master serialNo="HEQ0134004" name="heatingroom" />
+</devicemapping>
