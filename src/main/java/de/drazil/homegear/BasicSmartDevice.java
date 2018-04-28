@@ -2,6 +2,7 @@ package de.drazil.homegear;
 
 import java.util.Map;
 
+import de.drazil.homeautomation.service.HomegearDeviceService;
 import de.drazil.homegear.bean.Device;
 import de.drazil.homegear.bean.DeviceField;
 import de.drazil.homegear.bean.Type;
@@ -9,9 +10,9 @@ import de.drazil.homegear.bean.Type;
 public class BasicSmartDevice {
 	private String serialNo;
 
-	private HomegearDeviceFactory factory;
+	private HomegearDeviceService factory;
 
-	public void setHomegearDeviceFactory(HomegearDeviceFactory factory) {
+	public void setHomegearDeviceFactory(HomegearDeviceService factory) {
 		this.factory = factory;
 	}
 

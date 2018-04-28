@@ -1,4 +1,4 @@
-package de.drazil.homegear.controller;
+package de.drazil.homeautomation.scheduler;
 
 import java.text.MessageFormat;
 import java.util.Date;
@@ -9,14 +9,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import de.drazil.homegear.HomegearDeviceFactory;
+import de.drazil.homeautomation.service.HomegearDeviceService;
 
 @Component("schedulerBean")
-public class ScheduleController {
+public class HomeautomationScheduler {
 	private static final Logger Log = Logger.getLogger("ScheduleController");
 
 	@Autowired
-	HomegearDeviceFactory factory;
+	HomegearDeviceService factory;
 
 	@Value("${boiler.valveState1}")
 	private String valveState1;

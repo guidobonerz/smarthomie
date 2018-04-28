@@ -1,4 +1,4 @@
-package de.drazil.homegear;
+package de.drazil.homeautomation.service;
 
 import java.net.InetAddress;
 import java.net.URL;
@@ -16,15 +16,23 @@ import org.springframework.stereotype.Service;
 
 import com.googlecode.jsonrpc4j.JsonRpcHttpClient;
 
+import de.drazil.homegear.IRemoteMeteringSwitch;
+import de.drazil.homegear.IRemoteOutdoorWeatherSensor;
+import de.drazil.homegear.IRemoteRadiatorThermostat;
+import de.drazil.homegear.IRemoteSmokeDetector;
+import de.drazil.homegear.IRemoteSwitch;
+import de.drazil.homegear.IRemoteValveDrive;
+import de.drazil.homegear.IRemoteWallThermostat;
+import de.drazil.homegear.ISmartDevice;
 import de.drazil.homegear.bean.Device;
 import de.drazil.homegear.bean.DeviceConfig;
 import de.drazil.homegear.bean.DeviceId;
 import de.drazil.xml.XmlHandler;
 
 @Service
-public class HomegearDeviceFactory {
+public class HomegearDeviceService {
 
-	private static final Logger Log = Logger.getLogger(HomegearDeviceFactory.class.getSimpleName());
+	private static final Logger Log = Logger.getLogger(HomegearDeviceService.class.getSimpleName());
 	private JsonRpcHttpClient rpcClient = null;
 	private DeviceConfig devices = null;
 	private Map<String, DeviceId> deviceSerialMap;

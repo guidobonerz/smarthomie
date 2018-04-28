@@ -1,4 +1,4 @@
-package de.drazil.homeautomation.controller;
+package de.drazil.homeautomation.scheduler;
 
 import java.io.IOException;
 
@@ -13,8 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class HomeScheduler /* implements SchedulingConfigurer */ {
-	private static final Logger log = LoggerFactory.getLogger(HomeScheduler.class);
+public class ExternalScheduler {
+	private static final Logger log = LoggerFactory.getLogger(ExternalScheduler.class);
 
 	// @Scheduled(cron = "*/10 * * * * *")
 	public void getWeatherData() {

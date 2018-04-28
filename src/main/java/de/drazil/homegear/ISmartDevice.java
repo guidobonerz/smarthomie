@@ -1,5 +1,7 @@
 package de.drazil.homegear;
 
+import de.drazil.homeautomation.service.HomegearDeviceService;
+
 public interface ISmartDevice {
 	public void setSerialNo(String serialNo);
 
@@ -7,5 +9,5 @@ public interface ISmartDevice {
 
 	public String getLocation() throws Throwable;
 
-	public void setHomegearDeviceFactory(HomegearDeviceFactory factory);
+	public void setHomegearDeviceFactory(HomegearDeviceService factory);
 }

@@ -1,4 +1,4 @@
-package de.drazil.homegear.controller;
+package de.drazil.homeautomation.controller;
 
 import java.util.HashMap;
 import java.util.List;
@@ -13,17 +13,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import de.drazil.homegear.IHeatingDevice.HeatingMode;
+import de.drazil.homeautomation.service.HomegearService;
 import de.drazil.homegear.IRemoteWallThermostat;
 import de.drazil.homegear.bean.ResponseWrapper;
-
-import de.drazil.homegear.service.HomegearService;
 
 @Controller
 public class HomegearController {
 	@Autowired
 	private HomegearService homegearService;
-	
-	
+
 	@RequestMapping(value = "/x", method = RequestMethod.GET)
 	public ModelAndView show() {
 
@@ -135,6 +133,45 @@ public class HomegearController {
 			e.printStackTrace();
 		}
 		return resultList;
+	}
+
+	@RequestMapping(value = "/boiler/{state}", method = { RequestMethod.GET })
+	public @ResponseBody ResponseWrapper setBoiler(@PathVariable boolean state) {
+		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
+		try {
+			homegearService.setBoiler(state);
+		} catch (Throwable e) {
+			rw.setData(null);
+			rw.setSuccessful(false);
+			rw.setMessage(e.getMessage());
+		}
+		return rw;
+	}
+
+	@RequestMapping(value = "/light/{location}/{state}", method = { RequestMethod.GET })
+	public @ResponseBody ResponseWrapper setLight(@PathVariable String location, @PathVariable boolean state) {
+		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
+		try {
+			homegearService.setLight(location, state);
+		} catch (Throwable e) {
+			rw.setData(null);
+			rw.setSuccessful(false);
+			rw.setMessage(e.getMessage());
+		}
+		return rw;
+	}
+
+	@RequestMapping(value = "/lightAll/{state}", method = { RequestMethod.GET })
+	public @ResponseBody ResponseWrapper setLight(@PathVariable boolean state) {
+		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
+		try {
+			homegearService.setLight(state);
+		} catch (Throwable e) {
+			rw.setData(null);
+			rw.setSuccessful(false);
+			rw.setMessage(e.getMessage());
+		}
+		return rw;
 	}
 
 	@RequestMapping(value = "/setManualTemperature/{serialNo}/{temperature}", method = { RequestMethod.GET })

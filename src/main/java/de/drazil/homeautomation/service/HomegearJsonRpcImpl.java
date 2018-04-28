@@ -1,4 +1,4 @@
-package de.drazil.homegear.controller;
+package de.drazil.homeautomation.service;
 
 import java.util.ArrayList;
 import java.util.List;

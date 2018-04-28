@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class HomeController {
+public class CameraEventController {
 	/*
 	 * @RequestMapping(value = "/motion_detection", method = { RequestMethod.GET,
 	 * RequestMethod.POST }) public void motionDetection(@RequestParam(value =

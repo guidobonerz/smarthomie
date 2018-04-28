@@ -1,4 +1,4 @@
-package de.drazil.homegear.service;
+package de.drazil.homeautomation.service;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -8,7 +8,6 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import de.drazil.homegear.HomegearDeviceFactory;
 import de.drazil.homegear.IRemoteMeteringSwitch;
 import de.drazil.homegear.IRemoteOutdoorWeatherSensor;
 import de.drazil.homegear.IRemoteRadiatorThermostat;
@@ -22,7 +21,7 @@ import de.drazil.homegear.util.VentilationCalcUtil;
 @Service
 public class HomegearService {
 	@Autowired
-	HomegearDeviceFactory factory;
+	HomegearDeviceService factory;
 
 	public List<Map<String, Object>> getRemoteRadiatorThermostatList() throws Throwable {
 		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
@@ -181,6 +180,26 @@ public class HomegearService {
 			resultList.add(map);
 		}
 		return resultList;
+	}
+
+	public void setBoiler(boolean state) throws Throwable {
+		factory.getRemoteValveDriveBySerialNo("HEQ0134004").setValveState(state ? 70 : 0);
+	}
+
+	public void setLight(boolean state) throws Throwable {
+		factory.getRemoteMeteringSwitchBySerialNo("LEQ0531814").setState(state);
+		factory.getRemoteSwitchBySerialNo("OEQ0479803").setState(state);
+	}
+
+	public void setLight(String location, boolean state) throws Throwable {
+		switch (location) {
+		case "livingroom": {
+			factory.getRemoteMeteringSwitchBySerialNo("LEQ0531814").setState(state);
+		}
+		case "corrider": {
+			factory.getRemoteSwitchBySerialNo("OEQ0479803").setState(state);
+		}
+		}
 	}
 
 	public <D extends ISmartDevice> D getSmartDevicebySerialNo(String serialNo, Class<? super D> deviceClass)
