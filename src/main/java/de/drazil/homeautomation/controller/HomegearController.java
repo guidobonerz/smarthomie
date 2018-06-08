@@ -6,38 +6,55 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import de.drazil.homegear.IHeatingDevice.HeatingMode;
+import de.drazil.homeautomation.bean.ResponseWrapper;
+import de.drazil.homeautomation.dto.Event;
+import de.drazil.homeautomation.service.ExternalSchedulerService;
 import de.drazil.homeautomation.service.HomegearService;
-import de.drazil.homegear.IRemoteWallThermostat;
-import de.drazil.homegear.bean.ResponseWrapper;
+import de.drazil.homeautomation.smartdevices.IRemoteWallThermostat;
+import de.drazil.homeautomation.smartdevices.IHeatingDevice.HeatingMode;
 
 @Controller
 public class HomegearController {
 	@Autowired
 	private HomegearService homegearService;
 
-	@RequestMapping(value = "/x", method = RequestMethod.GET)
-	public ModelAndView show() {
+	@Autowired
+	private ExternalSchedulerService service;
 
-		ModelAndView mv = new ModelAndView("homegear");
-		try {
-			mv.addObject("remoteRadiatorThermostatList", homegearService.getRemoteRadiatorThermostatList());
-			mv.addObject("remoteWallThermostatList", homegearService.getRemoteWallThermostatList());
-			mv.addObject("remoteOutdoorWeatherSensorList", homegearService.getRemoteOutdoorWeatherSensorList());
-			mv.addObject("remoteSwitchList", homegearService.getRemoteSwitchList());
+	@GetMapping("/")
+	public String root() {
+		return "redirect:/index";
+	}
 
-		} catch (Throwable e) {
+	@GetMapping("/index")
+	public String index() {
+		return "redirect:/overview";
+	}
 
-			e.printStackTrace();
-		}
+	@RequestMapping("/request")
+	public String request() {
+		List<Event> events = service.getUpcomingEventList(new String[] { "today", "tomorrow", "upcoming" });
+		return "login";
+	}
 
-		return mv;
+	@GetMapping("/overview")
+	public String overview() {
+		return "overview";
+	}
+
+	/*
+	 * @GetMapping("/control") public String control() { return "control"; }
+	 */
+	@GetMapping("/floorplan")
+	public String floorplan() {
+		return "floorplan";
 	}
 
 	@RequestMapping(value = "/getRemoteWallThermostatList", method = RequestMethod.GET)
@@ -65,6 +82,7 @@ public class HomegearController {
 			rw.setMessage("Succesfully got data");
 			rw.setSuccessful(true);
 		} catch (Throwable e) {
+			e.printStackTrace();
 			rw.setData(null);
 			rw.setSuccessful(false);
 			rw.setMessage(e.getMessage());
@@ -135,7 +153,8 @@ public class HomegearController {
 		return resultList;
 	}
 
-	@RequestMapping(value = "/boiler/{state}", method = { RequestMethod.GET })
+	@GetMapping(value = "/boiler/{state}")
+
 	public @ResponseBody ResponseWrapper setBoiler(@PathVariable boolean state) {
 		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
 		try {
@@ -148,7 +167,7 @@ public class HomegearController {
 		return rw;
 	}
 
-	@RequestMapping(value = "/light/{location}/{state}", method = { RequestMethod.GET })
+	@GetMapping(value = "/light/{location}/{state}")
 	public @ResponseBody ResponseWrapper setLight(@PathVariable String location, @PathVariable boolean state) {
 		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
 		try {
@@ -161,7 +180,7 @@ public class HomegearController {
 		return rw;
 	}
 
-	@RequestMapping(value = "/lightAll/{state}", method = { RequestMethod.GET })
+	@GetMapping(value = "/lightAll/{state}")
 	public @ResponseBody ResponseWrapper setLight(@PathVariable boolean state) {
 		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
 		try {
@@ -174,7 +193,20 @@ public class HomegearController {
 		return rw;
 	}
 
-	@RequestMapping(value = "/setManualTemperature/{serialNo}/{temperature}", method = { RequestMethod.GET })
+	@GetMapping(value = "/heating/{type}")
+	public @ResponseBody ResponseWrapper setHeating(@PathVariable String type) {
+		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
+		try {
+			homegearService.setHeating(type);
+		} catch (Throwable e) {
+			rw.setData(null);
+			rw.setSuccessful(false);
+			rw.setMessage(e.getMessage());
+		}
+		return rw;
+	}
+
+	@GetMapping(value = "/setManualTemperature/{serialNo}/{temperature}")
 	public @ResponseBody ResponseWrapper setManualTemperture(@PathVariable String serialNo,
 			@PathVariable double temperature) {
 		ResponseWrapper response = new ResponseWrapper();

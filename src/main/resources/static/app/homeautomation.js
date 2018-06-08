@@ -1,7 +1,6 @@
 var app = angular.module("Homeautomation", []);
 
-app.controller("RemoteWallThermostatController", function($scope, $http) {
-
+app.controller("GridController", function($scope, $http) {
 	$http({
 		method : "GET",
 		url : '/homeautomation/getRemoteWallThermostatList'
@@ -10,9 +9,6 @@ app.controller("RemoteWallThermostatController", function($scope, $http) {
 	}, function myError(response) {
 		// $scope.myWelcome = response.statusText;
 	});
-});
-
-app.controller("RemoteRadiatorThermostatController", function($scope, $http) {
 
 	$http({
 		method : "GET",
@@ -22,9 +18,6 @@ app.controller("RemoteRadiatorThermostatController", function($scope, $http) {
 	}, function myError(response) {
 		// $scope.myWelcome = response.statusText;
 	});
-});
-
-app.controller("RemoteOutdoorWeatherSensorController", function($scope, $http) {
 
 	$http({
 		method : "GET",
@@ -34,9 +27,6 @@ app.controller("RemoteOutdoorWeatherSensorController", function($scope, $http) {
 	}, function myError(response) {
 		// $scope.myWelcome = response.statusText;
 	});
-});
-
-app.controller("RemoteValveDriveController", function($scope, $http) {
 
 	$http({
 		method : "GET",
@@ -46,6 +36,7 @@ app.controller("RemoteValveDriveController", function($scope, $http) {
 	}, function myError(response) {
 		// $scope.myWelcome = response.statusText;
 	});
+
 });
 
 app.directive('tooltip', function() {
@@ -87,9 +78,9 @@ app.filter("getStickyness", function() {
 	return function(item) {
 		var dewPoint = getDewPoint(item.CurrentTemperature, item.Humidity);
 		if (dewPoint < 16) {
-			return "fa fa-sort-desc";
+			return "fa fa-smile-o";
 		} else if (dewPoint >= 16) {
-			return "fa fa-sort-up";
+			return "fa fa-frown-o";
 		}
 	}
 });

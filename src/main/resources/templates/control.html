@@ -1,0 +1,37 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<link rel="stylesheet" href="app/homeautomation.css" type="text/css">
+<link rel="stylesheet" href="css/icomoon.css" type="text/css">
+<link rel="stylesheet" href="css/font-awesome.min.css" type="text/css">
+<link rel="stylesheet" href="css/bootstrap.min.css" type="text/css" />
+
+<script src="js/jquery-3.3.1.slim.min.js" /></script>
+<script src="js/angular.min.js" /></script>
+<script src="js/bootstrap.min.js" /></script>
+<script src="app/homeautomation2.js" /></script>
+<title>Homeautomation</title>
+</head>
+<body ng-app="ButtonControl">
+	<div ng-controller="ButtonController">
+		<button ng-click="setBoiler(true)" type=" button"
+			class="btn btn-success">Boiler on</button>
+		<button ng-click="setBoilerO(false)" type=" button"
+			class="btn btn-danger">Boiler off</button>
+		</br>
+		<button ng-click="setAllLights(true)" type="button"
+			class="btn btn-success">All lights on</button>
+		<button ng-click="setAllLights(false)" type="button"
+			class="btn btn-danger">All lights off</button>
+		</br>
+		<button ng-click="setHeating('auto')" type="button"
+			class="btn btn-success">Heating Auto</button>
+		<button ng-click="setHeating('off')" type="button"
+			class="btn btn-danger">HeatingOff</button>
+	</div>
+
+
+</body>
+</html>

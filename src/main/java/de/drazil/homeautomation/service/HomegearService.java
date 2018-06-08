@@ -8,15 +8,16 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import de.drazil.homegear.IRemoteMeteringSwitch;
-import de.drazil.homegear.IRemoteOutdoorWeatherSensor;
-import de.drazil.homegear.IRemoteRadiatorThermostat;
-import de.drazil.homegear.IRemoteSwitch;
-import de.drazil.homegear.IRemoteValveDrive;
-import de.drazil.homegear.IRemoteWallThermostat;
-import de.drazil.homegear.ISmartDevice;
-import de.drazil.homegear.IWeatherSensor;
-import de.drazil.homegear.util.VentilationCalcUtil;
+import de.drazil.homeautomation.smartdevices.IRemoteMeteringSwitch;
+import de.drazil.homeautomation.smartdevices.IRemoteOutdoorWeatherSensor;
+import de.drazil.homeautomation.smartdevices.IRemoteRadiatorThermostat;
+import de.drazil.homeautomation.smartdevices.IRemoteSwitch;
+import de.drazil.homeautomation.smartdevices.IRemoteValveDrive;
+import de.drazil.homeautomation.smartdevices.IRemoteWallThermostat;
+import de.drazil.homeautomation.smartdevices.ISmartDevice;
+import de.drazil.homeautomation.smartdevices.IWeatherSensor;
+import de.drazil.homeautomation.smartdevices.IHeatingDevice.HeatingMode;
+import de.drazil.homeautomation.util.VentilationCalcUtil;
 
 @Service
 public class HomegearService {
@@ -29,6 +30,7 @@ public class HomegearService {
 		List<IRemoteRadiatorThermostat> list = factory
 				.<IRemoteRadiatorThermostat>getSmartDeviceList(IRemoteRadiatorThermostat.class);
 		for (IRemoteRadiatorThermostat device : list) {
+
 			Map<String, Object> map = new LinkedHashMap<String, Object>();
 			map.put("LowBattery", device.hasLowBattery());
 			map.put("BatteryVoltage", device.getBatteryValue());
@@ -41,20 +43,21 @@ public class HomegearService {
 			map.put("ValveState", device.getValveState());
 			map.put("SerialNo", device.getSerialNo());
 			resultList.add(map);
+
 		}
 		return resultList;
 	}
 
 	public List<Map<String, Object>> getRemoteWallThermostatList() throws Throwable {
-		Double humidityLevelOut = factory.getRemoteOutdoorWeatherSensorBySerialNo("LEQ0567692").getHumidityLevel();
+		Number humidityLevelOut = factory.getRemoteOutdoorWeatherSensorBySerialNo("LEQ0567692").getHumidityLevel();
 		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
 
 		List<IRemoteWallThermostat> list = factory
 				.<IRemoteWallThermostat>getSmartDeviceList(IRemoteWallThermostat.class);
 		for (IRemoteWallThermostat device : list) {
 			Number ct = device.getCurrentTemperature();
-			Integer ch = device.getHumidity();
-			Double humidityLevelIn = VentilationCalcUtil.getAbsoluteHumidity(ct, ch);
+			Number ch = device.getHumidity();
+			Number humidityLevelIn = VentilationCalcUtil.getAbsoluteHumidity(ct, ch);
 			Map<String, Object> map = new LinkedHashMap<String, Object>();
 			map.put("LowBattery", device.hasLowBattery());
 			map.put("BatteryVoltage", device.getBatteryValue());
@@ -70,14 +73,14 @@ public class HomegearService {
 			String key = device.getSerialNo();
 			String ventilationKey = key += ":Ventilation";
 			Object ventilation = System.getProperty(ventilationKey);
-			Double diff = humidityLevelOut - humidityLevelIn;
+			Number diff = humidityLevelOut.doubleValue() - humidityLevelIn.doubleValue();
 			if (ventilation == null) {
-				System.setProperty(ventilationKey, diff < 0 ? "true" : "false");
+				System.setProperty(ventilationKey, diff.doubleValue() < 0 ? "true" : "false");
 			}
 
-			if (diff <= -0.3) {
+			if (diff.doubleValue() <= -0.3) {
 				System.setProperty(ventilationKey, "true");
-			} else if (diff >= 0.3) {
+			} else if (diff.doubleValue() >= 0.3) {
 				System.setProperty(ventilationKey, "false");
 			}
 
@@ -189,6 +192,20 @@ public class HomegearService {
 	public void setLight(boolean state) throws Throwable {
 		factory.getRemoteMeteringSwitchBySerialNo("LEQ0531814").setState(state);
 		factory.getRemoteSwitchBySerialNo("OEQ0479803").setState(state);
+	}
+
+	public void setHeating(String state) throws Throwable {
+
+		List<IRemoteWallThermostat> list = factory.getSmartDeviceList(IRemoteWallThermostat.class);
+
+		for (IRemoteWallThermostat rt : list) {
+			System.out.println(rt.getLocation());
+			if (state.equalsIgnoreCase("auto")) {
+				rt.setControlMode(HeatingMode.AUTO);
+			} else if (state.equalsIgnoreCase("off")) {
+				rt.setControlMode(HeatingMode.MANUAL, new Double(0));
+			}
+		}
 	}
 
 	public void setLight(String location, boolean state) throws Throwable {

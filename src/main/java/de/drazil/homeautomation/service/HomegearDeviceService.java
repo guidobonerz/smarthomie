@@ -16,18 +16,18 @@ import org.springframework.stereotype.Service;
 
 import com.googlecode.jsonrpc4j.JsonRpcHttpClient;
 
-import de.drazil.homegear.IRemoteMeteringSwitch;
-import de.drazil.homegear.IRemoteOutdoorWeatherSensor;
-import de.drazil.homegear.IRemoteRadiatorThermostat;
-import de.drazil.homegear.IRemoteSmokeDetector;
-import de.drazil.homegear.IRemoteSwitch;
-import de.drazil.homegear.IRemoteValveDrive;
-import de.drazil.homegear.IRemoteWallThermostat;
-import de.drazil.homegear.ISmartDevice;
-import de.drazil.homegear.bean.Device;
-import de.drazil.homegear.bean.DeviceConfig;
-import de.drazil.homegear.bean.DeviceId;
-import de.drazil.xml.XmlHandler;
+import de.drazil.homeautomation.bean.Device;
+import de.drazil.homeautomation.bean.DeviceConfig;
+import de.drazil.homeautomation.bean.DeviceId;
+import de.drazil.homeautomation.smartdevices.IRemoteMeteringSwitch;
+import de.drazil.homeautomation.smartdevices.IRemoteOutdoorWeatherSensor;
+import de.drazil.homeautomation.smartdevices.IRemoteRadiatorThermostat;
+import de.drazil.homeautomation.smartdevices.IRemoteSmokeDetector;
+import de.drazil.homeautomation.smartdevices.IRemoteSwitch;
+import de.drazil.homeautomation.smartdevices.IRemoteValveDrive;
+import de.drazil.homeautomation.smartdevices.IRemoteWallThermostat;
+import de.drazil.homeautomation.smartdevices.ISmartDevice;
+import de.drazil.homeautomation.xml.XmlHandler;
 
 @Service
 public class HomegearDeviceService {
@@ -242,7 +242,7 @@ public class HomegearDeviceService {
 		deviceSerialMap = new HashMap<>();
 		ArrayList<LinkedHashMap<String, Object>> list = (ArrayList<LinkedHashMap<String, Object>>) executeMethod(
 				"listDevices",
-				new Object[] { new Boolean(false), new Object[] { "ID", "ADDRESS", "TYPE", "FAMILYID" } });
+				new Object[] { new Boolean(false), new Object[] { "ID", "ADDRESS", "TYPE", "FAMILYID", "NAME" } });
 
 		for (LinkedHashMap<String, Object> map : list) {
 			DeviceId deviceId = new DeviceId();
@@ -257,11 +257,10 @@ public class HomegearDeviceService {
 					deviceId.setAddress((String) value);
 				} else if (key.equals("FAMILYID")) {
 					deviceId.setFamilyId((Integer) value);
+				} else if (key.equals("NAME")) {
+					deviceId.setLocation((String) value);
 				}
 			}
-			LinkedHashMap<String, Object> deviceInfoMap = (LinkedHashMap<String, Object>) executeMethod("getDeviceInfo",
-					new Object[] { deviceId.getId(), new String[] { "NAME" } });
-			deviceId.setLocation((String) deviceInfoMap.get("NAME"));
 			deviceSerialMap.put(deviceId.getAddress(), deviceId);
 		}
 	}
