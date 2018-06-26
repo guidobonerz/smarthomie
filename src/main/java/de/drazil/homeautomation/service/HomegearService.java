@@ -22,12 +22,12 @@ import de.drazil.homeautomation.util.VentilationCalcUtil;
 @Service
 public class HomegearService {
 	@Autowired
-	HomegearDeviceService factory;
+	HomegearDeviceService homegearDeviceService;
 
 	public List<Map<String, Object>> getRemoteRadiatorThermostatList() throws Throwable {
 		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
 
-		List<IRemoteRadiatorThermostat> list = factory
+		List<IRemoteRadiatorThermostat> list = homegearDeviceService
 				.<IRemoteRadiatorThermostat>getSmartDeviceList(IRemoteRadiatorThermostat.class);
 		for (IRemoteRadiatorThermostat device : list) {
 
@@ -35,7 +35,7 @@ public class HomegearService {
 			map.put("LowBattery", device.hasLowBattery());
 			map.put("BatteryVoltage", device.getBatteryValue());
 			map.put("SignalStrength", device.getSignalStrength());
-			map.put("ControlMode", factory.getControlModeText(device.getControlMode()));
+			map.put("ControlMode", homegearDeviceService.getControlModeText(device.getControlMode()));
 			map.put("Unreachable", device.isUnreachable());
 			map.put("Location", device.getLocation());
 			map.put("CurrentTemperature", device.getCurrentTemperature());
@@ -49,10 +49,10 @@ public class HomegearService {
 	}
 
 	public List<Map<String, Object>> getRemoteWallThermostatList() throws Throwable {
-		Number humidityLevelOut = factory.getRemoteOutdoorWeatherSensorBySerialNo("LEQ0567692").getHumidityLevel();
+		Number humidityLevelOut = homegearDeviceService.getRemoteOutdoorWeatherSensorBySerialNo("LEQ0567692").getHumidityLevel();
 		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
 
-		List<IRemoteWallThermostat> list = factory
+		List<IRemoteWallThermostat> list = homegearDeviceService
 				.<IRemoteWallThermostat>getSmartDeviceList(IRemoteWallThermostat.class);
 		for (IRemoteWallThermostat device : list) {
 			Number ct = device.getCurrentTemperature();
@@ -62,7 +62,7 @@ public class HomegearService {
 			map.put("LowBattery", device.hasLowBattery());
 			map.put("BatteryVoltage", device.getBatteryValue());
 			map.put("SignalStrength", device.getSignalStrength());
-			map.put("ControlMode", factory.getControlModeText(device.getControlMode()));
+			map.put("ControlMode", homegearDeviceService.getControlModeText(device.getControlMode()));
 			map.put("Unreachable", device.isUnreachable());
 			map.put("Location", device.getLocation());
 			map.put("CurrentTemperature", ct);
@@ -94,7 +94,7 @@ public class HomegearService {
 	public List<Map<String, Object>> getRemoteOutdoorWeatherSensorList() throws Throwable {
 		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
 
-		List<IRemoteOutdoorWeatherSensor> list = factory
+		List<IRemoteOutdoorWeatherSensor> list = homegearDeviceService
 				.<IRemoteOutdoorWeatherSensor>getSmartDeviceList(IRemoteOutdoorWeatherSensor.class);
 		for (IRemoteOutdoorWeatherSensor device : list) {
 			Map<String, Object> map = new LinkedHashMap<String, Object>();
@@ -113,7 +113,7 @@ public class HomegearService {
 	public List<Map<String, Object>> getWeatherSensorList() throws Throwable {
 		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
 
-		List<IWeatherSensor> list = factory.<IWeatherSensor>getSmartDeviceList(IWeatherSensor.class);
+		List<IWeatherSensor> list = homegearDeviceService.<IWeatherSensor>getSmartDeviceList(IWeatherSensor.class);
 		for (IWeatherSensor device : list) {
 			Map<String, Object> map = new LinkedHashMap<String, Object>();
 			map.put("Location", device.getLocation());
@@ -132,7 +132,7 @@ public class HomegearService {
 	public List<Map<String, Object>> getRemoteValveDriveList() throws Throwable {
 		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
 
-		List<IRemoteValveDrive> list = factory.<IRemoteValveDrive>getSmartDeviceList(IRemoteValveDrive.class);
+		List<IRemoteValveDrive> list = homegearDeviceService.<IRemoteValveDrive>getSmartDeviceList(IRemoteValveDrive.class);
 		for (IRemoteValveDrive device : list) {
 			Map<String, Object> map = new LinkedHashMap<String, Object>();
 			map.put("Location", device.getLocation());
@@ -151,7 +151,7 @@ public class HomegearService {
 	public List<Map<String, Object>> getRemoteMeteringSwitchList() throws Throwable {
 		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
 
-		List<IRemoteMeteringSwitch> list = factory
+		List<IRemoteMeteringSwitch> list = homegearDeviceService
 				.<IRemoteMeteringSwitch>getSmartDeviceList(IRemoteMeteringSwitch.class);
 		for (IRemoteMeteringSwitch device : list) {
 			Map<String, Object> map = new LinkedHashMap<String, Object>();
@@ -172,7 +172,7 @@ public class HomegearService {
 	public List<Map<String, Object>> getRemoteSwitchList() throws Throwable {
 		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
 
-		List<IRemoteSwitch> list = factory.<IRemoteSwitch>getSmartDeviceList(IRemoteSwitch.class);
+		List<IRemoteSwitch> list = homegearDeviceService.<IRemoteSwitch>getSmartDeviceList(IRemoteSwitch.class);
 		for (IRemoteSwitch device : list) {
 			Map<String, Object> map = new LinkedHashMap<String, Object>();
 			map.put("SignalStrength", device.getSignalStrength());
@@ -186,17 +186,17 @@ public class HomegearService {
 	}
 
 	public void setBoiler(boolean state) throws Throwable {
-		factory.getRemoteValveDriveBySerialNo("HEQ0134004").setValveState(state ? 70 : 0);
+		homegearDeviceService.getRemoteValveDriveBySerialNo("HEQ0134004").setValveState(state ? 70 : 0);
 	}
 
 	public void setLight(boolean state) throws Throwable {
-		factory.getRemoteMeteringSwitchBySerialNo("LEQ0531814").setState(state);
-		factory.getRemoteSwitchBySerialNo("OEQ0479803").setState(state);
+		homegearDeviceService.getRemoteMeteringSwitchBySerialNo("LEQ0531814").setState(state);
+		homegearDeviceService.getRemoteSwitchBySerialNo("OEQ0479803").setState(state);
 	}
 
 	public void setHeating(String state) throws Throwable {
 
-		List<IRemoteWallThermostat> list = factory.getSmartDeviceList(IRemoteWallThermostat.class);
+		List<IRemoteWallThermostat> list = homegearDeviceService.getSmartDeviceList(IRemoteWallThermostat.class);
 
 		for (IRemoteWallThermostat rt : list) {
 			System.out.println(rt.getLocation());
@@ -211,16 +211,16 @@ public class HomegearService {
 	public void setLight(String location, boolean state) throws Throwable {
 		switch (location) {
 		case "livingroom": {
-			factory.getRemoteMeteringSwitchBySerialNo("LEQ0531814").setState(state);
+			homegearDeviceService.getRemoteMeteringSwitchBySerialNo("LEQ0531814").setState(state);
 		}
-		case "corrider": {
-			factory.getRemoteSwitchBySerialNo("OEQ0479803").setState(state);
+		case "corridor": {
+			homegearDeviceService.getRemoteSwitchBySerialNo("OEQ0479803").setState(state);
 		}
 		}
 	}
 
 	public <D extends ISmartDevice> D getSmartDevicebySerialNo(String serialNo, Class<? super D> deviceClass)
 			throws Throwable {
-		return factory.getSmartDeviceBySerialNo(serialNo, deviceClass);
+		return homegearDeviceService.getSmartDeviceBySerialNo(serialNo, deviceClass);
 	}
 }

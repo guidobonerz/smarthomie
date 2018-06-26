@@ -57,7 +57,7 @@ public class HomegearController {
 		return "floorplan";
 	}
 
-	@RequestMapping(value = "/getRemoteWallThermostatList", method = RequestMethod.GET)
+	@GetMapping(value = "/getRemoteWallThermostatList")
 	public @ResponseBody Object getRemoteWallThermostatList() {
 		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
 		Map<String, List<Map<String, Object>>> map = new HashMap<String, List<Map<String, Object>>>();
