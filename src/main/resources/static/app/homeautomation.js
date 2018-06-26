@@ -1,88 +1,42 @@
-var req = new Pollymer.Request({
-	recurring : true,
-	maxDelay : 5000
-});
-req
-		.on(
-				'finished',
-				function(code, result, headers) {
-					if (result != null) {
-						var scope = angular
-								.element(
-										$('[ng-controller=RemoteWallThermostatController]'))
-								.scope();
-
-						for (i = 0; i < result.length; i++) {
-							if (scope.remoteWallThermostatList != null) {
-								for (j = 0; j < scope.remoteWallThermostatList.length; j++) {
-									if (scope.remoteWallThermostatList[j].SerialNo === result[i].SerialNo) {
-										value = result[i].Value;
-										switch (result[i].Attribute) {
-										case 'CONTROL_MODE': {
-											scope.remoteWallThermostatList[j].ControlMode = (value == 0 ? 'automatic'
-													: 'manual');
-											break;
-										}
-										case 'ACTUAL_HUMIDITY': {
-											scope.remoteWallThermostatList[j].Humidity = value;
-											break;
-										}
-										case 'ACTUAL_TEMPERATURE': {
-											scope.remoteWallThermostatList[j].CurrentTemperature = value;
-											break;
-										}
-										}
-									}
-								}
-							}
-						}
-						scope.$apply();
-						console.log(result);
-					}
-				});
-req.on('error', function(reason) {
-});
-var headers = {};
-var body = 'some data';
-// req.maxTries = 2;
-// req.start('POST', '/homeautomation/poll', headers, body);
-
 var app = angular.module("Homeautomation", []);
 
-app.controller("RemoteWallThermostatController", function($scope, $http) {
-	$http.get('/homeautomation/getRemoteWallThermostatList').success(
-			function(data, status, headers, config) {
-				$scope.remoteWallThermostatList = data.data;
-			}).error(function(data, status, headers, config) {
-		// log error
+app.controller("GridController", function($scope, $http) {
+	$http({
+		method : "GET",
+		url : '/homeautomation/getRemoteWallThermostatList'
+	}).then(function mySuccess(response) {
+		$scope.remoteWallThermostatList = response.data.data;
+	}, function myError(response) {
+		// $scope.myWelcome = response.statusText;
 	});
-});
 
-app.controller("RemoteRadiatorThermostatController", function($scope, $http) {
-	$http.get('/homeautomation/getRemoteRadiatorThermostatList').success(
-			function(data, status, headers, config) {
-				$scope.remoteRadiatorThermostatList = data.data;
-			}).error(function(data, status, headers, config) {
-		// log error
+	$http({
+		method : "GET",
+		url : '/homeautomation/getRemoteRadiatorThermostatList'
+	}).then(function mySuccess(response) {
+		$scope.remoteRadiatorThermostatList = response.data.data;
+	}, function myError(response) {
+		// $scope.myWelcome = response.statusText;
 	});
-});
 
-app.controller("RemoteOutdoorWeatherSensorController", function($scope, $http) {
-	$http.get('/homeautomation/getRemoteOutdoorWeatherSensorList').success(
-			function(data, status, headers, config) {
-				$scope.remoteOutdoorWeatherSensorList = data.data;
-			}).error(function(data, status, headers, config) {
-		// log error
+	$http({
+		method : "GET",
+		url : '/homeautomation/getRemoteOutdoorWeatherSensorList'
+	}).then(function mySuccess(response) {
+		$scope.remoteOutdoorWeatherSensorList = response.data.data;
+	}, function myError(response) {
+		// $scope.myWelcome = response.statusText;
 	});
-});
 
-app.controller("RemoteValveDriveController", function($scope, $http) {
-	$http.get('/homeautomation/getRemoteValveDriveList').success(
-			function(data, status, headers, config) {
-				$scope.remoteValveDriveList = data.data;
-			}).error(function(data, status, headers, config) {
-		// log error
+	$http({
+		method : "GET",
+		url : '/homeautomation/getRemoteValveDriveList'
+	}).then(function mySuccess(response) {
+		$scope.remoteValveDriveList = response.data.data;
+	}, function myError(response) {
+		// $scope.myWelcome = response.statusText;
 	});
+
 });
 
 app.directive('tooltip', function() {
@@ -124,9 +78,9 @@ app.filter("getStickyness", function() {
 	return function(item) {
 		var dewPoint = getDewPoint(item.CurrentTemperature, item.Humidity);
 		if (dewPoint < 16) {
-			return "fa fa-sort-desc";
+			return "fa fa-smile-o";
 		} else if (dewPoint >= 16) {
-			return "fa fa-sort-up";
+			return "fa fa-frown-o";
 		}
 	}
 });
@@ -185,17 +139,3 @@ app.directive('linearGraph', function($rootscope) {
 		attr.$observe('value')
 	};
 });
-
-/*
- * <canvas linearGraph id="{{item.SerialNo}}" width="100" height="15"
- * style="border: 1px solid #000000;"> var c =
- * document.getElementById("{{item.SerialNo}}"); var ctx = c.getContext("2d");
- * var grd = ctx.createLinearGradient(0, 0, 100, 0); grd.addColorStop(0,
- * "green"); grd.addColorStop(1, "red");
- * 
- * ctx.fillStyle="#dddddd";
- * ctx.fillRect(50+(6.25*$scope.item.VentilationDiff)-2,0,4,15); ctx.fillStyle =
- * grd; ctx.fillRect(0, 0, 100, 15);
- * 
- * 
- */

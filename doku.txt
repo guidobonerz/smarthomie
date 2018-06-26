@@ -1,0 +1,6 @@
+<img
+		src="http://10.100.200.171/mjpg/video.mjpg?resolution=320x200&compression=60&mirror=0&textstring=Hauseingang%20%25F%20%25T%20%20Compression:%23c%20Frame%20size:%23F%20kbytes%20FPS:%23r&textsize=medium&textcolor=white&textbackgroundcolor=semitransparent&textposition=top&text=1&clock=1&date=1&fps=10&maxframesize=0&videocodec=jpeg&rotation=180&timestamp=1524935575592"
+		width="320" height="200">
+	<img
+		src="http://10.100.200.170/mjpg/video.mjpg?resolution=320x200&compression=60&mirror=0&textstring=Corridor%20%25F%20%25T%20%20Compression:%23c%20Frame%20size:%23F%20kbytes%20FPS:%23r&textsize=medium&textcolor=white&textbackgroundcolor=semitransparent&textposition=top&text=1&clock=1&date=1&fps=10&maxframesize=0&videocodec=jpeg&rotation=0&timestamp=1524935575592"
+		width="320" height="200">

@@ -2,7 +2,7 @@
 <deviceConfig>
 	<devices>
 		<device id="HM-CC-RT-DN" vendor="Homematic" description="Heizungsthermostat"
-			adapterClassName="de.drazil.homegear.homematic.HomematicRemoteRadiatorThermostat">
+			adapterClassName="de.drazil.homeautomation.smartdevicesimpl.homematic.HomematicRemoteRadiatorThermostat">
 			<types>
 				<type id="master">
 					<fields>
@@ -51,7 +51,7 @@
 			</types>
 		</device>
 		<device id="HM-TC-IT-WM-W-EU" vendor="Homematic" description="Wandthermostat"
-			adapterClassName="de.drazil.homegear.homematic.HomematicRemoteWallThermostat">
+			adapterClassName="de.drazil.homeautomation.smartdevicesimpl.homematic.HomematicRemoteWallThermostat">
 			<types>
 				<type id="master">
 					<fields>
@@ -104,7 +104,7 @@
 		</device>
 		<device id="HM-WDS10-TH-O" vendor="Homematic"
 			description="Outdoor Humidity/Temperature Sensor"
-			adapterClassName="de.drazil.homegear.homematic.HomematicRemoteOutdoorWeatherSensor">
+			adapterClassName="de.drazil.homeautomation.smartdevicesimpl.homematic.HomematicRemoteOutdoorWeatherSensor">
 			<types>
 				<type id="value">
 					<fields>
@@ -122,7 +122,7 @@
 			</types>
 		</device>
 		<device id="HM-CC-VD" vendor="Homematic" description="ValveDrive"
-			adapterClassName="de.drazil.homegear.homematic.HomematicRemoteValveDrive">
+			adapterClassName="de.drazil.homeautomation.smartdevicesimpl.homematic.HomematicRemoteValveDrive">
 			<types>
 				<type id="master">
 					<fields>
@@ -145,7 +145,7 @@
 			</types>
 		</device>
 		<device id="HM-ES-PMSw1-Pl" vendor="Homematic" description="PowerSwitch/EnergyMeasurement"
-			adapterClassName="de.drazil.homegear.homematic.HomematicRemoteMeteringSwitch">
+			adapterClassName="de.drazil.homeautomation.smartdevicesimpl.homematic.HomematicRemoteMeteringSwitch">
 			<types>
 				<type id="value">
 					<fields>
@@ -176,7 +176,7 @@
 			</types>
 		</device>
 		<device id="HM-LC-Sw1-Pl-DN-R1" vendor="Homematic" description="PowerSwitch"
-			adapterClassName="de.drazil.homegear.homematic.HomematicRemoteSwitch">
+			adapterClassName="de.drazil.homeautomation.smartdevicesimpl.homematic.HomematicRemoteSwitch">
 			<types>
 				<type id="value">
 					<fields>
@@ -207,7 +207,7 @@
 			</types>
 		</device>
 		<device id="HM-Sec-SD-2" vendor="Homematic" description="SmokeDetector2"
-			adapterClassName="de.drazil.homegear.homematic.HomematicSmokeDetector2">
+			adapterClassName="de.drazil.homeautomation.smartdevicesimpl.homematic.HomematicSmokeDetector2">
 			<types>
 				<type id="master">
 					<fields>
