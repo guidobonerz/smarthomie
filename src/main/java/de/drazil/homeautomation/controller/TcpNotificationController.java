@@ -9,7 +9,6 @@ public class TcpNotificationController {
 	public void receiveData(Connection connection, byte[] data) {
 		String s = new String(data);
 		System.out.println(s);
-
 	}
 
 	public void connect(Connection connection) {

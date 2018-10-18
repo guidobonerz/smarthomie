@@ -234,6 +234,62 @@
 				</type>
 			</types>
 		</device>
+		<device id="HM-LC-Bl1-FM" vendor="Homematic" description="Shutter Actuator"
+			adapterClassName="de.drazil.homeautomation.smartdevicesimpl.homematic.HomematicShutterActuator">
+			<types>
+				<type id="master">
+					<fields>
+						<field id="CHANNEL0" channel="0" />
+					</fields>
+				</type>
+				<type id="value">
+					<fields>
+						<field id="STATE" channel="1" readOnly="false" />
+						<field id="LOWBAT" channel="1" readOnly="false" />
+						<field id="INSTALL_TEST" channel="1" readOnly="false" />
+						<field id="ERROR_SMOKE_CHAMBER" channel="1" readOnly="false" />
+						<field id="ERROR_ALARM_TEST" channel="1" readOnly="false" />
+						<field id="UNREACH" channel="0" readOnly="false" />
+						<field id="STICKY_UNREACH" channel="0" readOnly="false" />
+						<field id="RSSI_DEVICE" channel="0" readOnly="false" />
+						<field id="LOWBAT" channel="0" readOnly="false" />
+						<field id="DUTYCYCLE" channel="1" readOnly="false" />
+						<field id="RSSI_PEER" channel="0" readOnly="false" />
+						<field id="CONFIG_PENDING" channel="0" readOnly="false" />
+						<field id="CENTRAL_ADDRESS_SPOOFED" channel="0" readOnly="false" />
+						<field id="LAST_PACKET_RECEIVED" channel="0" readOnly="false" />
+					</fields>
+				</type>
+			</types>
+		</device>
+		<device id="HM-LC-Sw2-FM" vendor="Homematic" description="Switch Actuator"
+			adapterClassName="de.drazil.homeautomation.smartdevicesimpl.homematic.HomematicSwitchActuator">
+			<types>
+				<type id="master">
+					<fields>
+						<field id="CHANNEL0" channel="0" />
+					</fields>
+				</type>
+				<type id="value">
+					<fields>
+						<field id="STATE" channel="1" readOnly="false" />
+						<field id="LOWBAT" channel="1" readOnly="false" />
+						<field id="INSTALL_TEST" channel="1" readOnly="false" />
+						<field id="ERROR_SMOKE_CHAMBER" channel="1" readOnly="false" />
+						<field id="ERROR_ALARM_TEST" channel="1" readOnly="false" />
+						<field id="UNREACH" channel="0" readOnly="false" />
+						<field id="STICKY_UNREACH" channel="0" readOnly="false" />
+						<field id="RSSI_DEVICE" channel="0" readOnly="false" />
+						<field id="LOWBAT" channel="0" readOnly="false" />
+						<field id="DUTYCYCLE" channel="1" readOnly="false" />
+						<field id="RSSI_PEER" channel="0" readOnly="false" />
+						<field id="CONFIG_PENDING" channel="0" readOnly="false" />
+						<field id="CENTRAL_ADDRESS_SPOOFED" channel="0" readOnly="false" />
+						<field id="LAST_PACKET_RECEIVED" channel="0" readOnly="false" />
+					</fields>
+				</type>
+			</types>
+		</device>
 	</devices>
 </deviceConfig>
 

@@ -159,6 +159,8 @@ public class HomegearController {
 		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
 		try {
 			homegearService.setBoiler(state);
+			rw.setMessage("Succesfully set state");
+			rw.setSuccessful(true);
 		} catch (Throwable e) {
 			rw.setData(null);
 			rw.setSuccessful(false);
@@ -172,6 +174,8 @@ public class HomegearController {
 		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
 		try {
 			homegearService.setLight(location, state);
+			rw.setMessage("Succesfully set state");
+			rw.setSuccessful(true);
 		} catch (Throwable e) {
 			rw.setData(null);
 			rw.setSuccessful(false);
@@ -185,6 +189,8 @@ public class HomegearController {
 		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
 		try {
 			homegearService.setLight(state);
+			rw.setMessage("Succesfully set state");
+			rw.setSuccessful(true);
 		} catch (Throwable e) {
 			rw.setData(null);
 			rw.setSuccessful(false);
@@ -193,11 +199,13 @@ public class HomegearController {
 		return rw;
 	}
 
-	@GetMapping(value = "/heating/{type}")
-	public @ResponseBody ResponseWrapper setHeating(@PathVariable String type) {
+	@GetMapping(value = "/heatingmode/{type}")
+	public @ResponseBody ResponseWrapper setHeatingMode(@PathVariable String type) {
 		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
 		try {
 			homegearService.setHeating(type);
+			rw.setMessage("Succesfully set heating mode");
+			rw.setSuccessful(true);
 		} catch (Throwable e) {
 			rw.setData(null);
 			rw.setSuccessful(false);
@@ -209,17 +217,17 @@ public class HomegearController {
 	@GetMapping(value = "/setManualTemperature/{serialNo}/{temperature}")
 	public @ResponseBody ResponseWrapper setManualTemperture(@PathVariable String serialNo,
 			@PathVariable double temperature) {
-		ResponseWrapper response = new ResponseWrapper();
-
+		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
 		try {
 			homegearService.getSmartDevicebySerialNo(serialNo, IRemoteWallThermostat.class)
 					.setControlMode(HeatingMode.MANUAL, (temperature / 10));
-			response.setSuccessful(true);
+			rw.setMessage("Succesfully set heating mode");
+			rw.setSuccessful(true);
 		} catch (Throwable e) {
-			response.setSuccessful(false);
-			response.setMessage("setting new temperture of [" + serialNo + "] failed.");
+			rw.setSuccessful(false);
+			rw.setMessage("setting new temperture of [" + serialNo + "] failed.");
 		}
 
-		return response;
+		return rw;
 	}
 }
