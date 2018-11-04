@@ -23,32 +23,32 @@ public class ExternalSchedulerDao {
 	
 
 	public void removeEventByCalenderName(String calenderName) {
-		jdbcTemplate.update("delete from event where group_id=?", calenderName);
+		jdbcTemplate.update("delete from calendar.event where group_id=?", calenderName);
 	}
 
 	public void addEvent(String groupdId, String start_date, String start_time, String end_date, String end_time,
 			String description, boolean allDayEvent, int categoryId, int actionId) {
 		jdbcTemplate.update(
-				"INSERT INTO event(group_id,start_date,start_time,end_date,end_time,description,all_day_event,category_id,action_id) values (?,?,?,?,?,?,?,?,?)",
+				"INSERT INTO calendar.event(group_id,start_date,start_time,end_date,end_time,description,all_day_event,category_id,action_id) values (?,?,?,?,?,?,?,?,?)",
 				groupdId, start_date, start_time, end_date, end_time, description, allDayEvent, categoryId, actionId);
 
 	}
 
 	public void addOrUpdateDynamicEvent(String id, String start_date, String start_time) {
-		int result = jdbcTemplate.queryForObject("select count(*) from dynamic_event where id=?", new Object[] { id },
+		int result = jdbcTemplate.queryForObject("select count(*) from calendar.dynamic_event where id=?", new Object[] { id },
 				Integer.class);
 		if (result == 0) {
-			jdbcTemplate.update("insert into dynamic_event(id,start_date,start_time) values (?,?,?)", id, start_date,
+			jdbcTemplate.update("insert into calendar.dynamic_event(id,start_date,start_time) values (?,?,?)", id, start_date,
 					start_time);
 		} else {
-			jdbcTemplate.update("update dynamic_event set start_date=?, start_time=? where id=?", start_date,
+			jdbcTemplate.update("update calendar.dynamic_event set start_date=?, start_time=? where id=?", start_date,
 					start_time, id);
 		}
 	}
 
 	public List<Event> getUpcomingEventList(int from, int to) {
 
-		List<Event> list = jdbcTemplate.query("select * from event_view where diff between ? and ?",
+		List<Event> list = jdbcTemplate.query("select * from calendar.event_view where diff between ? and ?",
 				new Object[] { from, to }, new RowMapper<Event>() {
 					@Override
 					public Event mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -75,7 +75,7 @@ public class ExternalSchedulerDao {
 		List<String> eventList = Arrays.asList(events);
 		MapSqlParameterSource parameters = new MapSqlParameterSource();
 		parameters.addValue("events", eventList);
-		List<Event> list = namedJdbcTemplate.query("select * from event_view where event in (:events)", parameters,
+		List<Event> list = namedJdbcTemplate.query("select * from calendar.event_view where event in (:events)", parameters,
 				new RowMapper<Event>() {
 					@Override
 					public Event mapRow(ResultSet rs, int rowNum) throws SQLException {
