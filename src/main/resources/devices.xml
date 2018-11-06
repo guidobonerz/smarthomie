@@ -234,6 +234,7 @@
 				</type>
 			</types>
 		</device>
+		<!-- 
 		<device id="HM-LC-Bl1-FM" vendor="Homematic" description="Shutter Actuator"
 			adapterClassName="de.drazil.homeautomation.smartdevicesimpl.homematic.HomematicShutterActuator">
 			<types>
@@ -290,6 +291,7 @@
 				</type>
 			</types>
 		</device>
+		 -->
 	</devices>
 </deviceConfig>
 

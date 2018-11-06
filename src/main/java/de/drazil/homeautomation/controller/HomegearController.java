@@ -18,6 +18,7 @@ import de.drazil.homeautomation.dto.Event;
 import de.drazil.homeautomation.service.ExternalSchedulerService;
 import de.drazil.homeautomation.service.HomegearService;
 import de.drazil.homeautomation.smartdevices.IRemoteWallThermostat;
+import de.drazil.homeautomation.smartdevicesimpl.homematic.HomematicRemoteRadiatorThermostat;
 import de.drazil.homeautomation.smartdevices.IHeatingDevice.HeatingMode;
 
 @Controller
@@ -162,6 +163,7 @@ public class HomegearController {
 			rw.setMessage("Succesfully set state");
 			rw.setSuccessful(true);
 		} catch (Throwable e) {
+			e.printStackTrace();
 			rw.setData(null);
 			rw.setSuccessful(false);
 			rw.setMessage(e.getMessage());
@@ -177,6 +179,7 @@ public class HomegearController {
 			rw.setMessage("Succesfully set state");
 			rw.setSuccessful(true);
 		} catch (Throwable e) {
+			e.printStackTrace();
 			rw.setData(null);
 			rw.setSuccessful(false);
 			rw.setMessage(e.getMessage());
@@ -192,6 +195,7 @@ public class HomegearController {
 			rw.setMessage("Succesfully set state");
 			rw.setSuccessful(true);
 		} catch (Throwable e) {
+			e.printStackTrace();
 			rw.setData(null);
 			rw.setSuccessful(false);
 			rw.setMessage(e.getMessage());
@@ -207,6 +211,7 @@ public class HomegearController {
 			rw.setMessage("Succesfully set heating mode");
 			rw.setSuccessful(true);
 		} catch (Throwable e) {
+			e.printStackTrace();
 			rw.setData(null);
 			rw.setSuccessful(false);
 			rw.setMessage(e.getMessage());
@@ -224,6 +229,24 @@ public class HomegearController {
 			rw.setMessage("Succesfully set heating mode");
 			rw.setSuccessful(true);
 		} catch (Throwable e) {
+			e.printStackTrace();
+			rw.setSuccessful(false);
+			rw.setMessage("setting new temperture of [" + serialNo + "] failed.");
+		}
+
+		return rw;
+	}
+
+	@GetMapping(value = "/unlockKey/{serialNo}")
+	public @ResponseBody ResponseWrapper unlockKey(@PathVariable String serialNo) {
+		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
+		try {
+			homegearService.getSmartDevicebySerialNo(serialNo, HomematicRemoteRadiatorThermostat.class).setLocked(false,
+					false);
+			rw.setMessage("Succesfully set heating mode");
+			rw.setSuccessful(true);
+		} catch (Throwable e) {
+			e.printStackTrace();
 			rw.setSuccessful(false);
 			rw.setMessage("setting new temperture of [" + serialNo + "] failed.");
 		}
