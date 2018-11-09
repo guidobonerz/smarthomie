@@ -27,6 +27,7 @@ import de.drazil.homeautomation.smartdevices.IRemoteSwitch;
 import de.drazil.homeautomation.smartdevices.IRemoteValveDrive;
 import de.drazil.homeautomation.smartdevices.IRemoteWallThermostat;
 import de.drazil.homeautomation.smartdevices.ISmartDevice;
+import de.drazil.homeautomation.smartdevicesimpl.homematic.HomematicTemperatureDifferenceSensor;
 import de.drazil.homeautomation.xml.XmlHandler;
 
 @Service
@@ -63,11 +64,14 @@ public class HomegearDeviceService {
 		deviceMap = devices.getDeviceMap();
 
 		if (serverEnabled) {
+			String address = homegearXmlRpcServerHost;
+			if (address.equals("machine-ip")) {
+				address = InetAddress.getLocalHost().getHostAddress();
+			}
 			registerCallbackEventServer(
-					"http://" + homegearXmlRpcServerHost + ":" + homegearXmlRpcServerPort + ""
-							+ homegearXmlRpcServerPath,
+					"http://" + address + ":" + homegearXmlRpcServerPort + "" + homegearXmlRpcServerPath,
 					InetAddress.getLocalHost().getHostName() + ":" + homegearXmlRpcServerName,
-					(0x01 + 0x04 + 0x10 + 0x80));
+					(0x01 + 0x04 + 0x10 + 0x20 + 0x80));
 			Log.info("rpc callback event server enabled");
 		} else {
 			Log.info("rpc callback event server disabled");
@@ -113,6 +117,16 @@ public class HomegearDeviceService {
 		Device device = getDeviceBySerialNo(serialNo);
 		IRemoteMeteringSwitch smartDevice = (IRemoteMeteringSwitch) Class.forName(device.getAdapterClassName())
 				.newInstance();
+		smartDevice.setSerialNo(device.getSerialNo());
+		smartDevice.setHomegearDeviceFactory(this);
+		return smartDevice;
+	}
+
+	public HomematicTemperatureDifferenceSensor getTemperatureDifferenceSensorBySerialNo(String serialNo)
+			throws Throwable {
+		Device device = getDeviceBySerialNo(serialNo);
+		HomematicTemperatureDifferenceSensor smartDevice = (HomematicTemperatureDifferenceSensor) Class
+				.forName(device.getAdapterClassName()).newInstance();
 		smartDevice.setSerialNo(device.getSerialNo());
 		smartDevice.setHomegearDeviceFactory(this);
 		return smartDevice;
@@ -178,6 +192,7 @@ public class HomegearDeviceService {
 	}
 
 	public void registerCallbackEventServer(String url, String interfaceId, Integer flags) throws Throwable {
+		Log.info(url);
 		executeMethod("init", new Object[] { url, interfaceId, flags });
 	}
 

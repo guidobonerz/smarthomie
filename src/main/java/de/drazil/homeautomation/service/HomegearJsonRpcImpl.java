@@ -25,15 +25,15 @@ public class HomegearJsonRpcImpl implements IHomegearJsonRpc {
 
 	@JsonRpcMethod("event")
 	public void event(String interfaceId, int peerId, int channel, String parameterName, Object value) {
-		// Log.info("EVENT > interfaceId: " + interfaceId + " peerId: " + peerId + "
-		// channel: " + channel + " parameterName: " + parameterName + " value: " +
-		// value);
+		if (peerId == 46) {
+			Log.info("EVENT > interfaceId: " + interfaceId + " peerId: " + peerId + " channel: " + channel
+					+ " parameterName: " + parameterName + " value: " + value);
+		}
 	}
 
 	@JsonRpcMethod("error")
 	public void error(String interfaceId, Integer level, String message) {
-		// Log.info("ERROR > interfaceId: " + interfaceId + " level: " + level + "
-		// message " + message);
+		Log.info("ERROR > interfaceId: " + interfaceId + " level: " + level + " message " + message);
 	}
 
 	@JsonRpcMethod("listMethods")

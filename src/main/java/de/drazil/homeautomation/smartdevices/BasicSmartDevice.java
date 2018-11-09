@@ -45,14 +45,18 @@ public class BasicSmartDevice {
 				new Object[] { device.getPeerId(), field.getChannel(), typeName, parameterMap });
 	}
 
-	@SuppressWarnings("unchecked")
 	protected <ValueType> ValueType getValue(String valueName) throws Throwable {
+		return getValue(valueName, null);
+	}
+
+	@SuppressWarnings("unchecked")
+	protected <ValueType> ValueType getValue(String valueName, Integer channel) throws Throwable {
 		Device device = factory.getDeviceBySerialNo(getSerialNo());
 		Type type = device.getTypeMap().get("value");
 		DeviceField field = type.getDeviceFieldMap().get(valueName);
 
 		Object o = factory.executeMethod("getValue",
-				new Object[] { device.getPeerId(), field.getChannel(), valueName });
+				new Object[] { device.getPeerId(), channel == null ? field.getChannel() : channel, valueName });
 		ValueType v = null;
 		try {
 			v = (ValueType) o;

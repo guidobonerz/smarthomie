@@ -8,6 +8,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import de.drazil.homeautomation.smartdevices.IHeatingDevice.HeatingMode;
 import de.drazil.homeautomation.smartdevices.IRemoteMeteringSwitch;
 import de.drazil.homeautomation.smartdevices.IRemoteOutdoorWeatherSensor;
 import de.drazil.homeautomation.smartdevices.IRemoteRadiatorThermostat;
@@ -16,7 +17,6 @@ import de.drazil.homeautomation.smartdevices.IRemoteValveDrive;
 import de.drazil.homeautomation.smartdevices.IRemoteWallThermostat;
 import de.drazil.homeautomation.smartdevices.ISmartDevice;
 import de.drazil.homeautomation.smartdevices.IWeatherSensor;
-import de.drazil.homeautomation.smartdevices.IHeatingDevice.HeatingMode;
 import de.drazil.homeautomation.util.VentilationCalcUtil;
 
 @Service
@@ -191,6 +191,10 @@ public class HomegearService {
 		homegearDeviceService.getRemoteValveDriveBySerialNo("HEQ0134004").setValveState(state ? 70 : 0);
 	}
 
+	public Number getBoilerTemperature(Integer channel) throws Throwable {
+		return homegearDeviceService.getTemperatureDifferenceSensorBySerialNo("OEQ0676279").getTemperature(channel);
+	}
+
 	public void setLight(boolean state) throws Throwable {
 		homegearDeviceService.getRemoteMeteringSwitchBySerialNo("LEQ0531814").setState(state);
 		homegearDeviceService.getRemoteSwitchBySerialNo("OEQ0479803").setState(state);
@@ -212,7 +216,7 @@ public class HomegearService {
 
 	public void setLight(String location, boolean state) throws Throwable {
 		switch (location) {
-		
+
 		case "corridor": {
 			homegearDeviceService.getRemoteMeteringSwitchBySerialNo("LEQ0531814").setState(state);
 			break;

@@ -155,12 +155,27 @@ public class HomegearController {
 	}
 
 	@GetMapping(value = "/boiler/{state}")
-
 	public @ResponseBody ResponseWrapper setBoiler(@PathVariable boolean state) {
 		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
 		try {
 			homegearService.setBoiler(state);
 			rw.setMessage("Succesfully set state");
+			rw.setSuccessful(true);
+		} catch (Throwable e) {
+			e.printStackTrace();
+			rw.setData(null);
+			rw.setSuccessful(false);
+			rw.setMessage(e.getMessage());
+		}
+		return rw;
+	}
+
+	@GetMapping(value = "/boiler/temperature/{channel}")
+	public @ResponseBody ResponseWrapper getBoilerTemperature(@PathVariable Integer channel) {
+		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
+		try {
+			Double value = homegearService.getBoilerTemperature(channel).doubleValue();
+			rw.setMessage("Succesfully get temperature of channel "+channel+" / " + value);
 			rw.setSuccessful(true);
 		} catch (Throwable e) {
 			e.printStackTrace();
