@@ -21,8 +21,16 @@ public class BasicRemoteSwitch extends BasicSmartDevice {
 		setValue("STATE", state);
 	}
 
+	public void setState(Integer channel, Boolean state) throws Throwable {
+		setValue("STATE", state, channel);
+	}
+
 	public Boolean getState() throws Throwable {
 		return getValue("STATE");
+	}
+
+	public Boolean getState(Integer channel) throws Throwable {
+		return getValue("STATE", channel);
 	}
 
 	public Integer getSignalStrength() throws Throwable {

@@ -195,6 +195,10 @@ public class HomegearService {
 		return homegearDeviceService.getTemperatureDifferenceSensorBySerialNo("OEQ0676279").getTemperature(channel);
 	}
 
+	public void setBoiler(Integer channel, boolean state) throws Throwable {
+		homegearDeviceService.getRemoteSwitchBySerialNo("OEQ2070955").setState(channel, state);
+	}
+
 	public void setLight(boolean state) throws Throwable {
 		homegearDeviceService.getRemoteMeteringSwitchBySerialNo("LEQ0531814").setState(state);
 		homegearDeviceService.getRemoteSwitchBySerialNo("OEQ0479803").setState(state);

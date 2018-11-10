@@ -68,10 +68,15 @@ public class BasicSmartDevice {
 	}
 
 	protected <ValueType> void setValue(String valueName, ValueType value) throws Throwable {
+		setValue(valueName, value, null);
+	}
+
+	protected <ValueType> void setValue(String valueName, ValueType value, Integer channel) throws Throwable {
 		Device device = factory.getDeviceBySerialNo(getSerialNo());
 		Type type = device.getTypeMap().get("value");
 		DeviceField field = type.getDeviceFieldMap().get(valueName);
-		factory.executeMethod("setValue", new Object[] { device.getPeerId(), field.getChannel(), valueName, value });
+		factory.executeMethod("setValue",
+				new Object[] { device.getPeerId(), channel == null ? field.getChannel() : channel, valueName, value });
 	}
 
 }

@@ -158,7 +158,7 @@ public class HomegearController {
 	public @ResponseBody ResponseWrapper setBoiler(@PathVariable boolean state) {
 		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
 		try {
-			homegearService.setBoiler(state);
+			homegearService.setBoiler(1,state);
 			rw.setMessage("Succesfully set state");
 			rw.setSuccessful(true);
 		} catch (Throwable e) {
