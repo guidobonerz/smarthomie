@@ -5,7 +5,7 @@ import java.util.List;
 import com.googlecode.jsonrpc4j.JsonRpcService;
 
 @JsonRpcService("/jsonrpc")
-public interface IHomegearJsonRpc {
+public interface IHomegearEventService {
 
 	public void event(String interfaceId, int peerId, int channel, String parameterName, Object value);
 

@@ -42,7 +42,7 @@ public class HomeautomationScheduler {
 	private void setBoilerHeatingOn(boolean state) {
 		try {
 			if (boilerControl.equals("on")) {
-				service.setBoiler(state);
+				service.setBoiler(1,state);
 				// factory.getRemoteValveDriveBySerialNo("HEQ0134004").setValveState(Integer.valueOf(valveState));
 			}
 		} catch (Throwable e) {
@@ -57,7 +57,7 @@ public class HomeautomationScheduler {
 		Log.info(message);
 		try {
 			if (boilerControl.equals("on")) {
-				service.setBoiler(false);
+				service.setBoiler(1,false);
 				// factory.getRemoteValveDriveBySerialNo("HEQ0134004").setValveState(0);
 			}
 		} catch (Throwable e) {

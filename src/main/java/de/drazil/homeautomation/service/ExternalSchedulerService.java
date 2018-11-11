@@ -58,7 +58,7 @@ public class ExternalSchedulerService {
 			HttpEntity entity = response.getEntity();
 
 			result = EntityUtils.toString(entity);
-			log.info(result);
+			//log.info(result);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

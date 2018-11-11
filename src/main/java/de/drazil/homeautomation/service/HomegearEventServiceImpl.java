@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.googlecode.jsonrpc4j.JsonRpcMethod;
@@ -11,8 +12,11 @@ import com.googlecode.jsonrpc4j.spring.AutoJsonRpcServiceImpl;
 
 @Service
 @AutoJsonRpcServiceImpl
-public class HomegearJsonRpcImpl implements IHomegearJsonRpc {
+public class HomegearEventServiceImpl implements IHomegearEventService {
 	private static final Logger Log = Logger.getLogger("jsonrpchandler");
+
+	@Autowired
+	private HomegearService service;
 
 	private static List<String> rpcMethodList = new ArrayList<String>();
 	static {
