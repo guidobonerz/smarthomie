@@ -187,16 +187,21 @@ public class HomegearService {
 		return resultList;
 	}
 
-	public void setBoiler(boolean state) throws Throwable {
-		homegearDeviceService.getRemoteValveDriveBySerialNo("HEQ0134004").setValveState(state ? 70 : 0);
-	}
-
+	/*
+	 * public void setBoiler(boolean state) throws Throwable {
+	 * homegearDeviceService.getRemoteValveDriveBySerialNo("HEQ0134004").
+	 * setValveState(state ? 70 : 0); }
+	 */
 	public Number getBoilerTemperature(Integer channel) throws Throwable {
 		return homegearDeviceService.getTemperatureDifferenceSensorBySerialNo("OEQ0676279").getTemperature(channel);
 	}
 
-	public void setBoiler(Integer channel, boolean state) throws Throwable {
+	public void setBoilerState(Integer channel, boolean state) throws Throwable {
 		homegearDeviceService.getRemoteSwitchBySerialNo("OEQ2070955").setState(channel, state);
+	}
+
+	public boolean getBoilerState(Integer channel) throws Throwable {
+		return homegearDeviceService.getRemoteSwitchBySerialNo("OEQ2070955").getState(channel);
 	}
 
 	public void setLight(boolean state) throws Throwable {

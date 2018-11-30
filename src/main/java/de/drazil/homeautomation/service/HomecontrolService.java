@@ -20,8 +20,10 @@ public class HomecontrolService {
 
 			if (n.doubleValue() > 65) {
 				try {
-					homegearService.setBoiler(false);
-					Log.info("boiler reached max temperature -> switch it off");
+					if (homegearService.getBoilerState(1)) {
+						homegearService.setBoilerState(1, false);
+						Log.info("boiler reached max temperature -> switch it off");
+					}
 				} catch (Throwable e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
