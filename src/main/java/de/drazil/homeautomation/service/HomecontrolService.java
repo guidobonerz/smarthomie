@@ -14,7 +14,7 @@ public class HomecontrolService {
 
 	public void control(String interfaceId, int peerId, int channel, String parameterName, Object value) {
 		// System.out.println(peerId + ":" + channel + ":" + parameterName);
-		if (peerId == 46 && channel == 2 && parameterName.equals("TEMPERATURE")) {
+		if (peerId == 46 && channel == 1 && parameterName.equals("TEMPERATURE")) {
 			Number n = ((Number) value);
 			Log.info("current boiler temperature is " + n.doubleValue());
 
