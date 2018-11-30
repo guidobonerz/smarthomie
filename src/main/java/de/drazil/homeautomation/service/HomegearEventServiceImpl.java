@@ -4,19 +4,30 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.googlecode.jsonrpc4j.JsonRpcMethod;
 import com.googlecode.jsonrpc4j.spring.AutoJsonRpcServiceImpl;
 
+import de.drazil.homeautomation.dto.SmartDeviceEvent;
+
 @Service
 @AutoJsonRpcServiceImpl
 public class HomegearEventServiceImpl implements IHomegearEventService {
 	private static final Logger Log = Logger.getLogger("jsonrpchandler");
 
+	private List<SmartDeviceEvent> smartDeviceEventList = null;
+
 	@Autowired
-	private HomegearService service;
+	HomecontrolService homecontrolService;
+
+	@PostConstruct
+	public void init() {
+		smartDeviceEventList = new ArrayList<>();
+	}
 
 	private static List<String> rpcMethodList = new ArrayList<String>();
 	static {
@@ -27,11 +38,19 @@ public class HomegearEventServiceImpl implements IHomegearEventService {
 		// rpcMethodList.add("newDevices");
 	}
 
+	public List<SmartDeviceEvent> getSmartDeviceEventList() {
+		List<SmartDeviceEvent> eventList = new ArrayList<>(smartDeviceEventList);
+		for (SmartDeviceEvent event : eventList) {
+			smartDeviceEventList.remove(event);
+		}
+		return eventList;
+	}
+
 	@JsonRpcMethod("event")
 	public void event(String interfaceId, int peerId, int channel, String parameterName, Object value) {
-		if (peerId == 46) {
-			Log.info("EVENT > interfaceId: " + interfaceId + " peerId: " + peerId + " channel: " + channel
-					+ " parameterName: " + parameterName + " value: " + value);
+		homecontrolService.control(interfaceId, peerId, channel, parameterName, value);
+		if (smartDeviceEventList.size() < 100) {
+			smartDeviceEventList.add(new SmartDeviceEvent(interfaceId, peerId, channel, parameterName, value));
 		}
 	}
 

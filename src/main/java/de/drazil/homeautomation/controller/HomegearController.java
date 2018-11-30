@@ -15,16 +15,21 @@ import org.springframework.web.servlet.ModelAndView;
 
 import de.drazil.homeautomation.bean.ResponseWrapper;
 import de.drazil.homeautomation.dto.Event;
+import de.drazil.homeautomation.dto.SmartDeviceEvent;
 import de.drazil.homeautomation.service.ExternalSchedulerService;
+import de.drazil.homeautomation.service.HomegearEventServiceImpl;
 import de.drazil.homeautomation.service.HomegearService;
+import de.drazil.homeautomation.smartdevices.IHeatingDevice.HeatingMode;
 import de.drazil.homeautomation.smartdevices.IRemoteWallThermostat;
 import de.drazil.homeautomation.smartdevicesimpl.homematic.HomematicRemoteRadiatorThermostat;
-import de.drazil.homeautomation.smartdevices.IHeatingDevice.HeatingMode;
 
 @Controller
 public class HomegearController {
 	@Autowired
 	private HomegearService homegearService;
+
+	@Autowired
+	private HomegearEventServiceImpl homegearEventService;
 
 	@Autowired
 	private ExternalSchedulerService service;
@@ -48,6 +53,11 @@ public class HomegearController {
 	@GetMapping("/overview")
 	public String overview() {
 		return "overview";
+	}
+
+	@GetMapping("/polling")
+	public String polling() {
+		return "polling";
 	}
 
 	/*
@@ -158,7 +168,7 @@ public class HomegearController {
 	public @ResponseBody ResponseWrapper setBoiler(@PathVariable boolean state) {
 		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
 		try {
-			homegearService.setBoiler(1,state);
+			homegearService.setBoiler(1, state);
 			rw.setMessage("Succesfully set state");
 			rw.setSuccessful(true);
 		} catch (Throwable e) {
@@ -175,7 +185,7 @@ public class HomegearController {
 		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
 		try {
 			Double value = homegearService.getBoilerTemperature(channel).doubleValue();
-			rw.setMessage("Succesfully get temperature of channel "+channel+" / " + value);
+			rw.setMessage("Succesfully get temperature of channel " + channel + " / " + value);
 			rw.setSuccessful(true);
 		} catch (Throwable e) {
 			e.printStackTrace();
@@ -268,4 +278,24 @@ public class HomegearController {
 
 		return rw;
 	}
+
+	@GetMapping(value = "/getSmartEvents")
+	public @ResponseBody ResponseWrapper smartEvents() {
+		System.out.println("getSmartEvents()");
+		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
+		try {
+			List<SmartDeviceEvent> eventList = homegearEventService.getSmartDeviceEventList();
+			rw.setData(eventList);
+			rw.setTotal(eventList.size());
+			rw.setMessage("Succesfully got events");
+			rw.setSuccessful(true);
+		} catch (Throwable e) {
+			e.printStackTrace();
+			rw.setSuccessful(false);
+			rw.setMessage("getting event data failed.");
+		}
+
+		return rw;
+	}
+
 }

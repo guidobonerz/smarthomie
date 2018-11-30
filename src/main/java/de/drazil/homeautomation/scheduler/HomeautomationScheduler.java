@@ -50,7 +50,7 @@ public class HomeautomationScheduler {
 		}
 	}
 
-	@Scheduled(cron = "${boiler.heating1.off}")
+	//@Scheduled(cron = "${boiler.heating1.off}")
 	// @Scheduled(cron = "${boiler.heating2.off}")
 	public void setBoilerHeatingOff() {
 		String message = MessageFormat.format("Boiler Heating - Off at {0,time}", new Date());
