@@ -37,6 +37,8 @@ public class HomegearDeviceService {
 	private JsonRpcHttpClient rpcClient = null;
 	private DeviceConfig devices = null;
 	private Map<String, DeviceId> deviceSerialMap;
+	private Map<String, DeviceId> deviceLocationMap;
+	private Map<String, DeviceId> deviceIdMap;
 	private Map<String, Device> deviceMap;
 
 	@Value("${homegear.host}")
@@ -60,7 +62,7 @@ public class HomegearDeviceService {
 
 		XmlHandler xh = new XmlHandler();
 		devices = xh.readFromXml(DeviceConfig.class, "devices.xml");
-		createDeviceIdMapping();
+		createDeviceMapping();
 		deviceMap = devices.getDeviceMap();
 
 		if (serverEnabled) {
@@ -250,8 +252,10 @@ public class HomegearDeviceService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void createDeviceIdMapping() throws Throwable {
+	private void createDeviceMapping() throws Throwable {
 		deviceSerialMap = new HashMap<>();
+		deviceLocationMap = new HashMap<>();
+		deviceIdMap = new HashMap<>();
 		ArrayList<LinkedHashMap<String, Object>> list = (ArrayList<LinkedHashMap<String, Object>>) executeMethod(
 				"listDevices",
 				new Object[] { new Boolean(false), new Object[] { "ID", "ADDRESS", "TYPE", "FAMILYID", "NAME" } });
@@ -274,6 +278,12 @@ public class HomegearDeviceService {
 				}
 			}
 			deviceSerialMap.put(deviceId.getAddress(), deviceId);
+			deviceLocationMap.put(deviceId.getLocation(), deviceId);
+			deviceIdMap.put(deviceId.getId().toString(), deviceId);
 		}
+	}
+
+	public DeviceId getDeviceId(String id) {
+		return deviceIdMap.get(id);
 	}
 }

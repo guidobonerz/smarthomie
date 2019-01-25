@@ -266,7 +266,7 @@ public class HomegearController {
 
 	@GetMapping(value = "/getMessages")
 	public @ResponseBody ResponseWrapper getMessages() {
-		System.out.println("getMessages()");
+		
 		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
 		try {
 			List<Message> list = messageService.getMessageList();

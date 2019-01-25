@@ -21,6 +21,8 @@ public class HomegearEventServiceImpl implements IHomegearEventService {
 	HomecontrolService homecontrolService;
 	@Autowired
 	MessageService messageService;
+	@Autowired
+	HomegearDeviceService homegearDeviceService;
 
 	private static List<String> rpcMethodList = new ArrayList<String>();
 	static {
@@ -35,8 +37,9 @@ public class HomegearEventServiceImpl implements IHomegearEventService {
 	public void event(String interfaceId, int peerId, int channel, String parameterName, Object value) {
 		homecontrolService.control(interfaceId, peerId, channel, parameterName, value);
 		if (messageService.getMessageCount() < 100) {
-			messageService.addMessage(
-					new Message("EVENT", new SmartDeviceEvent(interfaceId, peerId, channel, parameterName, value)));
+			messageService.addMessage(new Message("EVENT",
+					new SmartDeviceEvent(homegearDeviceService.getDeviceId(Integer.toString(peerId)).getLocation(),
+							interfaceId, peerId, channel, parameterName, value)));
 		}
 	}
 

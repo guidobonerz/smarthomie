@@ -6,6 +6,7 @@ import lombok.Data;
 @AllArgsConstructor
 @Data
 public class SmartDeviceEvent {
+	String location;
 	String interfaceId;
 	int peerId;
 	int channel;
