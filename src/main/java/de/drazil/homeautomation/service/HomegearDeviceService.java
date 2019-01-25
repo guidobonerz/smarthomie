@@ -64,12 +64,9 @@ public class HomegearDeviceService {
 		deviceMap = devices.getDeviceMap();
 
 		if (serverEnabled) {
-			String address = homegearXmlRpcServerHost;
-			if (address.equals("machine-ip")) {
-				address = InetAddress.getLocalHost().getHostAddress();
-			}
 			registerCallbackEventServer(
-					"http://" + address + ":" + homegearXmlRpcServerPort + "" + homegearXmlRpcServerPath,
+					"http://" + homegearXmlRpcServerHost + ":" + homegearXmlRpcServerPort + ""
+							+ homegearXmlRpcServerPath,
 					InetAddress.getLocalHost().getHostName() + ":" + homegearXmlRpcServerName,
 					(0x01 + 0x04 + 0x10 + 0x20 + 0x80));
 			Log.info("rpc callback event server enabled");
