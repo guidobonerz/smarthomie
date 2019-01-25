@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,15 +17,10 @@ import de.drazil.homeautomation.dto.SmartDeviceEvent;
 public class HomegearEventServiceImpl implements IHomegearEventService {
 	private static final Logger Log = Logger.getLogger("jsonrpchandler");
 
-	private List<SmartDeviceEvent> smartDeviceEventList = null;
-
 	@Autowired
 	HomecontrolService homecontrolService;
-
-	@PostConstruct
-	public void init() {
-		smartDeviceEventList = new ArrayList<>();
-	}
+	@Autowired
+	MessageService messageService;
 
 	private static List<String> rpcMethodList = new ArrayList<String>();
 	static {
@@ -38,19 +31,12 @@ public class HomegearEventServiceImpl implements IHomegearEventService {
 		// rpcMethodList.add("newDevices");
 	}
 
-	public List<SmartDeviceEvent> getSmartDeviceEventList() {
-		List<SmartDeviceEvent> eventList = new ArrayList<>(smartDeviceEventList);
-		for (SmartDeviceEvent event : eventList) {
-			smartDeviceEventList.remove(event);
-		}
-		return eventList;
-	}
-
 	@JsonRpcMethod("event")
 	public void event(String interfaceId, int peerId, int channel, String parameterName, Object value) {
 		homecontrolService.control(interfaceId, peerId, channel, parameterName, value);
-		if (smartDeviceEventList.size() < 100) {
-			smartDeviceEventList.add(new SmartDeviceEvent(interfaceId, peerId, channel, parameterName, value));
+		if (messageService.getMessageCount() < 100) {
+			messageService.addMessage(
+					new Message("EVENT", new SmartDeviceEvent(interfaceId, peerId, channel, parameterName, value)));
 		}
 	}
 

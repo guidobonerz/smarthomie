@@ -15,10 +15,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 import de.drazil.homeautomation.bean.ResponseWrapper;
 import de.drazil.homeautomation.dto.Event;
-import de.drazil.homeautomation.dto.SmartDeviceEvent;
 import de.drazil.homeautomation.service.ExternalSchedulerService;
-import de.drazil.homeautomation.service.HomegearEventServiceImpl;
 import de.drazil.homeautomation.service.HomegearService;
+import de.drazil.homeautomation.service.Message;
+import de.drazil.homeautomation.service.MessageService;
 import de.drazil.homeautomation.smartdevices.IHeatingDevice.HeatingMode;
 import de.drazil.homeautomation.smartdevices.IRemoteWallThermostat;
 import de.drazil.homeautomation.smartdevicesimpl.homematic.HomematicRemoteRadiatorThermostat;
@@ -29,7 +29,7 @@ public class HomegearController {
 	private HomegearService homegearService;
 
 	@Autowired
-	private HomegearEventServiceImpl homegearEventService;
+	MessageService messageService;
 
 	@Autowired
 	private ExternalSchedulerService service;
@@ -44,12 +44,6 @@ public class HomegearController {
 		return "redirect:/overview";
 	}
 
-	@RequestMapping("/request")
-	public String request() {
-		List<Event> events = service.getUpcomingEventList(new String[] { "today", "tomorrow", "upcoming" });
-		return "login";
-	}
-
 	@GetMapping("/overview")
 	public String overview() {
 		return "overview";
@@ -60,9 +54,6 @@ public class HomegearController {
 		return "polling";
 	}
 
-	/*
-	 * @GetMapping("/control") public String control() { return "control"; }
-	 */
 	@GetMapping("/floorplan")
 	public String floorplan() {
 		return "floorplan";
@@ -71,7 +62,6 @@ public class HomegearController {
 	@GetMapping(value = "/getRemoteWallThermostatList")
 	public @ResponseBody Object getRemoteWallThermostatList() {
 		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
-		Map<String, List<Map<String, Object>>> map = new HashMap<String, List<Map<String, Object>>>();
 		try {
 			rw.setData(homegearService.getRemoteWallThermostatList());
 			rw.setMessage("Succesfully got data");
@@ -87,7 +77,6 @@ public class HomegearController {
 	@RequestMapping(value = "/getRemoteRadiatorThermostatList", method = RequestMethod.GET)
 	public @ResponseBody Object getRemoteRadiatorThermostatList() {
 		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
-		Map<String, List<Map<String, Object>>> map = new HashMap<String, List<Map<String, Object>>>();
 		try {
 			rw.setData(homegearService.getRemoteRadiatorThermostatList());
 			rw.setMessage("Succesfully got data");
@@ -104,7 +93,6 @@ public class HomegearController {
 	@RequestMapping(value = "/getRemoteValveDriveList", method = RequestMethod.GET)
 	public @ResponseBody Object getRemoteValveDriveList() {
 		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
-		Map<String, List<Map<String, Object>>> map = new HashMap<String, List<Map<String, Object>>>();
 		try {
 			rw.setData(homegearService.getRemoteValveDriveList());
 			rw.setMessage("Succesfully got data");
@@ -120,7 +108,6 @@ public class HomegearController {
 	@RequestMapping(value = "/getRemoteOutdoorWeatherSensorList", method = RequestMethod.GET)
 	public @ResponseBody Object getRemoteOutdoorWeatherSensorList() {
 		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
-		Map<String, List<Map<String, Object>>> map = new HashMap<String, List<Map<String, Object>>>();
 		try {
 			rw.setData(homegearService.getRemoteOutdoorWeatherSensorList());
 			rw.setMessage("Succesfully got data");
@@ -275,18 +262,34 @@ public class HomegearController {
 			rw.setSuccessful(false);
 			rw.setMessage("setting new temperture of [" + serialNo + "] failed.");
 		}
-
 		return rw;
 	}
 
-	@GetMapping(value = "/getSmartEvents")
-	public @ResponseBody ResponseWrapper smartEvents() {
-		System.out.println("getSmartEvents()");
+	@GetMapping(value = "/getMessages")
+	public @ResponseBody ResponseWrapper getMessages() {
+		System.out.println("getMessages()");
 		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
 		try {
-			List<SmartDeviceEvent> eventList = homegearEventService.getSmartDeviceEventList();
-			rw.setData(eventList);
-			rw.setTotal(eventList.size());
+			List<Message> list = messageService.getMessageList();
+			rw.setData(list);
+			rw.setTotal(list.size());
+			rw.setMessage("Succesfully got messages");
+			rw.setSuccessful(true);
+		} catch (Throwable e) {
+			e.printStackTrace();
+			rw.setSuccessful(false);
+			rw.setMessage("getting event data failed.");
+		}
+		return rw;
+	}
+
+	@RequestMapping("/getEvents")
+	public @ResponseBody ResponseWrapper getEvents() {
+		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
+		try {
+			List<Event> list = service.getUpcomingEventList(new String[] { "today", "tomorrow", "upcoming" });
+			rw.setData(list);
+			rw.setTotal(list.size());
 			rw.setMessage("Succesfully got events");
 			rw.setSuccessful(true);
 		} catch (Throwable e) {
@@ -294,8 +297,6 @@ public class HomegearController {
 			rw.setSuccessful(false);
 			rw.setMessage("getting event data failed.");
 		}
-
 		return rw;
 	}
-
 }
