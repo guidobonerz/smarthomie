@@ -14,6 +14,6 @@ public class Event {
 	private long categoryId;
 	private long actionId;
 	private long diff;
-	private String event;
+	private String occurrence;
 
 }

@@ -63,7 +63,7 @@ public class ExternalSchedulerDao {
 						event.setCategoryId(rs.getLong("category_id"));
 						event.setAllDayEvent(rs.getBoolean("all_day_event"));
 						event.setDiff(rs.getLong("diff"));
-						event.setEvent(rs.getString("event"));
+						event.setOccurrence(rs.getString("occurrence"));
 						return event;
 					}
 				});
@@ -74,8 +74,8 @@ public class ExternalSchedulerDao {
 
 		List<String> eventList = Arrays.asList(events);
 		MapSqlParameterSource parameters = new MapSqlParameterSource();
-		parameters.addValue("events", eventList);
-		List<Event> list = namedJdbcTemplate.query("select * from calendar.event_view where event in (:events)", parameters,
+		parameters.addValue("occurrences", eventList);
+		List<Event> list = namedJdbcTemplate.query("select * from calendar.event_view where occurrence in (:occurrences)", parameters,
 				new RowMapper<Event>() {
 					@Override
 					public Event mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -90,7 +90,7 @@ public class ExternalSchedulerDao {
 						event.setCategoryId(rs.getLong("category_id"));
 						event.setAllDayEvent(rs.getBoolean("all_day_event"));
 						event.setDiff(rs.getLong("diff"));
-						event.setEvent(rs.getString("event"));
+						event.setOccurrence(rs.getString("occurrence"));
 						return event;
 					}
 				});

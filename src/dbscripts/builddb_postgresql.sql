@@ -41,6 +41,7 @@ CREATE TABLE calendar.reminder (
   PRIMARY KEY (id,reminder_id)
 ) ;
 
+drop view calendar.event_view;
  create view calendar.event_view as
 select
     e.group_id AS group_id,
@@ -56,6 +57,6 @@ select
     (case   when date_part('day',to_date( e.start_date, 'YYYY-MM-DD' )-now())= 0 then 'today'
             when date_part('day',to_date( e.start_date, 'YYYY-MM-DD' )-now() )= 1 then 'tomorrow'
             when date_part('day',to_date( e.start_date, 'YYYY-MM-DD' )-now() )> 1 and date_part('day',to_date( e.start_date, 'YYYY-MM-DD' )-now() ) < 15 then 'upcoming'
-            when date_part('day',to_date( e.start_date, 'YYYY-MM-DD' )-now() )< 0 then 'over' else 'sometime'   end ) AS when
+            when date_part('day',to_date( e.start_date, 'YYYY-MM-DD' )-now() )< 0 then 'over' else 'sometime'   end ) AS occurrence
 from (calendar.event e left join calendar.dynamic_event de on (e.dynamic_start = de.id)) order by to_date(e.start_date,'YYYY-MM-DD');
 
