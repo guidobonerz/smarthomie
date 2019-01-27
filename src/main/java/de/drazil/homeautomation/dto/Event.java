@@ -5,15 +5,14 @@ import lombok.Data;
 @Data
 public class Event {
 	private String groupId;
-	private String startDate;
-	private String startTime;
-	private String endDate;
-	private String endTime;
+	private String startRule;
+	private String endRule;
 	private String description;
 	private boolean allDayEvent;
 	private long categoryId;
 	private long actionId;
 	private long diff;
 	private String occurrence;
+	
 
 }

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.googlecode.jsonrpc4j.JsonRpcMethod;
 import com.googlecode.jsonrpc4j.spring.AutoJsonRpcServiceImpl;
 
+import de.drazil.homeautomation.bean.DeviceId;
 import de.drazil.homeautomation.dto.SmartDeviceEvent;
 
 @Service
@@ -37,9 +38,9 @@ public class HomegearEventServiceImpl implements IHomegearEventService {
 	public void event(String interfaceId, int peerId, int channel, String parameterName, Object value) {
 		homecontrolService.control(interfaceId, peerId, channel, parameterName, value);
 		if (messageService.getMessageCount() < 100) {
-			messageService.addMessage(new Message("EVENT",
-					new SmartDeviceEvent(homegearDeviceService.getDeviceId(Integer.toString(peerId)).getLocation(),
-							interfaceId, peerId, channel, parameterName, value)));
+			DeviceId id = homegearDeviceService.getDeviceId(Integer.toString(peerId));
+			messageService.addMessage(new Message("EVENT", new SmartDeviceEvent(id.getLocation(), id.getAddress(),
+					interfaceId, peerId, channel, parameterName, value)));
 		}
 	}
 

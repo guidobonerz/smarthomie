@@ -7,6 +7,7 @@ import lombok.Data;
 @Data
 public class SmartDeviceEvent {
 	String location;
+	String serialNo;
 	String interfaceId;
 	int peerId;
 	int channel;

@@ -1,14 +1,20 @@
 package de.drazil.homeautomation.scheduler;
 
 import java.sql.Date;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
+
+import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +36,10 @@ import com.jayway.jsonpath.spi.mapper.MappingProvider;
 import biweekly.Biweekly;
 import biweekly.ICalendar;
 import biweekly.component.VEvent;
+import de.drazil.homeautomation.dto.DynamicEvent;
+import de.drazil.homeautomation.dto.Event;
 import de.drazil.homeautomation.service.ExternalSchedulerService;
+import de.drazil.homeautomation.service.HomegearDeviceService;
 
 @Component
 public class ExternalScheduler {
@@ -43,20 +52,147 @@ public class ExternalScheduler {
 	private boolean schedulerEnabled;
 
 	@Autowired
+	HomegearDeviceService homegearDeviceService;
+	@Autowired
 	TaskScheduler taskScheduler;
 	ScheduledFuture<?> scheduledFuture;
+	String groupId;
 
-	private Runnable sunrise() {
-		return () -> log.info("sunrise");
+	DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+	private Runnable floorlampOn() {
+		return () -> {
+			try {
+				homegearDeviceService.getRemoteMeteringSwitchBySerialNo("LEQ0531814").setState(true);
+			} catch (Throwable e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		};
 	}
 
-	void sunset() {
-		log.info("sunset");
+	private Runnable floorlampOff() {
+		return () -> {
+			try {
+				homegearDeviceService.getRemoteMeteringSwitchBySerialNo("LEQ0531814").setState(false);
+			} catch (Throwable e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		};
 	}
 
-	@Scheduled(initialDelay = 5000, fixedDelay = 500000) // , cron = "00 16 23 * * ?")
-	// @Scheduled(cron = "*/10 * * * * *")
-	public void readUpcomingEvents() {
+	private Runnable livingroolLampOn() {
+		return () -> {
+			try {
+				homegearDeviceService.getRemoteMeteringSwitchBySerialNo("OEQ0479803").setState(true);
+			} catch (Throwable e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		};
+	}
+
+	private Runnable livingroolLampOff() {
+		return () -> {
+			try {
+				homegearDeviceService.getRemoteMeteringSwitchBySerialNo("OEQ0479803").setState(false);
+			} catch (Throwable e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		};
+	}
+
+	@PostConstruct
+	public void init() {
+		readDailyEvents();
+		readYearlyEvents();
+	}
+
+	private void buildScheduler() {
+		List<Event> eventList = service.getEventList();
+		for (Event event : eventList) {
+			processEvent(event);
+			if (event.getDescription().equals("FloorLamp")) {
+				LocalDateTime start = LocalDateTime.parse(event.getStartRule(), dateTimeFormatter);
+				LocalDateTime end = LocalDateTime.parse(event.getEndRule(), dateTimeFormatter);
+				taskScheduler.schedule(floorlampOn(), ZonedDateTime.of(start, ZoneId.of("CET")).toInstant());
+				taskScheduler.schedule(floorlampOff(), ZonedDateTime.of(end, ZoneId.of("CET")).toInstant());
+			} else if (event.getDescription().equals("LivingRoomLamp")) {
+				LocalDateTime start = LocalDateTime.parse(event.getStartRule(), dateTimeFormatter);
+				LocalDateTime end = LocalDateTime.parse(event.getEndRule(), dateTimeFormatter);
+				taskScheduler.schedule(livingroolLampOn(), ZonedDateTime.of(start, ZoneId.of("CET")).toInstant());
+				taskScheduler.schedule(livingroolLampOff(), ZonedDateTime.of(end, ZoneId.of("CET")).toInstant());
+			}
+		}
+	}
+
+	private void processEvent(Event event) {
+		if (event.getStartRule() != null) {
+			event.setStartRule(getPatchedRule(event.getStartRule()));
+		}
+		if (event.getEndRule() != null) {
+			event.setEndRule(getPatchedRule(event.getEndRule()));
+		}
+	}
+
+	private String getPatchedRule(String rule) {
+		String patchedRule = rule;
+		DynamicEvent de = service.getDynamicEventById(rule);
+
+		if (de != null) {
+			patchedRule = LocalDateTime.parse(de.getTargetDate(), dateTimeFormatter).format(dateTimeFormatter);
+		} else if (rule.startsWith("{TODAY}")) {
+			patchedRule = patchedRule.replace("{TODAY}", LocalDate.now().format(dateFormatter));
+		} else if (rule.startsWith("{TOMORROW}")) {
+			patchedRule = patchedRule.replace("{TODAY}", LocalDate.now().plusDays(1).format(dateFormatter));
+		}
+
+		return patchedRule;
+	}
+
+	@Scheduled(cron = "0 0 0 * * *")
+	private void readDailyEvents() {
+		// openweathermap
+		// ---------------------------------------------------------------------
+		// String openweathermap =
+		// service.readCalender("http://api.openweathermap.org/data/2.5/weather?q=Dinslaken,de&units=metric&APPID=cce438ee0049647cc63adb6598fd65c4");
+		// sunrise/set
+		// ---------------------------------------------------------------------
+		String sunrise = service.readDataFromUrl("https://api.sunrise-sunset.org/json?lat=51.5674264&lng=6.747534");
+		LinkedHashMap<String, ?> sunsetMap = JsonPath.parse(sunrise).read("$.results");
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		for (String id : sunsetMap.keySet()) {
+			String value = (String) sunsetMap.get(id);
+			if (!id.equals("day_length")) {
+				LocalTime lt = LocalTime.parse(value, DateTimeFormatter.ofPattern("h:m:s a"));
+				// LocalTime lt = LocalTime.parse(value, DateTimeFormatter.ofPattern("H:m:s"));
+				LocalDateTime ldt = LocalDate.now().atTime(lt);
+				service.addOrUpdateDynamicEvent(id, ldt.format(formatter));
+			}
+		}
+
+		// darksky weather
+		// ---------------------------------------------------------------------
+		// String darkSkyWeather =
+		// service.readDataFromUrl("https://api.darksky.net/forecast/22f4b40c5eebd547bf007fb1bd247287/51.566735,%206.745985?lang=de&units=auto");
+		// LinkedHashMap<String, ?> currently =
+		// JsonPath.parse(darkSkyWeather).read("$.currently");
+		// LinkedHashMap<String, ?> hourly =
+		// JsonPath.parse(darkSkyWeather).read("$.hourly");
+		// LinkedHashMap<String, ?> daily =
+		// JsonPath.parse(darkSkyWeather).read("$.daily");
+		// Object alters = JsonPath.parse(darkSkyWeather).read("$.alerts");
+		buildScheduler();
+	}
+
+	@Scheduled(cron = "0 0 0 1 1 *")
+	private void readYearlyEvents() {
+
+		LocalDate localDate = LocalDate.now();
+		int year = localDate.getYear();
 
 		TypeRef<List<LinkedHashMap<Object, String>>> typeRef = new TypeRef<List<LinkedHashMap<Object, String>>>() {
 		};
@@ -82,93 +218,56 @@ public class ExternalScheduler {
 			}
 		});
 
-		// scheduledFuture = taskScheduler.schedule(sunrise(), new CronTrigger("*/5 * *
-		// * * *"));
-		// openweathermap
+		// wastecalender
 		// ---------------------------------------------------------------------
-		// String openweathermap =
-		// service.readCalender("http://api.openweathermap.org/data/2.5/weather?q=Dinslaken,de&units=metric&APPID=cce438ee0049647cc63adb6598fd65c4");
-		// sunrise/set
-		// ---------------------------------------------------------------------
-		if (schedulerEnabled) {
-			String sunrise = service.readDataFromUrl("https://api.sunrise-sunset.org/json?lat=51.5674264&lng=6.747534");
-			LinkedHashMap<String, ?> sunsetMap = JsonPath.parse(sunrise).read("$.results");
-
-			for (String id : sunsetMap.keySet()) {
-				String value = (String) sunsetMap.get(id);
-				if (!id.equals("day_length")) {
-					LocalTime lt = LocalTime.parse(value, DateTimeFormatter.ofPattern("h:m:s a"));
-					Date date = Date.valueOf(LocalDate.now().plusDays(1));
-					service.addOrUpdateDynamicEvent(id, date.toString(), lt.toString());
-				} else {
-					Date date = Date.valueOf(LocalDate.now());
-					LocalTime lt = LocalTime.parse(value, DateTimeFormatter.ofPattern("H:m:s"));
-					service.addOrUpdateDynamicEvent(id, date.toString(), lt.toString());
-				}
-			}
-
-			// wastecalender
-			// ---------------------------------------------------------------------
+		groupId = "Müllkalender" + year;
+		if (!service.checkGroup(groupId)) {
 			String waste = service.readDataFromUrl(
 					"https://www.dinslaken.de/www/web_io.nsf/index.xsp?rule=neu&path=%2Fsys%2Fdienstleistungslayout-abfallservice-ausgabe-2%2F&Bezirk=Rilkeweg&AS_Rest=14+t%C3%A4gige+Leerung");
-			service.removeEventByCalenderName("Müllkalender2018");
 			List<ICalendar> icals = Biweekly.parse(waste).all();
 			for (ICalendar ic : icals) {
 				for (VEvent event : ic.getEvents()) {
 					String description = event.getSummary().getValue();
-					service.addEvent("Müllkalender2018", new Date(event.getDateStart().getValue().getTime()).toString(),
-							"00:00:00", new Date(event.getDateEnd().getValue().getTime()).toString(), "00:00:00",
-							description, true, service.getWasteCatgory(description), -1);
+					service.addEvent(groupId,
+							new Date(event.getDateStart().getValue().getTime()).toString() + " 00:00:00",
+							new Date(event.getDateEnd().getValue().getTime()).toString() + " 00:00:00", description,
+							true, service.getWasteCatgory(description), -1);
 				}
 			}
-			// holidays
-			// ---------------------------------------------------------------------
-			// String schoolVacation =
-			// service.readCalender("https://ferien-api.de/api/v1/holidays/NW/2018");
+		}
+		// holidays
+		// ---------------------------------------------------------------------
+		// String schoolVacation =
+		// service.readCalender("https://ferien-api.de/api/v1/holidays/NW/2018");
+		groupId = "Ferien" + year;
+		if (!service.checkGroup(groupId)) {
 			String schoolVacation = service
-					.readDataFromUrl("http://api.smartnoob.de/ferien/v1/ferien/?bundesland=nw&jahr=2018");
-			service.removeEventByCalenderName("Ferien2018");
-
+					.readDataFromUrl("http://api.smartnoob.de/ferien/v1/ferien/?bundesland=nw&jahr=" + year);
 			List<LinkedHashMap<Object, String>> schoolVacationList = JsonPath.parse(schoolVacation).read("$.daten.*",
 					typeRef);
 			for (LinkedHashMap<Object, String> map : schoolVacationList) {
 				String start = map.get("beginn");
 				String end = map.get("ende");
-				service.addEvent("Ferien2018", service.getJavaDateFromUnixTimestamp(start).toString(),
-						service.getJavaTimeFromUnixTimestamp(start).toString(),
-						service.getJavaDateFromUnixTimestamp(end).toString(),
-						service.getJavaTimeFromUnixTimestamp(end).toString(), map.get("title"), true, 13, -1);
+				service.addEvent(groupId, service.getJavaDateFromUnixTimestamp(start).toString() + " 00:00:00",
+						service.getJavaDateFromUnixTimestamp(end).toString() + " 00:00:00", map.get("title"), true, 13,
+						-1);
 			}
-			// feiertage
-			// ---------------------------------------------------------------------
-			// String bankHolidays =
-			// service.readCalender("https://feiertage-api.de/api/?jahr=2018&nur_land=NW");
+		}
+		// feiertage
+		// ---------------------------------------------------------------------
+		groupId = "Feiertage" + year;
+		if (!service.checkGroup(groupId)) {
 			String bankHolidays = service
-					.readDataFromUrl("http://api.smartnoob.de/ferien/v1/feiertage/?bundesland=nw&jahr=2018");
-			service.removeEventByCalenderName("Feiertage2018");
-
+					.readDataFromUrl("http://api.smartnoob.de/ferien/v1/feiertage/?bundesland=nw&jahr=" + year);
 			List<LinkedHashMap<Object, String>> bankHolidayList = JsonPath.parse(bankHolidays).read("$.daten.*",
 					typeRef);
 			for (LinkedHashMap<Object, String> map : bankHolidayList) {
 				String start = map.get("beginn");
 				String end = map.get("ende");
-				service.addEvent("Feiertage2018", service.getJavaDateFromUnixTimestamp(start).toString(),
-						service.getJavaTimeFromUnixTimestamp(start).toString(),
-						service.getJavaDateFromUnixTimestamp(end).toString(),
-						service.getJavaTimeFromUnixTimestamp(end).toString(), map.get("title"), true, 11, -1);
+				service.addEvent(groupId, service.getJavaDateFromUnixTimestamp(start).toString() + " 00:00:00",
+						service.getJavaDateFromUnixTimestamp(end).toString() + " 00:00:00", map.get("title"), true, 11,
+						-1);
 			}
-
-			// darksky weather
-			// ---------------------------------------------------------------------
-			String darkSkyWeather = service.readDataFromUrl(
-					"https://api.darksky.net/forecast/22f4b40c5eebd547bf007fb1bd247287/51.566735,%206.745985?lang=de&units=auto");
-			LinkedHashMap<String, ?> currently = JsonPath.parse(darkSkyWeather).read("$.currently");
-			LinkedHashMap<String, ?> hourly = JsonPath.parse(darkSkyWeather).read("$.hourly");
-			LinkedHashMap<String, ?> daily = JsonPath.parse(darkSkyWeather).read("$.daily");
-			// Object alters = JsonPath.parse(darkSkyWeather).read("$.alerts");
-
 		}
-
 	}
-
 }

@@ -234,12 +234,11 @@ public class HomegearDeviceService {
 	}
 
 	public void getDeviceInfo() throws Throwable {
-		Object o = executeMethod("listDevices",
+		executeMethod("listDevices",
 				new Object[] { new Boolean(false), new Object[] { "VERSION", "TYPE", "ADDRESS" } });
 	}
 
 	public Device getDeviceBySerialNo(String serialNo) throws Throwable {
-
 		DeviceId deviceId = getDeviceIdBySerialNo(serialNo);
 		return getDevice(deviceId);
 	}

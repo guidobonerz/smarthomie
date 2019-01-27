@@ -68,27 +68,27 @@ public class HomeautomationScheduler {
 	@Scheduled(cron = "${floorlamp.on}")
 	public void setFloorLampOn() throws Throwable {
 		String message = MessageFormat.format("FloorLamp - On at {0,time}", new Date());
-		Log.info(message);
-		service.setLight("corridor", true);
+		//Log.info(message);
+		//service.setLight("corridor", true);
 	}
 
 	@Scheduled(cron = "${floorlamp.off}")
 	public void setFloorLampOff() throws Throwable {
-		Log.info("FloorLamp - Off");
-		service.setLight("corridor", false);
+		//Log.info("FloorLamp - Off");
+		//service.setLight("corridor", false);
 	}
 
 	@Scheduled(cron = "${livingroomlamp.on}")
 	public void setLivingroomLampOn() throws Throwable {
 		String message = MessageFormat.format("LivingroomLamp - On at {0,time}", new Date());
-		Log.info(message);
-		service.setLight("livingroom", true);
+		//Log.info(message);
+		//service.setLight("livingroom", true);
 	}
 
 	@Scheduled(cron = "${livingroomlamp.off}")
 	public void setLivingroomLampOff() throws Throwable {
 		String message = MessageFormat.format("LivingroomLamp - Off at {0,time}", new Date());
-		Log.info(message);
-		service.setLight("livingroom", false);
+		//Log.info(message);
+		//service.setLight("livingroom", false);
 	}
 }
