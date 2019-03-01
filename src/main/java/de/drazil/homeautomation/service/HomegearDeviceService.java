@@ -67,7 +67,7 @@ public class HomegearDeviceService {
 
 		if (serverEnabled) {
 			registerCallbackEventServer(
-					"http://" + homegearXmlRpcServerHost + ":" + homegearXmlRpcServerPort + ""
+					"http://" + InetAddress.getLocalHost() + ":" + homegearXmlRpcServerPort + ""
 							+ homegearXmlRpcServerPath,
 					InetAddress.getLocalHost().getHostName() + ":" + homegearXmlRpcServerName,
 					(0x01 + 0x04 + 0x10 + 0x20 + 0x80));

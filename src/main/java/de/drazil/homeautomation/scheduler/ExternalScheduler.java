@@ -1,7 +1,6 @@
 package de.drazil.homeautomation.scheduler;
 
 import java.sql.Date;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -12,7 +11,7 @@ import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ScheduledFuture;
+import java.util.TimeZone;
 
 import javax.annotation.PostConstruct;
 
@@ -46,16 +45,18 @@ public class ExternalScheduler {
 	private static final Logger log = LoggerFactory.getLogger(ExternalScheduler.class);
 
 	@Autowired
+	HomegearDeviceService homegearDeviceService;
+	@Autowired
 	private ExternalSchedulerService service;
+	@Autowired
+	TaskScheduler taskScheduler;
 
 	@Value("${app.scheduler-enabled}")
 	private boolean schedulerEnabled;
 
-	@Autowired
-	HomegearDeviceService homegearDeviceService;
-	@Autowired
-	TaskScheduler taskScheduler;
-	ScheduledFuture<?> scheduledFuture;
+	@Value("${app.timezone}")
+	private String timezone;
+
 	String groupId;
 
 	DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -86,7 +87,7 @@ public class ExternalScheduler {
 	private Runnable livingroolLampOn() {
 		return () -> {
 			try {
-				homegearDeviceService.getRemoteMeteringSwitchBySerialNo("OEQ0479803").setState(true);
+				homegearDeviceService.getRemoteSwitchBySerialNo("OEQ0479803").setState(true);
 			} catch (Throwable e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -97,7 +98,7 @@ public class ExternalScheduler {
 	private Runnable livingroolLampOff() {
 		return () -> {
 			try {
-				homegearDeviceService.getRemoteMeteringSwitchBySerialNo("OEQ0479803").setState(false);
+				homegearDeviceService.getRemoteSwitchBySerialNo("OEQ0479803").setState(false);
 			} catch (Throwable e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -118,13 +119,13 @@ public class ExternalScheduler {
 			if (event.getDescription().equals("FloorLamp")) {
 				LocalDateTime start = LocalDateTime.parse(event.getStartRule(), dateTimeFormatter);
 				LocalDateTime end = LocalDateTime.parse(event.getEndRule(), dateTimeFormatter);
-				taskScheduler.schedule(floorlampOn(), ZonedDateTime.of(start, ZoneId.of("CET")).toInstant());
-				taskScheduler.schedule(floorlampOff(), ZonedDateTime.of(end, ZoneId.of("CET")).toInstant());
+				taskScheduler.schedule(floorlampOn(), ZonedDateTime.of(start, ZoneId.of(timezone)).toInstant());
+				taskScheduler.schedule(floorlampOff(), ZonedDateTime.of(end, ZoneId.of(timezone)).toInstant());
 			} else if (event.getDescription().equals("LivingRoomLamp")) {
 				LocalDateTime start = LocalDateTime.parse(event.getStartRule(), dateTimeFormatter);
 				LocalDateTime end = LocalDateTime.parse(event.getEndRule(), dateTimeFormatter);
-				taskScheduler.schedule(livingroolLampOn(), ZonedDateTime.of(start, ZoneId.of("CET")).toInstant());
-				taskScheduler.schedule(livingroolLampOff(), ZonedDateTime.of(end, ZoneId.of("CET")).toInstant());
+				taskScheduler.schedule(livingroolLampOn(), ZonedDateTime.of(start, ZoneId.of(timezone)).toInstant());
+				taskScheduler.schedule(livingroolLampOff(), ZonedDateTime.of(end, ZoneId.of(timezone)).toInstant());
 			}
 		}
 	}
@@ -170,6 +171,9 @@ public class ExternalScheduler {
 				LocalTime lt = LocalTime.parse(value, DateTimeFormatter.ofPattern("h:m:s a"));
 				// LocalTime lt = LocalTime.parse(value, DateTimeFormatter.ofPattern("H:m:s"));
 				LocalDateTime ldt = LocalDate.now().atTime(lt);
+				ZonedDateTime zdt = ZonedDateTime.of(ldt, ZoneId.systemDefault());
+				boolean isDST = zdt.getZone().getRules().isDaylightSavings(ldt.toInstant(zdt.getOffset()));
+				ldt = ldt.plusHours(isDST ? 0 : 1);
 				service.addOrUpdateDynamicEvent(id, ldt.format(formatter));
 			}
 		}

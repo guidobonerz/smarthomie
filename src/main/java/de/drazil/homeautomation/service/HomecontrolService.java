@@ -33,7 +33,7 @@ public class HomecontrolService {
 			log.fine("current boiler temperature is " + n.doubleValue());
 
 			DayOfWeek dow = LocalDate.now().getDayOfWeek();
-			double boilerTemp = (dow.compareTo(DayOfWeek.SATURDAY) > 0 || dow.compareTo(DayOfWeek.SUNDAY) > 0)
+			double boilerTemp = (dow.compareTo(DayOfWeek.SATURDAY) == 0 || dow.compareTo(DayOfWeek.SUNDAY) == 0)
 					? weekendTemp
 					: workdayTemp;
 			if (n.doubleValue() > boilerTemp) {

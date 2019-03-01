@@ -1,19 +1,15 @@
 
 --drop view calendar.event_view;
-drop table calendar."action";
-drop table calendar.category;
-drop table calendar.dynamic_event;
-drop table calendar.event;
-drop table calendar.reminder;
 
+drop table calendar."action";
 CREATE TABLE calendar."action" (
-  id serial primary key,
+  "key" varchar(100) primary key,
   command varchar(100) ,
   randomize numeric(11) ,
   "value" numeric(11) 
 );
 
-
+drop table calendar.category;
 CREATE TABLE calendar.category (
   id serial primary key,
   description varchar(45) NOT NULL,
@@ -22,12 +18,13 @@ CREATE TABLE calendar.category (
   can_have_reminder smallint 
 ) ;
 
-
+drop table calendar.dynamic_event;
 CREATE TABLE calendar.dynamic_event (
   id varchar(100) NOT NULL PRIMARY KEY,
   target_date varchar(20) NOT NULL
 );
 
+drop table calendar.event;
 CREATE TABLE calendar.event (
   id serial primary key,
   group_id varchar(100) NOT NULL,
@@ -39,7 +36,7 @@ CREATE TABLE calendar.event (
   action_id numeric(11)
 );
 
-
+drop table calendar.reminder;
 CREATE TABLE calendar.reminder (
   id serial ,
   reminder_id numeric(11)  NOT NULL,
