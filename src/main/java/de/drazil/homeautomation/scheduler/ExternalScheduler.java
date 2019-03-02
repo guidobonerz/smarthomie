@@ -162,7 +162,7 @@ public class ExternalScheduler {
 		// service.readCalender("http://api.openweathermap.org/data/2.5/weather?q=Dinslaken,de&units=metric&APPID=cce438ee0049647cc63adb6598fd65c4");
 		// sunrise/set
 		// ---------------------------------------------------------------------
-		String sunrise = service.readDataFromUrl("https://api.sunrise-sunset.org/json?lat=51.5674264&lng=6.747534");
+		String sunrise = service.readDataFromUrl("https://api.sunrise-sunset.org/json?lat=51.56838&lng=6.72703");
 		LinkedHashMap<String, ?> sunsetMap = JsonPath.parse(sunrise).read("$.results");
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		for (String id : sunsetMap.keySet()) {
@@ -171,8 +171,12 @@ public class ExternalScheduler {
 				LocalTime lt = LocalTime.parse(value, DateTimeFormatter.ofPattern("h:m:s a"));
 				// LocalTime lt = LocalTime.parse(value, DateTimeFormatter.ofPattern("H:m:s"));
 				LocalDateTime ldt = LocalDate.now().atTime(lt);
-				ZonedDateTime zdt = ZonedDateTime.of(ldt, ZoneId.systemDefault());
-				boolean isDST = zdt.getZone().getRules().isDaylightSavings(ldt.toInstant(zdt.getOffset()));
+
+				ZonedDateTime utcTimeZoned = ZonedDateTime.of(ldt, ZoneId.of("UTC"));
+				ldt = utcTimeZoned.withZoneSameInstant(ZoneId.of("CET")).toLocalDateTime();
+
+				boolean isDST = utcTimeZoned.getZone().getRules()
+						.isDaylightSavings(ldt.toInstant(utcTimeZoned.getOffset()));
 				ldt = ldt.plusHours(isDST ? 0 : 1);
 				service.addOrUpdateDynamicEvent(id, ldt.format(formatter));
 			}
@@ -181,7 +185,7 @@ public class ExternalScheduler {
 		// darksky weather
 		// ---------------------------------------------------------------------
 		// String darkSkyWeather =
-		// service.readDataFromUrl("https://api.darksky.net/forecast/22f4b40c5eebd547bf007fb1bd247287/51.566735,%206.745985?lang=de&units=auto");
+		// service.readDataFromUrl("https://api.darksky.net/forecast/22f4b40c5eebd547bf007fb1bd247287/51.56838,%206.72703?lang=de&units=auto");
 		// LinkedHashMap<String, ?> currently =
 		// JsonPath.parse(darkSkyWeather).read("$.currently");
 		// LinkedHashMap<String, ?> hourly =
