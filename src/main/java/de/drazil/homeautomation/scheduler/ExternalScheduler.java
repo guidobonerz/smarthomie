@@ -177,7 +177,7 @@ public class ExternalScheduler {
 
 				boolean isDST = utcTimeZoned.getZone().getRules()
 						.isDaylightSavings(ldt.toInstant(utcTimeZoned.getOffset()));
-				ldt = ldt.plusHours(isDST ? 0 : 1);
+				ldt = ldt.plusHours(isDST ? 1 : 0);
 				service.addOrUpdateDynamicEvent(id, ldt.format(formatter));
 			}
 		}
