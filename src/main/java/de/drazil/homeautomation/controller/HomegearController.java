@@ -73,7 +73,7 @@ public class HomegearController {
 		return rw;
 	}
 
-	@RequestMapping(value = "/getRemoteRadiatorThermostatList", method = RequestMethod.GET)
+	@GetMapping(value = "/getRemoteRadiatorThermostatList")
 	public @ResponseBody Object getRemoteRadiatorThermostatList() {
 		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
 		try {
@@ -104,7 +104,7 @@ public class HomegearController {
 		return rw;
 	}
 
-	@RequestMapping(value = "/getRemoteOutdoorWeatherSensorList", method = RequestMethod.GET)
+	@GetMapping(value = "/getRemoteOutdoorWeatherSensorList")
 	public @ResponseBody Object getRemoteOutdoorWeatherSensorList() {
 		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
 		try {
@@ -119,13 +119,13 @@ public class HomegearController {
 		return rw;
 	}
 
-	@RequestMapping(value = "/floorPlan", method = RequestMethod.GET)
+	@GetMapping(value = "/floorPlan")
 	public ModelAndView showGroundFloorPlan() {
 		ModelAndView mv = new ModelAndView("floor_plan");
 		return mv;
 	}
 
-	@RequestMapping(value = "/getWeatherSensors", method = { RequestMethod.GET })
+	@GetMapping(value = "/getWeatherSensors")
 	public @ResponseBody List<Map<String, Object>> getWeatherSensors() {
 		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
 		List<Map<String, Object>> resultList = null;
@@ -139,7 +139,7 @@ public class HomegearController {
 		return resultList;
 	}
 
-	@RequestMapping(value = "/getSwitches", method = { RequestMethod.GET })
+	@GetMapping(value = "/getSwitches")
 	public @ResponseBody List<Map<String, Object>> getSwitches() {
 		List<Map<String, Object>> resultList = null;
 		try {
@@ -264,9 +264,17 @@ public class HomegearController {
 		return rw;
 	}
 
+	@GetMapping(value = "/motion_detection")
+	public String motionDetection() {
+
+		System.out.println("message received");
+
+		return new String("HTTP/1.0 200 OK\r\n\n" + "Content-Type: text/plain\n\n" + "\n");
+	}
+
 	@GetMapping(value = "/getMessages")
 	public @ResponseBody ResponseWrapper getMessages() {
-		
+
 		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
 		try {
 			List<Message> list = messageService.getMessageList();
@@ -282,7 +290,7 @@ public class HomegearController {
 		return rw;
 	}
 
-	@RequestMapping("/getEvents")
+	@GetMapping("/getEvents")
 	public @ResponseBody ResponseWrapper getEvents() {
 		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
 		try {

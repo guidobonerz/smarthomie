@@ -49,6 +49,7 @@
 			<version>${springboot.version}</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/javagrinko/tcp-spring-boot-starter -->
+		
 		<dependency>
 			<groupId>javagrinko</groupId>
 			<artifactId>tcp-spring-boot-starter</artifactId>
@@ -160,7 +161,7 @@
 			<plugin>
 				<groupId>nl.geodienstencentrum.maven</groupId>
 				<artifactId>sass-maven-plugin</artifactId>
-				<version>2.25</version>
+				<version>3.5.4</version>
 				<executions>
 					<execution>
 						<phase>prepare-package</phase>

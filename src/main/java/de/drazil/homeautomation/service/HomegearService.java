@@ -49,8 +49,10 @@ public class HomegearService {
 	}
 
 	public List<Map<String, Object>> getRemoteWallThermostatList() throws Throwable {
-		Number humidityLevelOut = homegearDeviceService.getRemoteOutdoorWeatherSensorBySerialNo("LEQ0567692")
+		//old LEQ0567692
+		Number humidityLevelOut = homegearDeviceService.getRemoteOutdoorWeatherSensorBySerialNo("HEQ0237274")
 				.getHumidityLevel();
+		
 		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
 
 		List<IRemoteWallThermostat> list = homegearDeviceService
@@ -215,10 +217,14 @@ public class HomegearService {
 
 		for (IRemoteWallThermostat rt : list) {
 			System.out.println(rt.getLocation());
-			if (state.equalsIgnoreCase("auto")) {
-				rt.setControlMode(HeatingMode.AUTO);
-			} else if (state.equalsIgnoreCase("off")) {
-				rt.setControlMode(HeatingMode.MANUAL, new Double(0));
+			try {
+				if (state.equalsIgnoreCase("auto")) {
+					rt.setControlMode(HeatingMode.AUTO);
+				} else if (state.equalsIgnoreCase("off")) {
+					rt.setControlMode(HeatingMode.MANUAL, new Double(0));
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
 	}
