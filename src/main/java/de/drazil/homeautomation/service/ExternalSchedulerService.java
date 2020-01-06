@@ -71,9 +71,11 @@ public class ExternalSchedulerService {
 		HttpGet request = new HttpGet(url);
 		try {
 			HttpResponse response = client.execute(request);
-			HttpEntity entity = response.getEntity();
-
-			result = EntityUtils.toString(entity);
+			int errorCode = response.getStatusLine().getStatusCode();
+			if (errorCode ==200) {
+				HttpEntity entity = response.getEntity();
+				result = EntityUtils.toString(entity);
+			}
 			// log.info(result);
 		} catch (IOException e) {
 			e.printStackTrace();

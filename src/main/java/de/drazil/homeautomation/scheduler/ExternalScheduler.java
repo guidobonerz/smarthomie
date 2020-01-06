@@ -162,37 +162,42 @@ public class ExternalScheduler {
 		// sunrise/set
 		// ---------------------------------------------------------------------
 		String sunrise = service.readDataFromUrl("https://api.sunrise-sunset.org/json?lat=51.56838&lng=6.72703");
-		LinkedHashMap<String, ?> sunsetMap = JsonPath.parse(sunrise).read("$.results");
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-		for (String id : sunsetMap.keySet()) {
-			String value = (String) sunsetMap.get(id);
-			if (!id.equals("day_length")) {
-				LocalTime lt = LocalTime.parse(value, DateTimeFormatter.ofPattern("h:m:s a"));
-				// LocalTime lt = LocalTime.parse(value, DateTimeFormatter.ofPattern("H:m:s"));
-				LocalDateTime ldt = LocalDate.now().atTime(lt);
+		if (sunrise != null) {
+			LinkedHashMap<String, ?> sunsetMap = JsonPath.parse(sunrise).read("$.results");
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+			for (String id : sunsetMap.keySet()) {
+				String value = (String) sunsetMap.get(id);
+				if (!id.equals("day_length")) {
+					LocalTime lt = LocalTime.parse(value, DateTimeFormatter.ofPattern("h:m:s a"));
+					// LocalTime lt = LocalTime.parse(value, DateTimeFormatter.ofPattern("H:m:s"));
+					LocalDateTime ldt = LocalDate.now().atTime(lt);
 
-				ZonedDateTime utcTimeZoned = ZonedDateTime.of(ldt, ZoneId.of("UTC"));
-				ldt = utcTimeZoned.withZoneSameInstant(ZoneId.of("CET")).toLocalDateTime();
+					ZonedDateTime utcTimeZoned = ZonedDateTime.of(ldt, ZoneId.of("UTC"));
+					ldt = utcTimeZoned.withZoneSameInstant(ZoneId.of("CET")).toLocalDateTime();
 
-				boolean isDST = utcTimeZoned.getZone().getRules()
-						.isDaylightSavings(ldt.toInstant(utcTimeZoned.getOffset()));
-				ldt = ldt.plusHours(isDST ? 1 : 0);
-				service.addOrUpdateDynamicEvent(id, ldt.format(formatter));
+					boolean isDST = utcTimeZoned.getZone().getRules()
+							.isDaylightSavings(ldt.toInstant(utcTimeZoned.getOffset()));
+					ldt = ldt.plusHours(isDST ? 1 : 0);
+					service.addOrUpdateDynamicEvent(id, ldt.format(formatter));
+				}
 			}
+
+			// darksky weather
+			// ---------------------------------------------------------------------
+			// String darkSkyWeather =
+			// service.readDataFromUrl("https://api.darksky.net/forecast/22f4b40c5eebd547bf007fb1bd247287/51.56838,%206.72703?lang=de&units=auto");
+			// LinkedHashMap<String, ?> currently =
+			// JsonPath.parse(darkSkyWeather).read("$.currently");
+			// LinkedHashMap<String, ?> hourly =
+			// JsonPath.parse(darkSkyWeather).read("$.hourly");
+			// LinkedHashMap<String, ?> daily =
+			// JsonPath.parse(darkSkyWeather).read("$.daily");
+			// Object alters = JsonPath.parse(darkSkyWeather).read("$.alerts");
+			buildScheduler();
+		} else {
+			log.error("can't get sunrise/set from remote server");
 		}
 
-		// darksky weather
-		// ---------------------------------------------------------------------
-		// String darkSkyWeather =
-		// service.readDataFromUrl("https://api.darksky.net/forecast/22f4b40c5eebd547bf007fb1bd247287/51.56838,%206.72703?lang=de&units=auto");
-		// LinkedHashMap<String, ?> currently =
-		// JsonPath.parse(darkSkyWeather).read("$.currently");
-		// LinkedHashMap<String, ?> hourly =
-		// JsonPath.parse(darkSkyWeather).read("$.hourly");
-		// LinkedHashMap<String, ?> daily =
-		// JsonPath.parse(darkSkyWeather).read("$.daily");
-		// Object alters = JsonPath.parse(darkSkyWeather).read("$.alerts");
-		buildScheduler();
 	}
 
 	@Scheduled(cron = "0 0 0 1 1 *")
@@ -231,15 +236,19 @@ public class ExternalScheduler {
 		if (!service.checkGroup(groupId)) {
 			String waste = service.readDataFromUrl(
 					"https://www.dinslaken.de/www/web_io.nsf/index.xsp?rule=neu&path=%2Fsys%2Fdienstleistungslayout-abfallservice-ausgabe-2%2F&Bezirk=Rilkeweg&AS_Rest=14+t%C3%A4gige+Leerung");
-			List<ICalendar> icals = Biweekly.parse(waste).all();
-			for (ICalendar ic : icals) {
-				for (VEvent event : ic.getEvents()) {
-					String description = event.getSummary().getValue();
-					service.addEvent(groupId,
-							new Date(event.getDateStart().getValue().getTime()).toString() + " 00:00:00",
-							new Date(event.getDateEnd().getValue().getTime()).toString() + " 00:00:00", description,
-							true, service.getWasteCatgory(description), -1);
+			if (waste != null) {
+				List<ICalendar> icals = Biweekly.parse(waste).all();
+				for (ICalendar ic : icals) {
+					for (VEvent event : ic.getEvents()) {
+						String description = event.getSummary().getValue();
+						service.addEvent(groupId,
+								new Date(event.getDateStart().getValue().getTime()).toString() + " 00:00:00",
+								new Date(event.getDateEnd().getValue().getTime()).toString() + " 00:00:00", description,
+								true, service.getWasteCatgory(description), -1);
+					}
 				}
+			} else {
+				log.error("can't get wastecalender from remote server");
 			}
 		}
 		// holidays
@@ -250,14 +259,18 @@ public class ExternalScheduler {
 		if (!service.checkGroup(groupId)) {
 			String schoolVacation = service
 					.readDataFromUrl("http://api.smartnoob.de/ferien/v1/ferien/?bundesland=nw&jahr=" + year);
-			List<LinkedHashMap<Object, String>> schoolVacationList = JsonPath.parse(schoolVacation).read("$.daten.*",
-					typeRef);
-			for (LinkedHashMap<Object, String> map : schoolVacationList) {
-				String start = map.get("beginn");
-				String end = map.get("ende");
-				service.addEvent(groupId, service.getJavaDateFromUnixTimestamp(start).toString() + " 00:00:00",
-						service.getJavaDateFromUnixTimestamp(end).toString() + " 00:00:00", map.get("title"), true, 13,
-						-1);
+			if (schoolVacation != null) {
+				List<LinkedHashMap<Object, String>> schoolVacationList = JsonPath.parse(schoolVacation)
+						.read("$.daten.*", typeRef);
+				for (LinkedHashMap<Object, String> map : schoolVacationList) {
+					String start = map.get("beginn");
+					String end = map.get("ende");
+					service.addEvent(groupId, service.getJavaDateFromUnixTimestamp(start).toString() + " 00:00:00",
+							service.getJavaDateFromUnixTimestamp(end).toString() + " 00:00:00", map.get("title"), true,
+							13, -1);
+				}
+			} else {
+				log.error("can't get schulferien from remote server");
 			}
 		}
 		// feiertage
@@ -266,14 +279,18 @@ public class ExternalScheduler {
 		if (!service.checkGroup(groupId)) {
 			String bankHolidays = service
 					.readDataFromUrl("http://api.smartnoob.de/ferien/v1/feiertage/?bundesland=nw&jahr=" + year);
-			List<LinkedHashMap<Object, String>> bankHolidayList = JsonPath.parse(bankHolidays).read("$.daten.*",
-					typeRef);
-			for (LinkedHashMap<Object, String> map : bankHolidayList) {
-				String start = map.get("beginn");
-				String end = map.get("ende");
-				service.addEvent(groupId, service.getJavaDateFromUnixTimestamp(start).toString() + " 00:00:00",
-						service.getJavaDateFromUnixTimestamp(end).toString() + " 00:00:00", map.get("title"), true, 11,
-						-1);
+			if (bankHolidays != null) {
+				List<LinkedHashMap<Object, String>> bankHolidayList = JsonPath.parse(bankHolidays).read("$.daten.*",
+						typeRef);
+				for (LinkedHashMap<Object, String> map : bankHolidayList) {
+					String start = map.get("beginn");
+					String end = map.get("ende");
+					service.addEvent(groupId, service.getJavaDateFromUnixTimestamp(start).toString() + " 00:00:00",
+							service.getJavaDateFromUnixTimestamp(end).toString() + " 00:00:00", map.get("title"), true,
+							11, -1);
+				}
+			} else {
+				log.error("can't get feiertage from remote server");
 			}
 		}
 	}
