@@ -1,5 +1,6 @@
 var buttonControl = angular.module("ButtonControl", []);
-buttonControl.controller("ButtonController", function($scope, $http) {
+buttonControl.controller("ButtonController",[ function($scope, $http) {
+	
 	$scope.setBoiler = function(state) {
 
 		$http({

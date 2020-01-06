@@ -1,6 +1,39 @@
 var app = angular.module("Homeautomation", []);
 
-app.controller("GridController", function($scope, $http) {
+app.factory('Poller', function($http, $timeout) {
+	var pollerData = {
+		response : {},
+		stop : false
+	};
+
+	var isChannelLive = function() {
+		$http.get('http://localhost:50080/homeautomation/getMessages').then(
+				function(response) {
+					$timeout(isChannelLive, 2000);
+					pollerData.response = response.data;
+					if (response.data.data.length > 0) {
+						console.log(response.data.data[0].payload);
+					}
+				});
+	};
+	var init = function() {
+		pollerData.stop = false;
+		isChannelLive();
+	};
+	var stop = function() {
+
+		pollerData.stop = true;
+	};
+
+	return {
+		pollerData : pollerData, // this should be private
+		init : init,
+		stop : stop
+	};
+});
+
+app.controller("GridController", function($scope, Poller, $http) {
+	Poller.init();
 	$http({
 		method : "GET",
 		url : '/homeautomation/getRemoteWallThermostatList'
@@ -54,17 +87,20 @@ app.directive('tooltip', function() {
 
 app.filter("getBatteryStateIconIndex", function() {
 	return function(item) {
+		var batt;
 		if (item.BatteryVoltage <= 2.2) {
-			return 0;
+			batt = 'empty';
 		} else if (item.BatteryVoltage <= 2.4) {
-			return 1;
+			batt = 'quarter';
 		} else if (item.BatteryVoltage <= 2.6) {
-			return 2;
+			batt = 'half';
 		} else if (item.BatteryVoltage <= 2.8) {
-			return 3;
+			batt = 'three-quarters';
 		} else {
-			return 4;
+			batt = 'full';
 		}
+		batt += item.LowBattery ? ' red' : '';
+		return batt;
 	}
 });
 
@@ -78,28 +114,31 @@ app.filter("getStickyness", function() {
 	return function(item) {
 		var dewPoint = getDewPoint(item.CurrentTemperature, item.Humidity);
 		if (dewPoint < 16) {
-			return "fa fa-smile-o";
+			return 'far fa-smile';
 		} else if (dewPoint >= 16) {
-			return "fa fa-frown-o";
+			return 'far fa-frown';
 		}
 	}
 });
 
 app.filter("getSignalStrengthIcon", function() {
 	return function(item) {
+		var signal;
 		if (item.SignalStrength <= -80) {
-			return "icon-wifi-signal-low-2";
+			signal = 'icon-wifi-signal-low-2';
 		} else if (item.SignalStrength <= -60) {
-			return "icon-wifi-signal-medium-2";
+			signal = 'icon-wifi-signal-medium-2';
 		} else {
-			return "icon-wifi-signal-full-2";
+			signal = 'icon-wifi-signal-full-2';
 		}
+		signal += item.Unreachable ? ' red' : '';
+		return signal;
 	}
 });
 
 app.filter("getVentilationRecommendationIcon", function() {
 	return function(item) {
-		return item ? "green" : "red";
+		return item ? 'green' : 'red';
 	}
 });
 
@@ -110,25 +149,26 @@ app.filter("getSliderPosition", function() {
 	}
 });
 
+/* {{item|getLowBatteryColor}} */
 app.filter("getLowBatteryColor", function() {
 	return function(item) {
-		return item.LowBattery ? "red" : "";
+		return item.LowBattery ? 'red' : '';
 	}
 });
-
+/* {{item|getUnreachableColor}} */
 app.filter("getUnreachableColor", function() {
 	return function(item) {
-		return item.Unreachable ? "red" : "";
+		return item.Unreachable ? 'red' : '';
 	}
 });
 
 app.filter("getControlModeIcon", function() {
 	return function(item) {
-		var iconName = "fa fa-star-o";
-		if (item === "manual") {
-			iconName = "fa fa-hand-paper-o";
-		} else if (item === "automatic") {
-			iconName = "fa fa-clock-o";
+		var iconName = 'far fa-star';
+		if (item === 'manual') {
+			iconName = 'far fa-hand-paper';
+		} else if (item === 'automatic') {
+			iconName = 'far fa-clock';
 		}
 		return iconName;
 	}

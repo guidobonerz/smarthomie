@@ -11,7 +11,7 @@
 
 <link rel="stylesheet" href="app/homeautomation.css" type="text/css">
 <link rel="stylesheet" href="css/icomoon.css" type="text/css">
-<link rel="stylesheet" href="css/font-awesome.min.css" type="text/css">
+<link rel="stylesheet" href="css/all.min.css" type="text/css">
 <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css" />
 
 
@@ -27,7 +27,7 @@
 
 	<div ng-controller="GridController">
 
-
+<pre>{{pollerData | json}}</pre>
 		<table class="table table-dark">
 			<thead>
 				<tr>
@@ -53,11 +53,11 @@
 					<td class="cellStyle60"><i
 						title="{{item.SignalStrength| number:0}}&nbsp;dBm"
 						data-toggle="tooltip" data-placement="top"
-						class="{{item|getSignalStrengthIcon}} {{item|getUnreachableColor}}"></i></td>
+						class="{{item|getSignalStrengthIcon}}"></i></td>
 					<td class="cellStyle60"><i
 						title="{{item.BatteryVoltage| number:1}}V" data-toggle="tooltip"
 						data-placement="top"
-						class="fa fa-battery-{{item|getBatteryStateIconIndex}} {{item|getLowBatteryColor}}"></i></td>
+						class="fas fa-battery-{{item|getBatteryStateIconIndex}}"></i></td>
 					<td class="cellStyle60"><i title="{{item.ControlMode}}"
 						data-toggle="tooltip" data-placement="top"
 						class="{{item.ControlMode|getControlModeIcon}}"></i></td>
@@ -100,11 +100,11 @@
 					<td class="cellStyle60"><i
 						title="{{item.SignalStrength| number:0}}&nbsp;dBm"
 						data-toggle="tooltip" data-placement="top"
-						class="{{item|getSignalStrengthIcon}} {{item|getUnreachableColor}}"></i></td>
+						class="{{item|getSignalStrengthIcon}}"></i></td>
 					<td class="cellStyle60"><i
 						title="{{item.BatteryVoltage| number:1}}V" data-toggle="tooltip"
 						data-placement="top"
-						class="fa fa-battery-{{item|getBatteryStateIconIndex}} {{item|getLowBatteryColor}}"></i></td>
+						class="fas fa-battery-{{item|getBatteryStateIconIndex}}"></i></td>
 					<td class="cellStyle60"><i title="{{item.ControlMode}}"
 						data-toggle="tooltip" data-placement="top"
 						class="{{item.ControlMode|getControlModeIcon}}"></i></td>
@@ -129,9 +129,9 @@
 					<td class="cellStyle60"><i
 						title="{{item.SignalStrength| number:0}}&nbsp;dBm"
 						data-toggle="tooltip" data-placement="top"
-						class="{{item|getSignalStrengthIcon}} {{item|getUnreachableColor}}"></i></td>
+						class="{{item|getSignalStrengthIcon}}"></i></td>
 					<td class="cellStyle60"><i
-						class="fa fa-battery-4 {{item|getLowBatteryColor}}"></i></td>
+						class="fas fa-battery-full {{item|getLowBatteryColor}}"></i></td>
 					<td class="cellStyle60">&nbsp;</td>
 					<td class="cellStyle120">{{item.CurrentTemperature|
 						number:2}}&nbsp;&deg;C</td>
@@ -151,9 +151,9 @@
 					<td class="cellStyle60"><i
 						title="{{item.SignalStrength| number:0}}&nbsp;dBm"
 						data-toggle="tooltip" data-placement="top"
-						class="{{item|getSignalStrengthIcon}} {{item|getUnreachableColor}}"></i></td>
+						class="{{item|getSignalStrengthIcon}}"></i></td>
 					<td class="cellStyle60"><i
-						class="fa fa-battery-4 {{item|getLowBatteryColor}}"></i></td>
+						class="fas fa-battery-full {{item|getLowBatteryColor}}"></i></td>
 					<td class="cellStyle120">&nbsp;</td>
 					<td class="cellStyle120">&nbsp;</td>
 					<td class="cellStyle120">&nbsp;</td>
@@ -165,5 +165,6 @@
 		</table>
 
 	</div>
+	
 </body>
 </html>

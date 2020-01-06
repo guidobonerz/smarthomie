@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import de.drazil.homeautomation.dao.ExternalSchedulerDao;
+import de.drazil.homeautomation.dto.DynamicEvent;
 import de.drazil.homeautomation.dto.Event;
 
 @Service
@@ -26,18 +27,29 @@ public class ExternalSchedulerService {
 	@Autowired
 	private ExternalSchedulerDao dao;
 
+	public boolean checkGroup(String groupId) {
+		return dao.checkGroup(groupId);
+	}
+
 	public void removeEventByCalenderName(String calenderName) {
 		dao.removeEventByCalenderName(calenderName);
 	}
 
-	public void addEvent(String groupId, String start_date, String start_time, String end_date, String end_time,
-			String description, boolean allDayEvent, int categoryId, int actionId) {
-		dao.addEvent(groupId, start_date, start_time, end_date, end_time, description, allDayEvent, categoryId,
-				actionId);
+	public void addEvent(String groupId, String start_rule, String end_rule, String description, boolean allDayEvent,
+			int categoryId, int actionId) {
+		dao.addEvent(groupId, start_rule, end_rule, description, allDayEvent, categoryId, actionId);
 	}
 
-	public void addOrUpdateDynamicEvent(String id, String start_date, String start_time) {
-		dao.addOrUpdateDynamicEvent(id, start_date, start_time);
+	public void addOrUpdateDynamicEvent(String id, String target_date) {
+		dao.addOrUpdateDynamicEvent(id, target_date);
+	}
+
+	public List<Event> getEventList() {
+		return dao.getEventList();
+	}
+
+	public DynamicEvent getDynamicEventById(String id) {
+		return dao.getDynamicEventById(id);
 	}
 
 	public List<Event> getUpcomingEventList(int from, int to) {
@@ -48,6 +60,10 @@ public class ExternalSchedulerService {
 		return dao.getUpcomingEventList(events);
 	}
 
+	public List<Event> getUpcomingEventActionList(String events[]) {
+		return dao.getUpcomingEventActionList(events);
+	}
+
 	public String readDataFromUrl(String url) {
 
 		String result = null;
@@ -55,10 +71,12 @@ public class ExternalSchedulerService {
 		HttpGet request = new HttpGet(url);
 		try {
 			HttpResponse response = client.execute(request);
-			HttpEntity entity = response.getEntity();
-
-			result = EntityUtils.toString(entity);
-			log.info(result);
+			int errorCode = response.getStatusLine().getStatusCode();
+			if (errorCode ==200) {
+				HttpEntity entity = response.getEntity();
+				result = EntityUtils.toString(entity);
+			}
+			// log.info(result);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

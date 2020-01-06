@@ -27,6 +27,7 @@ import de.drazil.homeautomation.smartdevices.IRemoteSwitch;
 import de.drazil.homeautomation.smartdevices.IRemoteValveDrive;
 import de.drazil.homeautomation.smartdevices.IRemoteWallThermostat;
 import de.drazil.homeautomation.smartdevices.ISmartDevice;
+import de.drazil.homeautomation.smartdevicesimpl.homematic.HomematicTemperatureDifferenceSensor;
 import de.drazil.homeautomation.xml.XmlHandler;
 
 @Service
@@ -36,6 +37,8 @@ public class HomegearDeviceService {
 	private JsonRpcHttpClient rpcClient = null;
 	private DeviceConfig devices = null;
 	private Map<String, DeviceId> deviceSerialMap;
+	private Map<String, DeviceId> deviceLocationMap;
+	private Map<String, DeviceId> deviceIdMap;
 	private Map<String, Device> deviceMap;
 
 	@Value("${homegear.host}")
@@ -59,7 +62,7 @@ public class HomegearDeviceService {
 
 		XmlHandler xh = new XmlHandler();
 		devices = xh.readFromXml(DeviceConfig.class, "devices.xml");
-		createDeviceIdMapping();
+		createDeviceMapping();
 		deviceMap = devices.getDeviceMap();
 
 		if (serverEnabled) {
@@ -67,7 +70,7 @@ public class HomegearDeviceService {
 					"http://" + homegearXmlRpcServerHost + ":" + homegearXmlRpcServerPort + ""
 							+ homegearXmlRpcServerPath,
 					InetAddress.getLocalHost().getHostName() + ":" + homegearXmlRpcServerName,
-					(0x01 + 0x04 + 0x10 + 0x80));
+					(0x01 + 0x04 + 0x10 + 0x20 + 0x80));
 			Log.info("rpc callback event server enabled");
 		} else {
 			Log.info("rpc callback event server disabled");
@@ -113,6 +116,16 @@ public class HomegearDeviceService {
 		Device device = getDeviceBySerialNo(serialNo);
 		IRemoteMeteringSwitch smartDevice = (IRemoteMeteringSwitch) Class.forName(device.getAdapterClassName())
 				.newInstance();
+		smartDevice.setSerialNo(device.getSerialNo());
+		smartDevice.setHomegearDeviceFactory(this);
+		return smartDevice;
+	}
+
+	public HomematicTemperatureDifferenceSensor getTemperatureDifferenceSensorBySerialNo(String serialNo)
+			throws Throwable {
+		Device device = getDeviceBySerialNo(serialNo);
+		HomematicTemperatureDifferenceSensor smartDevice = (HomematicTemperatureDifferenceSensor) Class
+				.forName(device.getAdapterClassName()).newInstance();
 		smartDevice.setSerialNo(device.getSerialNo());
 		smartDevice.setHomegearDeviceFactory(this);
 		return smartDevice;
@@ -178,6 +191,7 @@ public class HomegearDeviceService {
 	}
 
 	public void registerCallbackEventServer(String url, String interfaceId, Integer flags) throws Throwable {
+		Log.info(url);
 		executeMethod("init", new Object[] { url, interfaceId, flags });
 	}
 
@@ -220,12 +234,11 @@ public class HomegearDeviceService {
 	}
 
 	public void getDeviceInfo() throws Throwable {
-		Object o = executeMethod("listDevices",
+		executeMethod("listDevices",
 				new Object[] { new Boolean(false), new Object[] { "VERSION", "TYPE", "ADDRESS" } });
 	}
 
 	public Device getDeviceBySerialNo(String serialNo) throws Throwable {
-
 		DeviceId deviceId = getDeviceIdBySerialNo(serialNo);
 		return getDevice(deviceId);
 	}
@@ -238,8 +251,10 @@ public class HomegearDeviceService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void createDeviceIdMapping() throws Throwable {
+	private void createDeviceMapping() throws Throwable {
 		deviceSerialMap = new HashMap<>();
+		deviceLocationMap = new HashMap<>();
+		deviceIdMap = new HashMap<>();
 		ArrayList<LinkedHashMap<String, Object>> list = (ArrayList<LinkedHashMap<String, Object>>) executeMethod(
 				"listDevices",
 				new Object[] { new Boolean(false), new Object[] { "ID", "ADDRESS", "TYPE", "FAMILYID", "NAME" } });
@@ -262,6 +277,12 @@ public class HomegearDeviceService {
 				}
 			}
 			deviceSerialMap.put(deviceId.getAddress(), deviceId);
+			deviceLocationMap.put(deviceId.getLocation(), deviceId);
+			deviceIdMap.put(deviceId.getId().toString(), deviceId);
 		}
+	}
+
+	public DeviceId getDeviceId(String id) {
+		return deviceIdMap.get(id);
 	}
 }

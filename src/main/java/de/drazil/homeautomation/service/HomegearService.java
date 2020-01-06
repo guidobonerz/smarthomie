@@ -8,6 +8,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import de.drazil.homeautomation.smartdevices.IHeatingDevice.HeatingMode;
 import de.drazil.homeautomation.smartdevices.IRemoteMeteringSwitch;
 import de.drazil.homeautomation.smartdevices.IRemoteOutdoorWeatherSensor;
 import de.drazil.homeautomation.smartdevices.IRemoteRadiatorThermostat;
@@ -16,7 +17,6 @@ import de.drazil.homeautomation.smartdevices.IRemoteValveDrive;
 import de.drazil.homeautomation.smartdevices.IRemoteWallThermostat;
 import de.drazil.homeautomation.smartdevices.ISmartDevice;
 import de.drazil.homeautomation.smartdevices.IWeatherSensor;
-import de.drazil.homeautomation.smartdevices.IHeatingDevice.HeatingMode;
 import de.drazil.homeautomation.util.VentilationCalcUtil;
 
 @Service
@@ -49,7 +49,10 @@ public class HomegearService {
 	}
 
 	public List<Map<String, Object>> getRemoteWallThermostatList() throws Throwable {
-		Number humidityLevelOut = homegearDeviceService.getRemoteOutdoorWeatherSensorBySerialNo("LEQ0567692").getHumidityLevel();
+		//old LEQ0567692
+		Number humidityLevelOut = homegearDeviceService.getRemoteOutdoorWeatherSensorBySerialNo("HEQ0237274")
+				.getHumidityLevel();
+		
 		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
 
 		List<IRemoteWallThermostat> list = homegearDeviceService
@@ -132,7 +135,8 @@ public class HomegearService {
 	public List<Map<String, Object>> getRemoteValveDriveList() throws Throwable {
 		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
 
-		List<IRemoteValveDrive> list = homegearDeviceService.<IRemoteValveDrive>getSmartDeviceList(IRemoteValveDrive.class);
+		List<IRemoteValveDrive> list = homegearDeviceService
+				.<IRemoteValveDrive>getSmartDeviceList(IRemoteValveDrive.class);
 		for (IRemoteValveDrive device : list) {
 			Map<String, Object> map = new LinkedHashMap<String, Object>();
 			map.put("Location", device.getLocation());
@@ -185,8 +189,21 @@ public class HomegearService {
 		return resultList;
 	}
 
-	public void setBoiler(boolean state) throws Throwable {
-		homegearDeviceService.getRemoteValveDriveBySerialNo("HEQ0134004").setValveState(state ? 70 : 0);
+	/*
+	 * public void setBoiler(boolean state) throws Throwable {
+	 * homegearDeviceService.getRemoteValveDriveBySerialNo("HEQ0134004").
+	 * setValveState(state ? 70 : 0); }
+	 */
+	public Number getBoilerTemperature(Integer channel) throws Throwable {
+		return homegearDeviceService.getTemperatureDifferenceSensorBySerialNo("OEQ0676279").getTemperature(channel);
+	}
+
+	public void setBoilerState(Integer channel, boolean state) throws Throwable {
+		homegearDeviceService.getRemoteSwitchBySerialNo("OEQ2070955").setState(channel, state);
+	}
+
+	public boolean getBoilerState(Integer channel) throws Throwable {
+		return homegearDeviceService.getRemoteSwitchBySerialNo("OEQ2070955").getState(channel);
 	}
 
 	public void setLight(boolean state) throws Throwable {
@@ -200,21 +217,28 @@ public class HomegearService {
 
 		for (IRemoteWallThermostat rt : list) {
 			System.out.println(rt.getLocation());
-			if (state.equalsIgnoreCase("auto")) {
-				rt.setControlMode(HeatingMode.AUTO);
-			} else if (state.equalsIgnoreCase("off")) {
-				rt.setControlMode(HeatingMode.MANUAL, new Double(0));
+			try {
+				if (state.equalsIgnoreCase("auto")) {
+					rt.setControlMode(HeatingMode.AUTO);
+				} else if (state.equalsIgnoreCase("off")) {
+					rt.setControlMode(HeatingMode.MANUAL, new Double(0));
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
 	}
 
 	public void setLight(String location, boolean state) throws Throwable {
 		switch (location) {
-		case "livingroom": {
-			homegearDeviceService.getRemoteMeteringSwitchBySerialNo("LEQ0531814").setState(state);
-		}
+
 		case "corridor": {
+			homegearDeviceService.getRemoteMeteringSwitchBySerialNo("LEQ0531814").setState(state);
+			break;
+		}
+		case "livingroom": {
 			homegearDeviceService.getRemoteSwitchBySerialNo("OEQ0479803").setState(state);
+			break;
 		}
 		}
 	}

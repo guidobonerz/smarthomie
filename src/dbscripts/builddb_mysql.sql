@@ -66,7 +66,7 @@ select
     (case   when((to_days( str_to_date( `e`.`start_date`, '%Y-%m-%d' ))- to_days( curdate()))= 0) then 'today'
             when((to_days( str_to_date( `e`.`start_date`, '%Y-%m-%d' ))- to_days( curdate()))= 1) then 'tomorrow'
             when(((to_days( str_to_date( `e`.`start_date`, '%Y-%m-%d' ))- to_days( curdate()))> 1)and((to_days( str_to_date( `e`.`start_date`, '%Y-%m-%d' ))- to_days( curdate()))< 15)) then 'upcoming'
-            when((to_days( str_to_date( `e`.`start_date`, '%Y-%m-%d' ))- to_days( curdate()))< 0) then 'over' else 'sometime' end ) AS `when`
+            when((to_days( str_to_date( `e`.`start_date`, '%Y-%m-%d' ))- to_days( curdate()))< 0) then 'over' else 'sometime' end ) AS `occurrence`
 from (`calender`.`event` `e` left join `calender`.`dynamic_event` `de` on ((`e`.`dynamic_start` = convert(`de`.`id` using utf8)))) order by str_to_date(`e`.`start_date`,'%Y-%m-%d');
 
 
