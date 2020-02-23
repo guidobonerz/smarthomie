@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Cam Dashboard</title>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<link rel="manifest" href="camera_manifest.json">
+
+<meta name="viewport" content="width=device-width">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="icon" sizes="192x192" href="img/camera192.png">
+
+<link rel="stylesheet" href="css/spin.css">
+<link rel="stylesheet" href="css/all.min.css">
+<link rel="stylesheet" href="css/bootstrap.min.css">
+<script src="js/spin.js"></script>
+<script src="js/jquery-3.4.1.min.js"></script>
+<script src="js/popper.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/media-stream-library.min.js"></script>
+<script src="js/camera.stream.player.js"></script>
+
+
+<style>
+video {
+	width: 100%;
+	height: auto;
+}
+
+/*schwarzgrau*/
+.bgRAL7021 {
+	background-color: #2f3234 !important;
+}
+/*umbragrau*/
+.bgRAL7022 {
+	background-color: #4c4a44 !important;
+}
+/*zinkgelb*/
+.textRAL1018 {
+	color: #faca30 !important;
+}
+
+/*nato olive*/
+.bgRAL7013 {
+	background-color: #555548 !important;
+}
+
+/*flame red*/
+.bgRAL3000 {
+	background-color: #AB2524 !important;
+}
+
+.textRAL3000 {
+	color: #AB2524 !important;
+}
+
+/*traffic white*/
+.bgRAL9016 {
+	background-color: #F6F6F6 !important;
+}
+
+.textRAL9016 {
+	color: #F6F6F6 !important;
+}
+
+/*luminous green*/
+.bgRAL6038 {
+	background-color: #00F700 !important;
+}
+
+.textRAL6038 {
+	color: #00F700 !important;
+}
+</style>
+</head>
+
+<body class="bg-dark">
+
+
+	<nav class="navbar navbar-expand-lg navbar-dark bgRAL7013">
+		<img src="img/odin.svg" style="width: 40px; height: 40px;"></img>
+		<!-- 
+		<button class="navbar-toggler" type="button" data-toggle="collapse"
+			data-target="#navbarSupportedContent"
+			aria-controls="navbarSupportedContent" aria-expanded="false"
+			aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		
+		<div class="collapse navbar-collapse" id="navbarSupportedContent">
+			<ul class="navbar-nav mr-auto">
+				<li class="nav-item active"><a class="nav-link" href="#">Home
+						<span class="sr-only">(current)</span>
+				</a></li>
+				<li class="nav-item"><a class="nav-link" href="#">Link</a></li>
+				<li class="nav-item dropdown"><a
+					class="nav-link dropdown-toggle" href="#" id="navbarDropdown"
+					role="button" data-toggle="dropdown" aria-haspopup="true"
+					aria-expanded="false"> Dropdown </a>
+					<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+						<a class="dropdown-item" href="#">Action</a> <a
+							class="dropdown-item" href="#">Another action</a>
+						<div class="dropdown-divider"></div>
+						<a class="dropdown-item" href="#">Something else here</a>
+					</div></li>
+				<li class="nav-item"><a class="nav-link disabled" href="#"
+					tabindex="-1" aria-disabled="true">Disabled</a></li>
+			</ul>
+
+		</div>
+		 -->
+		<span class="fad fa-siren fa-2x textRAL3000 float-right"></span>
+	</nav>
+
+	<div class="accordion" id="accordionExample">
+		<div class="card border-0">
+			<div class="btn btn-lg rounded-0 bgRAL7021 text-white" id="heading1"
+				data-toggle="collapse" data-target="#collapse1" aria-expanded="true"
+				aria-controls="collapse1">
+				<i class="fad fa-cctv fa-2x float-left"
+					style="vertical-align: middle; width: 60px"></i> <span
+					class="float-left">Video&uuml;berwachung</span>
+			</div>
+
+			<div id="collapse1" class="collapse" aria-labelledby="heading1"
+				data-parent="#accordionExample">
+				<div class="card-body" style="padding: 0;" id="accordionCamera">
+					<div class="card border-0" style="padding: 0px; spacing: 0px;">
+						<div class="btn-group bg-dark" role="group" aria-label="labelname">
+							<button id="showEntryVideo" type="button"
+								class="btn btn-dark textRAL1018" style="width: 30%">Hauseingang</button>
+							<button id="showCorridorVideo" type="button"
+								class="btn btn-dark textRAL1018" style="width: 30%">Flur</button>
+							<button id="showCorridorVideo" type="button"
+								class="btn btn-dark textRAL1018" style="width: 30%" disabled>Garten</button>
+							<i id="makeSnapshot"
+								class="fad fa-camera-retro fa-2x float-right text-white"
+								style="vertical-align: middle; width: 10%"></i>
+						</div>
+						<div class="container-fluid bg-dark embed-responsive-item"
+							id="videoContainer" style="padding: 0px; spacing: 0px;">
+							<video id="video" autoplay></video>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="card border-0">
+			<div class="btn btn-lg rounded-0 bgRAL7021 text-white" id="heading2"
+				data-toggle="collapse" data-target="#collapse2" aria-expanded="true"
+				aria-controls="collapse2">
+				<i class="fad fa-lightbulb fa-2x float-left"
+					style="horizontal-align: left; vertical-align: middle; width: 60px"></i>
+				<span class="float-left">Beleuchtung</span>
+			</div>
+			<div id="collapse2" class="collapse" aria-labelledby="heading2"
+				data-parent="#accordionExample">
+				<div class="card-body rounded-0" style="padding: 0;"
+					id="accordionCamera">
+					<div class="list-group">
+						<a href="#"
+							class="list-group-item list-group-item-action bg-dark textRAL1018 rounded-0">
+							<i class="fad fa-lightbulb float-left"
+							style="vertical-align: middle; width: 60px"></i>Flur - Stehlampe
+						</a> <a href="#"
+							class="list-group-item list-group-item-action bg-dark textRAL1018 rounded-0">
+							<i class="fad fa-lightbulb float-left"
+							style="vertical-align: middle; width: 60px"></i>Wohnzimmer -
+							Leselampe
+						</a> <a href="#"
+							class="list-group-item list-group-item-action bg-dark textRAL1018 rounded-0">
+							<i class="fad fa-lightbulb float-left"
+							style="vertical-align: middle; width: 60px"></i>Wohnzimmer -
+							Fensterbank
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="card border-0">
+			<div class="btn btn-lg rounded-0 bgRAL7021 text-white" id="heading3"
+				data-toggle="collapse" data-target="#collapse3" aria-expanded="true"
+				aria-controls="collapse3">
+				<i class="fad fa-heat fa-2x float-left"
+					style="vertical-align: middle; width: 60px"></i> <span
+					class="float-left">Heizung</span>
+			</div>
+			<div id="collapse3" class="collapse" aria-labelledby="heading3"
+				data-parent="#accordionExample">
+				<div class="card-body">ToDo</div>
+			</div>
+		</div>
+		<div class="card border-0">
+			<div class="btn btn-lg rounded-0 bgRAL7021 text-white" id="heading4"
+				data-toggle="collapse" data-target="#collapse4" aria-expanded="true"
+				aria-controls="collapse4">
+				<i class="fad fa-water fa-2x float-left"
+					style="horizontal-align: left; vertical-align: middle; width: 60px"></i>
+				<span class="float-left">Therme</span>
+			</div>
+			<div id="collapse4" class="collapse" aria-labelledby="heading4"
+				data-parent="#accordionExample">
+				<div class="card-body">ToDo</div>
+			</div>
+		</div>
+		<div class="card border-0">
+			<div class="btn btn-lg rounded-0 bgRAL7021 text-white" id="heading7"
+				data-toggle="collapse" data-target="#collapse7" aria-expanded="true"
+				aria-controls="collapse7">
+				<i class="fad fa-sprinkler fa-2x float-left"
+					style="horizontal-align: left; vertical-align: middle; width: 60px"></i>
+				<span class="float-left">Gartenbew&auml;sserung</span>
+			</div>
+			<div id="collapse7" class="collapse" aria-labelledby="heading7"
+				data-parent="#accordionExample">
+				<div class="card-body">ToDo</div>
+			</div>
+		</div>
+		<div class="card border-0">
+			<div class="btn btn-lg rounded-0 bgRAL7021 text-white" id="heading5"
+				data-toggle="collapse" data-target="#collapse5" aria-expanded="true"
+				aria-controls="collapse5">
+				<i class="fad fa-calendar-alt fa-2x float-left"
+					style="horizontal-align: left; vertical-align: middle; width: 60px"></i>
+				<span class="float-left">Ereignisse und Termine</span>
+			</div>
+			<div id="collapse5" class="collapse" aria-labelledby="heading5"
+				data-parent="#accordionExample">
+				<div class="card-body">ToDo</div>
+			</div>
+		</div>
+		<div class="card border-0">
+			<div class="btn btn-lg rounded-0 bgRAL7021 text-white" id="heading6"
+				data-toggle="collapse" data-target="#collapse6" aria-expanded="true"
+				aria-controls="collapse6">
+				<i class="fad fa-shopping-cart fa-2x float-left"
+					style="horizontal-align: left; vertical-align: middle; width: 60px"></i>
+				<span class="float-left">Einkaufszettel</span>
+			</div>
+			<div id="collapse6" class="collapse" aria-labelledby="heading6"
+				data-parent="#accordionExample">
+				<div class="card-body">ToDo</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>
+
+
