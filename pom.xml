@@ -1,7 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>de.drazil</groupId>
@@ -28,7 +26,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
-		<springboot.version>2.1.0.RELEASE</springboot.version>
+		<!--	<springboot.version>2.1.0.RELEASE</springboot.version>-->
 	</properties>
 
 	<dependencies>
@@ -39,27 +37,21 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-jdbc</artifactId>
-			<version>${springboot.version}</version>
+			<!--	<version>${springboot.version}</version>-->
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-thymeleaf -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
-			<version>${springboot.version}</version>
+			<!--	<version>${springboot.version}</version>-->
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/javagrinko/tcp-spring-boot-starter -->
-		
-		<dependency>
-			<groupId>javagrinko</groupId>
-			<artifactId>tcp-spring-boot-starter</artifactId>
-			<version>1.12</version>
-		</dependency>
+
 		<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-tomcat -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-tomcat</artifactId>
-			<version>${springboot.version}</version>
+			<!--	<version>${springboot.version}</version>-->
 			<scope>provided</scope>
 		</dependency>
 
@@ -67,7 +59,20 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
-			<version>${springboot.version}</version>
+			<!--	<version>${springboot.version}</version>-->
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/javagrinko/tcp-spring-boot-starter -->
+
+		<dependency>
+			<groupId>javagrinko</groupId>
+			<artifactId>tcp-spring-boot-starter</artifactId>
+			<version>1.12</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-text -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-text</artifactId>
+			<version>1.8</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
@@ -104,19 +109,13 @@
 			<artifactId>json-path</artifactId>
 			<version>2.4.0</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.cronutils/cron-utils -->
-		<!-- <dependency> <groupId>com.cronutils</groupId> <artifactId>cron-utils</artifactId> 
-			<version>7.0.1</version> </dependency> -->
-		<!-- https://mvnrepository.com/artifact/com.zaxxer/HikariCP -->
 
+		<!-- https://mvnrepository.com/artifact/com.zaxxer/HikariCP -->
 		<dependency>
 			<groupId>com.zaxxer</groupId>
 			<artifactId>HikariCP</artifactId>
 			<version>3.1.0</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
-		<!-- <dependency> <groupId>mysql</groupId> <artifactId>mysql-connector-java</artifactId> 
-			<version>5.1.46</version> </dependency> -->
 		<!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
 		<dependency>
 			<groupId>org.postgresql</groupId>
@@ -125,7 +124,6 @@
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/com.sun.xml.bind/jaxb-impl -->
-
 		<dependency>
 			<groupId>javax.xml.bind</groupId>
 			<artifactId>jaxb-api</artifactId>
@@ -146,49 +144,21 @@
 			<artifactId>javax.activation</artifactId>
 			<version>1.2.0</version>
 		</dependency>
-
-
+		<!-- https://mvnrepository.com/artifact/org.telegram/telegrambots-spring-boot-starter -->
+		<dependency>
+			<groupId>org.telegram</groupId>
+			<artifactId>telegrambots-spring-boot-starter</artifactId>
+			<version>4.6</version>
+		</dependency>
 	</dependencies>
-
 	<build>
 		<plugins>
 			<plugin>
 				<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-maven-plugin -->
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<version>${springboot.version}</version>
+				<!--<version>${springboot.version}</version>-->
 			</plugin>
-			<plugin>
-				<groupId>nl.geodienstencentrum.maven</groupId>
-				<artifactId>sass-maven-plugin</artifactId>
-				<version>3.5.4</version>
-				<executions>
-					<execution>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>update-stylesheets</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<resources>
-						<resource>
-							Set source destination folders
-							<source>
-								<directory>
-									${project.basedir}/src/main/resources/static/scss
-								</directory>
-							</source>
-							<destination>${project.basedir}/src/main/resources/static/css</destination>
-						</resource>
-					</resources>
-				</configuration>
-			</plugin>
-			<!-- <plugin> <groupId>com.github.eirslett</groupId> <artifactId>frontend-maven-plugin</artifactId> 
-				<version>0.0.23</version> <executions> <execution> <id>install node and npm</id> 
-				<goals> <goal>install-node-and-npm</goal> </goals> <phase>generate-resources</phase> 
-				<configuration> <nodeVersion>v0.12.7</nodeVersion> <npmVersion>2.11.3</npmVersion> 
-				</configuration> </execution> </executions> </plugin> -->
 		</plugins>
 		<finalName>homeautomation</finalName>
 	</build>
