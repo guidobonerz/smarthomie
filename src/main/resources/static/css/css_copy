@@ -1,0 +1,54 @@
+	<div class="list-group">
+		<button type="button"
+			class="list-group-item-dark list-group-item-action btn-lg active  rounded-0"
+			style="vertical-align: middle;">
+			<i class="fad fa-cctv fa-2x"
+				style="vertical-align: middle; width: 60px"></i>
+			Video&uuml;berwachung
+		</button>
+		<button type="button" class="list-group-item list-group-item-action"
+			data-target="#cameraDialog1" data-toggle="modal">Hauseingang</button>
+		<button type="button" class="list-group-item list-group-item-action"
+			data-target="#cameraDialog2" data-toggle="modal">Flur</button>
+	</div>
+	<div class="list-group">
+		<button type="button"
+			class="list-group-item-dark list-group-item-action btn-lg active  rounded-0"
+			style="vertical-align: middle;">
+			<i class="fad fa-lightbulb fa-2x"
+				style="vertical-align: middle; width: 60px"></i> Beleuchtung
+		</button>
+	</div>
+	<div class="list-group">
+		<button type="button"
+			class="list-group-item-dark list-group-item-action btn-lg active  rounded-0"
+			style="vertical-align: middle;">
+			<i class="fad fa-heat fa-2x"
+				style="vertical-align: middle; width: 60px"></i> Heizung
+		</button>
+	</div>
+	<div class="list-group">
+		<button type="button"
+			class="list-group-item-dark list-group-item-action btn-lg active  rounded-0"
+			style="vertical-align: middle;">
+			<i class="fad fa-water fa-2x"
+				style="vertical-align: middle; width: 60px"></i> Wasserkessel
+		</button>
+	</div>
+	<div class="list-group">
+		<button type="button"
+			class="list-group-item-dark list-group-item-action btn-lg active  rounded-0"
+			style="vertical-align: middle;">
+			<i class="fad fa-calendar-alt fa-2x"
+				style="vertical-align: middle; width: 60px"></i> Ereignisse und
+			Termine
+		</button>
+	</div>
+	<div class="list-group">
+		<button type="button"
+			class="list-group-item-dark list-group-item-action btn-lg active  rounded-0"
+			style="vertical-align: middle;">
+			<i class="fad fa-shopping-bag fa-2x"
+				style="vertical-align: middle; width: 60px"></i> Einkaufszettel
+		</button>
+	</div>

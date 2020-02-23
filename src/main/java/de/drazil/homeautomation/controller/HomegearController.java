@@ -1,16 +1,43 @@
 package de.drazil.homeautomation.controller;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.text.StringEscapeUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import de.drazil.homeautomation.bean.ResponseWrapper;
 import de.drazil.homeautomation.dto.Event;
@@ -33,6 +60,12 @@ public class HomegearController {
 	@Autowired
 	private ExternalSchedulerService service;
 
+	@Value("${app.base-path}")
+	private String basePath;
+
+	@Value("${app.snapshot-path}")
+	private String snapshotPath;
+
 	@GetMapping("/")
 	public String root() {
 		return "redirect:/index";
@@ -48,6 +81,11 @@ public class HomegearController {
 		return "overview";
 	}
 
+	@GetMapping("/dashboard")
+	public String dashboard() {
+		return "dashboard";
+	}
+
 	@GetMapping("/polling")
 	public String polling() {
 		return "polling";
@@ -56,6 +94,56 @@ public class HomegearController {
 	@GetMapping("/floorplan")
 	public String floorplan() {
 		return "floorplan";
+	}
+
+	@GetMapping("/snapshot")
+	@ResponseBody
+	public ResponseWrapper snapshot(@RequestParam(value = "deviceName", required = true) String deviceName) {
+		ResponseWrapper rw = new ResponseWrapper(false, "snapshot successfully taken");
+
+		String pattern = "yyyyddMM-HHmmss";
+		DateFormat df = new SimpleDateFormat(pattern);
+		Date today = Calendar.getInstance().getTime();
+
+		basePath = basePath.replace("{userhome}", System.getProperty("user.home"));
+
+		String ipAddress = null;
+		switch (deviceName) {
+			case "entry": {
+				ipAddress = "10.100.200.171";
+				break;
+			}
+			case "corridor": {
+				ipAddress = "10.100.200.170";
+				break;
+			}
+		}
+
+		HttpClient client = HttpClientBuilder.create().build();
+
+		HttpGet request = new HttpGet("http://" + ipAddress + "/axis-cgi/jpg/image.cgi");
+		try {
+			HttpResponse response = client.execute(request);
+			int errorCode = response.getStatusLine().getStatusCode();
+			if (errorCode == 200) {
+				HttpEntity entity = response.getEntity();
+				InputStream is = entity.getContent();
+				FileSystem fs = FileSystems.getDefault();
+				Path path = fs.getPath(basePath, snapshotPath);
+				Path imageName = Paths.get(path.toString(), deviceName + "_" + df.format(today) + ".jpg");
+				Files.createDirectories(imageName.getParent());
+				FileOutputStream fos = new FileOutputStream(imageName.toFile());
+				int inByte;
+				while ((inByte = is.read()) != -1) {
+					fos.write(inByte);
+				}
+				is.close();
+				fos.close();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return rw;
 	}
 
 	@GetMapping(value = "/getRemoteWallThermostatList")
@@ -306,4 +394,60 @@ public class HomegearController {
 		}
 		return rw;
 	}
+
+	@GetMapping("/tasmotaresponse/{button}")
+	public @ResponseBody ResponseWrapper tasmotaresponse(@PathVariable String button) {
+		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
+		System.out.println(button + " activated");
+		return rw;
+	}
+	/*
+	 * @GetMapping("/bot") public @ResponseBody ResponseWrapper
+	 * bot(@RequestParam("message") String message) { ResponseWrapper rw = new
+	 * ResponseWrapper(false, "Failed to get data");
+	 * System.out.println("send message to bot :" + message);
+	 * bot.sendMessage(message); return rw; }
+	 */
+	// shelly 1 rule
+	// rule1 on Power1#State=1 do websend [10.100.200.205:50081]
+	// /homeautomation/tasmotaresponse/entry endon
+
+	// @GetMapping("/tasmotaconfig/{button}")
+
+	// {"Rule1":"ON","Once":"OFF","StopOnError":"OFF","Free":416,"Rules":"on
+	// Power1#State=1 do websend [10.100.200.205:50081]
+	// /homeautomation/tasmotaresponse/test1 endon"}
+
+	/*
+	 * public @ResponseBody ResponseWrapper tasmotaconfig(@PathVariable String
+	 * button) { ResponseWrapper rw = new ResponseWrapper(false,
+	 * "Failed to get data"); String command =
+	 * "rule1 on Power1#State=1 do websend [10.100.200.205:50081] /homeautomation/tasmotaresponse/test1 endon"
+	 * ; command = StringEscapeUtils.escapeHtml4(command); String result = null;
+	 * HttpClient client = HttpClientBuilder.create().build(); HttpGet request = new
+	 * HttpGet("http://10.100.200.229/cm?cmnd=" + command); try { HttpResponse
+	 * response = client.execute(request); int errorCode =
+	 * response.getStatusLine().getStatusCode(); if (errorCode == 200) { HttpEntity
+	 * entity = response.getEntity(); result = EntityUtils.toString(entity); }
+	 * 
+	 * } catch (IOException e) { e.printStackTrace(); } return rw; }
+	 * 
+	 * @GetMapping("/stream1")
+	 * 
+	 * @ResponseBody public StreamingResponseBody getVidoeStream1(@RequestParam
+	 * String any) throws IOException {
+	 * 
+	 * RestTemplate restTemplate = new RestTemplate(); ResponseEntity<Resource>
+	 * responseEntity = restTemplate.exchange(
+	 * "rtsp://10.100.200.170/axis-media/media.amp?videocodec=h264", HttpMethod.GET,
+	 * null, Resource.class); InputStream st =
+	 * responseEntity.getBody().getInputStream(); return (os) -> { readAndWrite(st,
+	 * os); };
+	 * 
+	 * }
+	 * 
+	 * private void readAndWrite(final InputStream is, OutputStream os) throws
+	 * IOException { byte[] data = new byte[2048]; int read = 0; while ((read =
+	 * is.read(data)) > 0) { os.write(data, 0, read); } os.flush(); }
+	 */
 }
