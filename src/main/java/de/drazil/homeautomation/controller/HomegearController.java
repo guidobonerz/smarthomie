@@ -111,11 +111,11 @@ public class HomegearController {
 		String ipAddress = null;
 		switch (deviceName) {
 			case "entry": {
-				ipAddress = "10.100.200.171";
+				ipAddress = cameraEntranceIp;
 				break;
 			}
 			case "corridor": {
-				ipAddress = "10.100.200.170";
+				ipAddress = cameraCorridorIp;
 				break;
 			}
 		}
