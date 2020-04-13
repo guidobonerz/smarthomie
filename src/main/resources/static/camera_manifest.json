@@ -1,0 +1,15 @@
+{
+  "name": "Hausautomation",
+  "icons": [
+    
+    {
+      "src": "img/house.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "density": 4.0
+    }
+  ],
+  "start_url": "dashboard",
+  "display": "standalone",
+  "orientation": "portrait"
+}

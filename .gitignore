@@ -24,3 +24,5 @@ nbdist/
 .nb-gradle/
 
 ##project specific
+.vscode/launch.json
+.vscode/settings.json

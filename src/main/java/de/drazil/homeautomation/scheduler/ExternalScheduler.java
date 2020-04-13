@@ -253,21 +253,17 @@ public class ExternalScheduler {
 		}
 		// holidays
 		// ---------------------------------------------------------------------
-		// String schoolVacation =
-		// service.readCalender("https://ferien-api.de/api/v1/holidays/NW/2018");
 		groupId = "Ferien" + year;
 		if (!service.checkGroup(groupId)) {
-			String schoolVacation = service
-					.readDataFromUrl("http://api.smartnoob.de/ferien/v1/ferien/?bundesland=nw&jahr=" + year);
+			String schoolVacation = service.readDataFromUrl("https://ferien-api.de/api/v1/holidays/NW/" + year);
 			if (schoolVacation != null) {
-				List<LinkedHashMap<Object, String>> schoolVacationList = JsonPath.parse(schoolVacation)
-						.read("$.daten.*", typeRef);
+				List<LinkedHashMap<Object, String>> schoolVacationList = JsonPath.parse(schoolVacation).read("$.*",
+						typeRef);
 				for (LinkedHashMap<Object, String> map : schoolVacationList) {
-					String start = map.get("beginn");
-					String end = map.get("ende");
-					service.addEvent(groupId, service.getJavaDateFromUnixTimestamp(start).toString() + " 00:00:00",
-							service.getJavaDateFromUnixTimestamp(end).toString() + " 00:00:00", map.get("title"), true,
-							13, -1);
+					String start = map.get("start");
+					String end = map.get("end");
+					service.addEvent(groupId, LocalDateTime.parse(start).toString(),
+							LocalDateTime.parse(end).toString(), map.get("name"), true, 13, -1);
 				}
 			} else {
 				log.error("can't get schulferien from remote server");
@@ -275,23 +271,18 @@ public class ExternalScheduler {
 		}
 		// feiertage
 		// ---------------------------------------------------------------------
-		groupId = "Feiertage" + year;
-		if (!service.checkGroup(groupId)) {
-			String bankHolidays = service
-					.readDataFromUrl("http://api.smartnoob.de/ferien/v1/feiertage/?bundesland=nw&jahr=" + year);
-			if (bankHolidays != null) {
-				List<LinkedHashMap<Object, String>> bankHolidayList = JsonPath.parse(bankHolidays).read("$.daten.*",
-						typeRef);
-				for (LinkedHashMap<Object, String> map : bankHolidayList) {
-					String start = map.get("beginn");
-					String end = map.get("ende");
-					service.addEvent(groupId, service.getJavaDateFromUnixTimestamp(start).toString() + " 00:00:00",
-							service.getJavaDateFromUnixTimestamp(end).toString() + " 00:00:00", map.get("title"), true,
-							11, -1);
-				}
-			} else {
-				log.error("can't get feiertage from remote server");
-			}
-		}
+		/*
+		 * groupId = "Feiertage" + year; if (!service.checkGroup(groupId)) { String
+		 * bankHolidays =
+		 * service.readDataFromUrl("https://feiertage-api.de/api/?nur_land=nw&jahr=" +
+		 * year); if (bankHolidays != null) { List<LinkedHashMap<Object, String>>
+		 * bankHolidayList = JsonPath.parse(bankHolidays).read("$.*", typeRef); for
+		 * (LinkedHashMap<Object, String> map : bankHolidayList) { String start =
+		 * map.get("datum"); service.addEvent(groupId,
+		 * LocalDate.parse(start).toString(), LocalDate.parse(start).toString(),
+		 * map.get("name"), true, 11, -1); } } else {
+		 * log.error("can't get feiertage from remote server"); } }
+		 */
+
 	}
 }

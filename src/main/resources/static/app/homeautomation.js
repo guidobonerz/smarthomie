@@ -1,42 +1,42 @@
 var app = angular.module("Homeautomation", []);
 
-app.factory('Poller', function($http, $timeout) {
+app.factory('Poller', function ($http, $timeout) {
 	var pollerData = {
-		response : {},
-		stop : false
+		response: {},
+		stop: false
 	};
 
-	var isChannelLive = function() {
+	var isChannelLive = function () {
 		$http.get('http://localhost:50080/homeautomation/getMessages').then(
-				function(response) {
-					$timeout(isChannelLive, 2000);
-					pollerData.response = response.data;
-					if (response.data.data.length > 0) {
-						console.log(response.data.data[0].payload);
-					}
-				});
+			function (response) {
+				$timeout(isChannelLive, 2000);
+				pollerData.response = response.data;
+				if (response.data.data.length > 0) {
+					console.log(response.data.data[0].payload);
+				}
+			});
 	};
-	var init = function() {
+	var init = function () {
 		pollerData.stop = false;
 		isChannelLive();
 	};
-	var stop = function() {
+	var stop = function () {
 
 		pollerData.stop = true;
 	};
 
 	return {
-		pollerData : pollerData, // this should be private
-		init : init,
-		stop : stop
+		pollerData: pollerData, // this should be private
+		init: init,
+		stop: stop
 	};
 });
 
-app.controller("GridController", function($scope, Poller, $http) {
+app.controller("GridController", function ($scope, Poller, $http) {
 	Poller.init();
 	$http({
-		method : "GET",
-		url : '/homeautomation/getRemoteWallThermostatList'
+		method: "GET",
+		url: '/homeautomation/getRemoteWallThermostatList'
 	}).then(function mySuccess(response) {
 		$scope.remoteWallThermostatList = response.data.data;
 	}, function myError(response) {
@@ -44,8 +44,8 @@ app.controller("GridController", function($scope, Poller, $http) {
 	});
 
 	$http({
-		method : "GET",
-		url : '/homeautomation/getRemoteRadiatorThermostatList'
+		method: "GET",
+		url: '/homeautomation/getRemoteRadiatorThermostatList'
 	}).then(function mySuccess(response) {
 		$scope.remoteRadiatorThermostatList = response.data.data;
 	}, function myError(response) {
@@ -53,8 +53,8 @@ app.controller("GridController", function($scope, Poller, $http) {
 	});
 
 	$http({
-		method : "GET",
-		url : '/homeautomation/getRemoteOutdoorWeatherSensorList'
+		method: "GET",
+		url: '/homeautomation/getRemoteOutdoorWeatherSensorList'
 	}).then(function mySuccess(response) {
 		$scope.remoteOutdoorWeatherSensorList = response.data.data;
 	}, function myError(response) {
@@ -62,8 +62,8 @@ app.controller("GridController", function($scope, Poller, $http) {
 	});
 
 	$http({
-		method : "GET",
-		url : '/homeautomation/getRemoteValveDriveList'
+		method: "GET",
+		url: '/homeautomation/getRemoteValveDriveList'
 	}).then(function mySuccess(response) {
 		$scope.remoteValveDriveList = response.data.data;
 	}, function myError(response) {
@@ -72,21 +72,21 @@ app.controller("GridController", function($scope, Poller, $http) {
 
 });
 
-app.directive('tooltip', function() {
+app.directive('tooltip', function () {
 	return {
-		restrict : 'A',
-		link : function(scope, element, attrs) {
-			$(element).hover(function() {
+		restrict: 'A',
+		link: function (scope, element, attrs) {
+			$(element).hover(function () {
 				$(element).tooltip('show');
-			}, function() {
+			}, function () {
 				$(element).tooltip('hide');
 			});
 		}
 	};
 });
 
-app.filter("getBatteryStateIconIndex", function() {
-	return function(item) {
+app.filter("getBatteryStateIconIndex", function () {
+	return function (item) {
 		var batt;
 		if (item.BatteryVoltage <= 2.2) {
 			batt = 'empty';
@@ -104,14 +104,14 @@ app.filter("getBatteryStateIconIndex", function() {
 	}
 });
 
-app.filter("getDewPoint", function() {
-	return function(item) {
+app.filter("getDewPoint", function () {
+	return function (item) {
 		return getDewPoint(item.CurrentTemperature, item.Humidity);
 	}
 });
 
-app.filter("getStickyness", function() {
-	return function(item) {
+app.filter("getStickyness", function () {
+	return function (item) {
 		var dewPoint = getDewPoint(item.CurrentTemperature, item.Humidity);
 		if (dewPoint < 16) {
 			return 'far fa-smile';
@@ -121,8 +121,8 @@ app.filter("getStickyness", function() {
 	}
 });
 
-app.filter("getSignalStrengthIcon", function() {
-	return function(item) {
+app.filter("getSignalStrengthIcon", function () {
+	return function (item) {
 		var signal;
 		if (item.SignalStrength <= -80) {
 			signal = 'icon-wifi-signal-low-2';
@@ -136,34 +136,34 @@ app.filter("getSignalStrengthIcon", function() {
 	}
 });
 
-app.filter("getVentilationRecommendationIcon", function() {
-	return function(item) {
+app.filter("getVentilationRecommendationIcon", function () {
+	return function (item) {
 		return item ? 'green' : 'red';
 	}
 });
 
-app.filter("getSliderPosition", function() {
-	return function(item) {
+app.filter("getSliderPosition", function () {
+	return function (item) {
 		var pos = 50 + (6.25 * item.VentilationDiff) - 2;
 		return pos == Number.NaN ? 0 : pos;
 	}
 });
 
 /* {{item|getLowBatteryColor}} */
-app.filter("getLowBatteryColor", function() {
-	return function(item) {
+app.filter("getLowBatteryColor", function () {
+	return function (item) {
 		return item.LowBattery ? 'red' : '';
 	}
 });
 /* {{item|getUnreachableColor}} */
-app.filter("getUnreachableColor", function() {
-	return function(item) {
+app.filter("getUnreachableColor", function () {
+	return function (item) {
 		return item.Unreachable ? 'red' : '';
 	}
 });
 
-app.filter("getControlModeIcon", function() {
-	return function(item) {
+app.filter("getControlModeIcon", function () {
+	return function (item) {
 		var iconName = 'far fa-star';
 		if (item === 'manual') {
 			iconName = 'far fa-hand-paper';
@@ -174,8 +174,8 @@ app.filter("getControlModeIcon", function() {
 	}
 });
 
-app.directive('linearGraph', function($rootscope) {
-	return function(scope, element, attr) {
+app.directive('linearGraph', function ($rootscope) {
+	return function (scope, element, attr) {
 		attr.$observe('value')
 	};
 });

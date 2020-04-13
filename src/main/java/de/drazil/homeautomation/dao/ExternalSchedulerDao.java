@@ -82,8 +82,8 @@ public class ExternalSchedulerDao {
 				event.setActionId(rs.getLong("action_id"));
 				event.setCategoryId(rs.getLong("category_id"));
 				event.setAllDayEvent(rs.getBoolean("all_day_event"));
-				// event.setDiff(rs.getLong("diff"));
-				// event.setOccurrence(rs.getString("occurrence"));
+				//event.setDiff(rs.getLong("diff"));
+				//event.setOccurrence(rs.getString("occurrence"));
 				return event;
 			}
 		});
@@ -100,7 +100,7 @@ public class ExternalSchedulerDao {
 						event.setStartRule(rs.getString("start_rule"));
 						event.setStartRule(rs.getString("start_rule"));
 						event.setDescription(rs.getString("description"));
-						event.setActionId(rs.getLong("action_id"));
+						event.setActionId(rs.getLong("action_command"));
 						event.setCategoryId(rs.getLong("category_id"));
 						event.setAllDayEvent(rs.getBoolean("all_day_event"));
 						event.setDiff(rs.getLong("diff"));
@@ -125,7 +125,7 @@ public class ExternalSchedulerDao {
 						event.setStartRule(rs.getString("start_rule"));
 						event.setStartRule(rs.getString("start_rule"));
 						event.setDescription(rs.getString("description"));
-						event.setActionId(rs.getLong("action_id"));
+						event.setActionId(rs.getLong("action_command"));
 						event.setCategoryId(rs.getLong("category_id"));
 						event.setAllDayEvent(rs.getBoolean("all_day_event"));
 						event.setDiff(rs.getLong("diff"));
@@ -150,7 +150,7 @@ public class ExternalSchedulerDao {
 						event.setStartRule(rs.getString("start_rule"));
 						event.setStartRule(rs.getString("start_rule"));
 						event.setDescription(rs.getString("description"));
-						event.setActionId(rs.getLong("action_id"));
+						event.setActionId(rs.getLong("action_command"));
 						event.setCategoryId(rs.getLong("category_id"));
 						event.setAllDayEvent(rs.getBoolean("all_day_event"));
 						event.setDiff(rs.getLong("diff"));

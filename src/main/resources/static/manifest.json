@@ -1,5 +1,5 @@
 {
-  "name": "Web Application Manifest Sample",
+  "name": "Temperatures",
   "icons": [
     {
       "src": "img/Bulb-icon32.png",
@@ -39,6 +39,6 @@
     }
   ],
   "start_url": "index",
-  "display": "fullscreen",
+  "display": "standalone",
   "orientation": "landscape"
 }

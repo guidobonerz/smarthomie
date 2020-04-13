@@ -1,11 +1,11 @@
 var buttonControl = angular.module("ButtonControl", []);
-buttonControl.controller("ButtonController",[ function($scope, $http) {
-	
-	$scope.setBoiler = function(state) {
+buttonControl.controller("ButtonController", [function ($scope, $http) {
+
+	$scope.setBoiler = function (state) {
 
 		$http({
-			method : "GET",
-			url : '/homeautomation/boiler/'+state
+			method: "GET",
+			url: '/homeautomation/boiler/' + state
 		}).then(function mySuccess(response) {
 			$scope.myWelcome = response.data;
 		}, function myError(response) {
@@ -13,10 +13,10 @@ buttonControl.controller("ButtonController",[ function($scope, $http) {
 		});
 
 	};
-	$scope.setAllLights = function(state) {
+	$scope.setAllLights = function (state) {
 		$http({
-			method : "GET",
-			url : '/homeautomation/lightAll/' + state
+			method: "GET",
+			url: '/homeautomation/lightAll/' + state
 		}).then(function mySuccess(response) {
 			$scope.myWelcome = response.data;
 		}, function myError(response) {
@@ -24,11 +24,11 @@ buttonControl.controller("ButtonController",[ function($scope, $http) {
 		});
 	};
 
-	$scope.setHeating = function(type) {
+	$scope.setHeating = function (type) {
 
 		$http({
-			method : "GET",
-			url : '/homeautomation/heating/' + type
+			method: "GET",
+			url: '/homeautomation/heating/' + type
 		}).then(function mySuccess(response) {
 			$scope.myWelcome = response.data;
 		}, function myError(response) {
