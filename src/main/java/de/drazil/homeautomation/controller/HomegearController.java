@@ -3,7 +3,6 @@ package de.drazil.homeautomation.controller;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -16,28 +15,22 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.text.StringEscapeUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import de.drazil.homeautomation.bean.ResponseWrapper;
 import de.drazil.homeautomation.dto.Event;
@@ -66,6 +59,12 @@ public class HomegearController {
 	@Value("${app.snapshot-path}")
 	private String snapshotPath;
 
+	@Value("${app.camera.entrance}")
+	private String cameraEntranceIp;
+
+	@Value("${app.camera.corridor}")
+	private String cameraCorridorIp;
+
 	@GetMapping("/")
 	public String root() {
 		return "redirect:/index";
@@ -82,7 +81,9 @@ public class HomegearController {
 	}
 
 	@GetMapping("/dashboard")
-	public String dashboard() {
+	public String dashboard(Model model) {
+		model.addAttribute("cameraEntranceIp", cameraEntranceIp);
+		model.addAttribute("cameraCorridorIp", cameraCorridorIp);
 		return "dashboard";
 	}
 
