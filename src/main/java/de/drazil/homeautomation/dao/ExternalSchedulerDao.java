@@ -15,8 +15,10 @@ import org.springframework.stereotype.Repository;
 
 import de.drazil.homeautomation.dto.DynamicEvent;
 import de.drazil.homeautomation.dto.Event;
+import lombok.extern.slf4j.Slf4j;
 
 @Repository
+@Slf4j
 public class ExternalSchedulerDao {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
@@ -65,6 +67,7 @@ public class ExternalSchedulerDao {
 
 					}, new Object[] { id });
 		} catch (EmptyResultDataAccessException e) {
+			log.error("no data found");
 		}
 		return dynamicEvent;
 
@@ -82,8 +85,8 @@ public class ExternalSchedulerDao {
 				event.setActionId(rs.getLong("action_id"));
 				event.setCategoryId(rs.getLong("category_id"));
 				event.setAllDayEvent(rs.getBoolean("all_day_event"));
-				//event.setDiff(rs.getLong("diff"));
-				//event.setOccurrence(rs.getString("occurrence"));
+				// event.setDiff(rs.getLong("diff"));
+				// event.setOccurrence(rs.getString("occurrence"));
 				return event;
 			}
 		});

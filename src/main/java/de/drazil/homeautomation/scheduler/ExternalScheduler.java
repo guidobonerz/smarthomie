@@ -14,14 +14,6 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.TaskScheduler;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
-
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
@@ -31,6 +23,12 @@ import com.jayway.jsonpath.spi.json.JsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import com.jayway.jsonpath.spi.mapper.MappingProvider;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
 import biweekly.Biweekly;
 import biweekly.ICalendar;
 import biweekly.component.VEvent;
@@ -38,10 +36,11 @@ import de.drazil.homeautomation.dto.DynamicEvent;
 import de.drazil.homeautomation.dto.Event;
 import de.drazil.homeautomation.service.ExternalSchedulerService;
 import de.drazil.homeautomation.service.HomegearDeviceService;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
+@Slf4j
 public class ExternalScheduler {
-	private static final Logger log = LoggerFactory.getLogger(ExternalScheduler.class);
 
 	@Autowired
 	HomegearDeviceService homegearDeviceService;
@@ -66,8 +65,7 @@ public class ExternalScheduler {
 			try {
 				homegearDeviceService.getRemoteMeteringSwitchBySerialNo("LEQ0531814").setState(true);
 			} catch (Throwable e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.error("could not switch on floor lamp");
 			}
 		};
 	}
@@ -77,8 +75,7 @@ public class ExternalScheduler {
 			try {
 				homegearDeviceService.getRemoteMeteringSwitchBySerialNo("LEQ0531814").setState(false);
 			} catch (Throwable e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.error("could not switch off floor lamp");
 			}
 		};
 	}
@@ -88,8 +85,7 @@ public class ExternalScheduler {
 			try {
 				homegearDeviceService.getRemoteSwitchBySerialNo("OEQ0479803").setState(true);
 			} catch (Throwable e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.error("could not switch on livingroom lamp");
 			}
 		};
 	}
@@ -99,8 +95,7 @@ public class ExternalScheduler {
 			try {
 				homegearDeviceService.getRemoteSwitchBySerialNo("OEQ0479803").setState(false);
 			} catch (Throwable e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.error("could not switch off livingroom lamp");
 			}
 		};
 	}
