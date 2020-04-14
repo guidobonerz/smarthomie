@@ -29,11 +29,12 @@ import de.drazil.homeautomation.smartdevices.IRemoteWallThermostat;
 import de.drazil.homeautomation.smartdevices.ISmartDevice;
 import de.drazil.homeautomation.smartdevicesimpl.homematic.HomematicTemperatureDifferenceSensor;
 import de.drazil.homeautomation.xml.XmlHandler;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class HomegearDeviceService {
 
-	private static final Logger Log = Logger.getLogger(HomegearDeviceService.class.getSimpleName());
 	private JsonRpcHttpClient rpcClient = null;
 	private DeviceConfig devices = null;
 	private Map<String, DeviceId> deviceSerialMap;
@@ -71,9 +72,9 @@ public class HomegearDeviceService {
 							+ homegearXmlRpcServerPath,
 					InetAddress.getLocalHost().getHostName() + ":" + homegearXmlRpcServerName,
 					(0x01 + 0x04 + 0x10 + 0x20 + 0x80));
-			Log.info("rpc callback event server enabled");
+			log.info("rpc callback event server enabled");
 		} else {
-			Log.info("rpc callback event server disabled");
+			log.info("rpc callback event server disabled");
 		}
 	}
 
@@ -176,12 +177,12 @@ public class HomegearDeviceService {
 	public String getControlModeText(Integer mode) {
 		String controlModeName = "unkown";
 		switch (mode) {
-		case 0:
-			controlModeName = "automatic";
-			break;
-		case 1:
-			controlModeName = "manual";
-			break;
+			case 0:
+				controlModeName = "automatic";
+				break;
+			case 1:
+				controlModeName = "manual";
+				break;
 		}
 		return controlModeName;
 	}
@@ -191,7 +192,7 @@ public class HomegearDeviceService {
 	}
 
 	public void registerCallbackEventServer(String url, String interfaceId, Integer flags) throws Throwable {
-		Log.info(url);
+		log.info(url);
 		executeMethod("init", new Object[] { url, interfaceId, flags });
 	}
 

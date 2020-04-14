@@ -28,7 +28,6 @@ public class HomecontrolService {
 	public void control(String interfaceId, int peerId, int channel, String parameterName, Object value) {
 		log.debug("InterfaceId:" + interfaceId + "   PeerId:" + peerId + "   Channel:" + channel + "   ParameterName:"
 				+ parameterName);
-
 		if (peerId == 46 && channel == 1 && parameterName.equals("TEMPERATURE")) {
 			Number n = ((Number) value);
 			log.debug("current boiler temperature is " + n.doubleValue());
@@ -42,8 +41,7 @@ public class HomecontrolService {
 						log.info("boiler reached max temperature -> switch it off");
 					}
 				} catch (Throwable e) {
-
-					e.printStackTrace();
+					log.error("error setting boiler state", e);
 				}
 			}
 		}
