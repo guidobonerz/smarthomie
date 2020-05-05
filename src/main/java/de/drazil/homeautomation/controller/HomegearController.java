@@ -41,8 +41,10 @@ import de.drazil.homeautomation.service.MessageService;
 import de.drazil.homeautomation.smartdevices.IHeatingDevice.HeatingMode;
 import de.drazil.homeautomation.smartdevices.IRemoteWallThermostat;
 import de.drazil.homeautomation.smartdevicesimpl.homematic.HomematicRemoteRadiatorThermostat;
+import lombok.extern.slf4j.Slf4j;
 
 @Controller
+@Slf4j
 public class HomegearController {
 	@Autowired
 	private HomegearService homegearService;
@@ -142,7 +144,7 @@ public class HomegearController {
 				fos.close();
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.error("error taking camera snapshot", e);
 		}
 		return rw;
 	}
@@ -155,6 +157,7 @@ public class HomegearController {
 			rw.setMessage("Succesfully got data");
 			rw.setSuccessful(true);
 		} catch (Throwable e) {
+			log.error("error getting remote wall thermostat list", e);
 			rw.setData(null);
 			rw.setSuccessful(false);
 			rw.setMessage(e.getMessage());
@@ -170,7 +173,7 @@ public class HomegearController {
 			rw.setMessage("Succesfully got data");
 			rw.setSuccessful(true);
 		} catch (Throwable e) {
-			e.printStackTrace();
+			log.error("error getting remote radiator thermostat list", e);
 			rw.setData(null);
 			rw.setSuccessful(false);
 			rw.setMessage(e.getMessage());
@@ -186,6 +189,7 @@ public class HomegearController {
 			rw.setMessage("Succesfully got data");
 			rw.setSuccessful(true);
 		} catch (Throwable e) {
+			log.error("error getting remote valve drive list", e);
 			rw.setData(null);
 			rw.setSuccessful(false);
 			rw.setMessage(e.getMessage());
@@ -201,6 +205,7 @@ public class HomegearController {
 			rw.setMessage("Succesfully got data");
 			rw.setSuccessful(true);
 		} catch (Throwable e) {
+			log.error("error getting remote outdoor weather sensor list", e);
 			rw.setData(null);
 			rw.setSuccessful(false);
 			rw.setMessage(e.getMessage());
@@ -221,6 +226,7 @@ public class HomegearController {
 		try {
 			resultList = homegearService.getWeatherSensorList();
 		} catch (Throwable e) {
+			log.error("error getting waether sensor list", e);
 			rw.setData(null);
 			rw.setSuccessful(false);
 			rw.setMessage(e.getMessage());
@@ -234,7 +240,7 @@ public class HomegearController {
 		try {
 			resultList = homegearService.getRemoteSwitchList();
 		} catch (Throwable e) {
-			e.printStackTrace();
+			log.error("error getting switch list", e);
 		}
 		return resultList;
 	}
@@ -247,7 +253,7 @@ public class HomegearController {
 			rw.setMessage("Succesfully set state");
 			rw.setSuccessful(true);
 		} catch (Throwable e) {
-			e.printStackTrace();
+			log.error("error getting boiler state", e);
 			rw.setData(null);
 			rw.setSuccessful(false);
 			rw.setMessage(e.getMessage());
@@ -263,7 +269,7 @@ public class HomegearController {
 			rw.setMessage("Succesfully get temperature of channel " + channel + " / " + value);
 			rw.setSuccessful(true);
 		} catch (Throwable e) {
-			e.printStackTrace();
+			log.error("error getting boiler temperature channel", e);
 			rw.setData(null);
 			rw.setSuccessful(false);
 			rw.setMessage(e.getMessage());
@@ -279,7 +285,7 @@ public class HomegearController {
 			rw.setMessage("Succesfully set state");
 			rw.setSuccessful(true);
 		} catch (Throwable e) {
-			e.printStackTrace();
+			log.error("error switchting light on location", e);
 			rw.setData(null);
 			rw.setSuccessful(false);
 			rw.setMessage(e.getMessage());
@@ -295,7 +301,7 @@ public class HomegearController {
 			rw.setMessage("Succesfully set state");
 			rw.setSuccessful(true);
 		} catch (Throwable e) {
-			e.printStackTrace();
+			log.error("error switchting all lights", e);
 			rw.setData(null);
 			rw.setSuccessful(false);
 			rw.setMessage(e.getMessage());
@@ -311,7 +317,7 @@ public class HomegearController {
 			rw.setMessage("Succesfully set heating mode");
 			rw.setSuccessful(true);
 		} catch (Throwable e) {
-			e.printStackTrace();
+			log.error("error setting heating mode", e);
 			rw.setData(null);
 			rw.setSuccessful(false);
 			rw.setMessage(e.getMessage());
@@ -329,7 +335,7 @@ public class HomegearController {
 			rw.setMessage("Succesfully set heating mode");
 			rw.setSuccessful(true);
 		} catch (Throwable e) {
-			e.printStackTrace();
+			log.error("error setting temperature", e);
 			rw.setSuccessful(false);
 			rw.setMessage("setting new temperture of [" + serialNo + "] failed.");
 		}
@@ -346,7 +352,7 @@ public class HomegearController {
 			rw.setMessage("Succesfully set heating mode");
 			rw.setSuccessful(true);
 		} catch (Throwable e) {
-			e.printStackTrace();
+			log.error("error unlocking thermosatat keys", e);
 			rw.setSuccessful(false);
 			rw.setMessage("setting new temperture of [" + serialNo + "] failed.");
 		}
@@ -372,7 +378,7 @@ public class HomegearController {
 			rw.setMessage("Succesfully got messages");
 			rw.setSuccessful(true);
 		} catch (Throwable e) {
-			e.printStackTrace();
+			log.error("error getting event messages", e);
 			rw.setSuccessful(false);
 			rw.setMessage("getting event data failed.");
 		}
@@ -389,7 +395,7 @@ public class HomegearController {
 			rw.setMessage("Succesfully got events");
 			rw.setSuccessful(true);
 		} catch (Throwable e) {
-			e.printStackTrace();
+			log.error("error getting upcoming events", e);
 			rw.setSuccessful(false);
 			rw.setMessage("getting event data failed.");
 		}
@@ -399,7 +405,7 @@ public class HomegearController {
 	@GetMapping("/tasmotaresponse/{button}")
 	public @ResponseBody ResponseWrapper tasmotaresponse(@PathVariable String button) {
 		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
-		System.out.println(button + " activated");
+		log.info("tasmota button");
 		return rw;
 	}
 	/*
