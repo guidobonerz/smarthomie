@@ -32,7 +32,7 @@ public interface IHmAttributes {
     public static final String MANU_MODE = "MANU_MODE";
     public static final String BOOST_MODE = "BOOST_MODE";
     public static final String WEEK_PROGRAM_POINTER = "WEEK_PROGRAM_POINTER";
-    public static final String WEEK_PROGRGLOBAL_BUTTON_LOCKAM_POINTER = "GLOBAL_BUTTON_LOCK";
+    public static final String GLOBAL_BUTTON_LOCK = "GLOBAL_BUTTON_LOCK";
     public static final String BUTTON_LOCK = "BUTTON_LOCK";
     public static final String BURST_RX = "BURST_RX";
     public static final String PREFIX_P1 = "PREFIX_P1";
