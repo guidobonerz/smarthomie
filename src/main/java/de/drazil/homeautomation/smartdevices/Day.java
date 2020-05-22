@@ -8,7 +8,7 @@ public enum Day {
 
 	private final String name;
 
-	Day(String name) {
+	Day(final String name) {
 		this.name = name;
 	}
 

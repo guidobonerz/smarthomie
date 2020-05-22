@@ -23,8 +23,8 @@ public class Device {
 	private String description;
 	@XmlAttribute
 	private String adapterClassName;
-	public Integer peerId;
-	public String serialNo;
+	private Integer peerId;
+	private String serialNo;
 	@XmlElement(name = "types")
 	@XmlJavaTypeAdapter(TypeListAdapter.class)
 	private Map<String, Type> typeMap;
@@ -33,7 +33,7 @@ public class Device {
 		typeMap = new LinkedHashMap<String, Type>();
 	}
 
-	public void add(Type type) {
+	public void add(final Type type) {
 		typeMap.put(type.getId(), type);
 	}
 }

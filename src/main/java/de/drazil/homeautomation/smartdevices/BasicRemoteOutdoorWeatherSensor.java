@@ -7,27 +7,27 @@ public class BasicRemoteOutdoorWeatherSensor extends BasicSmartDevice
 
 	public Integer getSignalStrength() throws Throwable
 	{
-		return getValue("RSSI_DEVICE");
+		return getValue(RSSI_DEVICE);
 	}
 
 	public Boolean hasLowBattery() throws Throwable
 	{
-		return getValue("LOWBAT");
+		return getValue(LOWBAT);
 	}
 
 	public Boolean isUnreachable() throws Throwable
 	{
-		return getValue("UNREACH");
+		return getValue(UNREACH);
 	}
 
 	public Number getCurrentTemperature() throws Throwable
 	{
-		return getValue("TEMPERATURE");
+		return getValue(TEMPERATURE);
 	}
 
 	public Integer getHumidity() throws Throwable
 	{
-		return getValue("HUMIDITY");
+		return getValue(HUMIDITY);
 	}
 
 	public Double getBatteryValue() throws Throwable

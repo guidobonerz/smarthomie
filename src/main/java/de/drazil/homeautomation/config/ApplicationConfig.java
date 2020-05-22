@@ -1,24 +1,23 @@
 package de.drazil.homeautomation.config;
 
+import com.googlecode.jsonrpc4j.spring.AutoJsonRpcServiceImplExporter;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
-
-import com.googlecode.jsonrpc4j.spring.AutoJsonRpcServiceImplExporter;
 
 @Configuration
 public class ApplicationConfig {
 
 	@Bean
 	public static AutoJsonRpcServiceImplExporter autoJsonRpcServiceImplExporter() {
-		AutoJsonRpcServiceImplExporter exp = new AutoJsonRpcServiceImplExporter();
-		return exp;
+		return new AutoJsonRpcServiceImplExporter();
 	}
 
 	@Bean
 	public TaskScheduler taskScheduler() {
-		ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
+		final ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
 		scheduler.setThreadNamePrefix("myScheduler-");
 		scheduler.setPoolSize(100);
 		// block spring context stopping to allow SI pollers to complete

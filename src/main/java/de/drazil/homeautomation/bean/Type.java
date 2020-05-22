@@ -23,10 +23,10 @@ public class Type {
 	private Map<String, DeviceField> deviceFieldMap;
 
 	public Type() {
-		deviceFieldMap = new LinkedHashMap<String, DeviceField>();
+		deviceFieldMap = new LinkedHashMap<>();
 	}
 
-	public void add(DeviceField deviceField) {
+	public void add(final DeviceField deviceField) {
 		deviceFieldMap.put(deviceField.getId(), deviceField);
 	}
 }

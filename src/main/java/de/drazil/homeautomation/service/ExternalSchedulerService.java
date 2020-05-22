@@ -27,20 +27,20 @@ public class ExternalSchedulerService {
 	@Autowired
 	private ExternalSchedulerDao dao;
 
-	public boolean checkGroup(String groupId) {
+	public boolean checkGroup(final String groupId) {
 		return dao.checkGroup(groupId);
 	}
 
-	public void removeEventByCalenderName(String calenderName) {
+	public void removeEventByCalenderName(final String calenderName) {
 		dao.removeEventByCalenderName(calenderName);
 	}
 
-	public void addEvent(String groupId, String start_rule, String end_rule, String description, boolean allDayEvent,
-			int categoryId, int actionId) {
+	public void addEvent(final String groupId, final String start_rule, final String end_rule, final String description,
+			final boolean allDayEvent, final int categoryId, final int actionId) {
 		dao.addEvent(groupId, start_rule, end_rule, description, allDayEvent, categoryId, actionId);
 	}
 
-	public void addOrUpdateDynamicEvent(String id, String target_date) {
+	public void addOrUpdateDynamicEvent(final String id, final String target_date) {
 		dao.addOrUpdateDynamicEvent(id, target_date);
 	}
 
@@ -48,56 +48,56 @@ public class ExternalSchedulerService {
 		return dao.getEventList();
 	}
 
-	public DynamicEvent getDynamicEventById(String id) {
+	public DynamicEvent getDynamicEventById(final String id) {
 		return dao.getDynamicEventById(id);
 	}
 
-	public List<Event> getUpcomingEventList(int from, int to) {
+	public List<Event> getUpcomingEventList(final int from, final int to) {
 		return dao.getUpcomingEventList(from, to);
 	}
 
-	public List<Event> getUpcomingEventList(String events[]) {
+	public List<Event> getUpcomingEventList(final String events[]) {
 		return dao.getUpcomingEventList(events);
 	}
 
-	public List<Event> getUpcomingEventActionList(String events[]) {
+	public List<Event> getUpcomingEventActionList(final String events[]) {
 		return dao.getUpcomingEventActionList(events);
 	}
 
-	public String readDataFromUrl(String url) {
+	public String readDataFromUrl(final String url) {
 
 		String result = null;
-		HttpClient client = HttpClientBuilder.create().build();
-		HttpGet request = new HttpGet(url);
+		final HttpClient client = HttpClientBuilder.create().build();
+		final HttpGet request = new HttpGet(url);
 		try {
-			HttpResponse response = client.execute(request);
-			int errorCode = response.getStatusLine().getStatusCode();
-			if (errorCode ==200) {
-				HttpEntity entity = response.getEntity();
+			final HttpResponse response = client.execute(request);
+			final int errorCode = response.getStatusLine().getStatusCode();
+			if (errorCode == 200) {
+				final HttpEntity entity = response.getEntity();
 				result = EntityUtils.toString(entity);
 			}
 			// log.info(result);
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 		}
 		return result;
 	}
 
-	public Timestamp getJavaTimestampFromUnixTimestamp(String epochTime) {
-		long epoch = Double.valueOf(epochTime).longValue();
-		Timestamp date = new Timestamp(epoch * 1000);
+	public Timestamp getJavaTimestampFromUnixTimestamp(final String epochTime) {
+		final long epoch = Double.valueOf(epochTime).longValue();
+		final Timestamp date = new Timestamp(epoch * 1000);
 		return date;
 	}
 
-	public Date getJavaDateFromUnixTimestamp(String epochTime) {
-		long epoch = Double.valueOf(epochTime).longValue();
-		Date date = new Date(epoch * 1000);
+	public Date getJavaDateFromUnixTimestamp(final String epochTime) {
+		final long epoch = Double.valueOf(epochTime).longValue();
+		final Date date = new Date(epoch * 1000);
 		return date;
 	}
 
-	public Time getJavaTimeFromUnixTimestamp(String epochTime) {
-		long epoch = Double.valueOf(epochTime).longValue();
-		Time date = new Time(epoch * 1000);
+	public Time getJavaTimeFromUnixTimestamp(final String epochTime) {
+		final long epoch = Double.valueOf(epochTime).longValue();
+		final Time date = new Time(epoch * 1000);
 		return date;
 	}
 

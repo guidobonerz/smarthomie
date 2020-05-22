@@ -9,65 +9,65 @@ import de.drazil.homeautomation.smartdevices.IHeatingDevice.HeatingMode;
 
 public abstract class BasicRemoteThermostat extends BasicSmartDevice {
 	public Number getBatteryValue() throws Throwable {
-		return getValue("BATTERY_STATE");
+		return getValue(BATTERY_STATE);
 	}
 
 	public Integer getControlMode() throws Throwable {
 
-		return getValue("CONTROL_MODE");
+		return getValue(CONTROL_MODE);
 	}
 
-	public void setControlMode(HeatingMode mode) throws Throwable {
+	public void setControlMode(final HeatingMode mode) throws Throwable {
 		setControlMode(mode, 18.0);
 	}
 
-	public void setControlMode(HeatingMode mode, Double temperature) throws Throwable {
+	public void setControlMode(final HeatingMode mode, final Double temperature) throws Throwable {
 		switch (mode) {
-		case AUTO:
-			setValue("AUTO_MODE", new Boolean(true));
-			break;
-		case MANUAL:
-			setValue("MANU_MODE", temperature);
-			break;
-		case PARTY:
-			setValue("AUTO_MODE", new Boolean(true));
-			break;
-		case BOOST:
-			setValue("BOOST_MODE", new Boolean(true));
-			break;
+			case AUTO:
+				setValue(AUTO_MODE, Boolean.TRUE);
+				break;
+			case MANUAL:
+				setValue(MANU_MODE, temperature);
+				break;
+			case PARTY:
+				setValue(AUTO_MODE, Boolean.TRUE);
+				break;
+			case BOOST:
+				setValue(BOOST_MODE, Boolean.TRUE);
+				break;
 		}
 
 	}
 
 	public Number getCurrentTemperature() throws Throwable {
-		return getValue("ACTUAL_TEMPERATURE");
+		return getValue(ACTUAL_TEMPERATURE);
 	}
 
 	public Number getDesiredTemperature() throws Throwable {
-		return getValue("SET_TEMPERATURE");
+		return getValue(SET_TEMPERATURE);
 	}
 
 	public Integer getSignalStrength() throws Throwable {
-		return getValue("RSSI_DEVICE");
+		return getValue(RSSI_DEVICE);
 	}
 
 	public Boolean hasLowBattery() throws Throwable {
-		return getValue("LOWBAT");
+		return getValue(LOWBAT);
 	}
 
 	public Boolean isUnreachable() throws Throwable {
-		return getValue("UNREACH");
+		return getValue(UNREACH);
 	}
 
- 	public void setHeatingProfile(HeatingProfile... profiles) throws Throwable {
+	public void setHeatingProfile(final HeatingProfile... profiles) throws Throwable {
 		setHeatingProfile(WeekProgram.WEEK_PROGRAM_1, true, profiles);
 	}
 
-	public void setHeatingProfile(WeekProgram weekProgram, boolean activateProfile, HeatingProfile... profiles)
-			throws Throwable {
-		Map<String, Object> parameterSet = new LinkedHashMap<>();
+	public void setHeatingProfile(final WeekProgram weekProgram, final boolean activateProfile,
+			final HeatingProfile... profiles) throws Throwable {
+		final Map<String, Object> parameterSet = new LinkedHashMap<>();
 
-		for (HeatingProfile profile : profiles) {
+		for (final HeatingProfile profile : profiles) {
 
 			if (profile == null || profile.getHeatingPhases().size() == 0)
 				return;
@@ -88,43 +88,44 @@ public abstract class BasicRemoteThermostat extends BasicSmartDevice {
 
 			if (isWallThermostat()) {
 				switch (weekProgram) {
-				case WEEK_PROGRAM_1:
-					prefix = "P1_";
-					break;
-				case WEEK_PROGRAM_2:
-					prefix = "P2_";
-					break;
-				case WEEK_PROGRAM_3:
-					prefix = "P3_";
-					break;
+					case WEEK_PROGRAM_1:
+						prefix = PREFIX_P1;
+						break;
+					case WEEK_PROGRAM_2:
+						prefix = PREFIX_P2;
+						break;
+					case WEEK_PROGRAM_3:
+						prefix = PREFIX_P3;
+						break;
 				}
-				parameterSet.put("WEEK_PROGRAM_POINTER", weekProgram.getName());
+				parameterSet.put(WEEK_PROGRAM_POINTER, weekProgram.getName());
 			}
 
-			for (Day day : days) {
+			for (final Day day : days) {
 				int i = 1;
 				HeatingPhase lastPhase = null;
 
-				for (HeatingPhase phase : profile.getHeatingPhases()) {
-					String startTime = phase.getStartTime();
-					String startTimeArray[] = startTime.split(":");
+				for (final HeatingPhase phase : profile.getHeatingPhases()) {
+					final String startTime = phase.getStartTime();
+					final String startTimeArray[] = startTime.split(":");
 
-					int startTimeMinutes = (Integer.valueOf(startTimeArray[0]) * 60)
+					final int startTimeMinutes = (Integer.valueOf(startTimeArray[0]) * 60)
 							+ Integer.valueOf(startTimeArray[1]);
-					int endTimeMinutes = 1440; // 24:00
+					final int endTimeMinutes = 1440; // 24:00
 
-					parameterSet.put(prefix + "STARTTIME_" + day.getName() + "_" + i, startTimeMinutes);
-					parameterSet.put(prefix + "ENDTIME_" + day.getName() + "_" + i, endTimeMinutes);
-					parameterSet.put(prefix + "TEMPERATURE_" + day.getName() + "_" + i, phase.getDesiredTemperature());
+					parameterSet.put(prefix + STARTTIME_PART + day.getName() + "_" + i, startTimeMinutes);
+					parameterSet.put(prefix + ENDTIME_PART + day.getName() + "_" + i, endTimeMinutes);
+					parameterSet.put(prefix + TEMPERATURE_PART + day.getName() + "_" + i,
+							phase.getDesiredTemperature());
 					if (lastPhase != null) {
-						parameterSet.put(prefix + "ENDTIME_" + day.getName() + "_" + (i - 1), startTimeMinutes);
+						parameterSet.put(prefix + ENDTIME_PART + day.getName() + "_" + (i - 1), startTimeMinutes);
 					}
 					lastPhase = phase;
 					i++;
 				}
 			}
 
-			putParamset("CHANNEL0", "master", parameterSet);
+			putParamset(CHANNEL0, "master", parameterSet);
 
 			if (activateProfile) {
 				setControlMode(HeatingMode.AUTO);
@@ -134,23 +135,23 @@ public abstract class BasicRemoteThermostat extends BasicSmartDevice {
 
 	public abstract boolean isWallThermostat();
 
-	public Boolean isLocked(Boolean global) throws Throwable {
+	public Boolean isLocked(final Boolean global) throws Throwable {
 		return false;
 	}
 
-	public void setLocked(Boolean state) throws Throwable {
+	public void setLocked(final Boolean state) throws Throwable {
 		setLocked(state, true);
 	}
 
-	public void setLocked(Boolean state, Boolean global) throws Throwable {
-		Map<String, Object> parameterSet = new LinkedHashMap<>();
-		parameterSet.put(global ? "GLOBAL_BUTTON_LOCK" : "BUTTON_LOCK", state);
-		putParamset("CHANNEL0", "master", parameterSet);
+	public void setLocked(final Boolean state, final Boolean global) throws Throwable {
+		final Map<String, Object> parameterSet = new LinkedHashMap<>();
+		parameterSet.put(global ? GLOBAL_BUTTON_LOCK : BUTTON_LOCK, state);
+		putParamset(CHANNEL0, "master", parameterSet);
 	}
 
-	public void setWakeOnRadioEnabled(Boolean state) throws Throwable {
-		Map<String, Object> parameterSet = new LinkedHashMap<>();
-		parameterSet.put("BURST_RX", state);
-		putParamset("CHANNEL0", "master", parameterSet);
+	public void setWakeOnRadioEnabled(final Boolean state) throws Throwable {
+		final Map<String, Object> parameterSet = new LinkedHashMap<>();
+		parameterSet.put(BURST_RX, state);
+		putParamset(CHANNEL0, "master", parameterSet);
 	}
 }

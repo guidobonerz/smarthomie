@@ -3,15 +3,15 @@ package de.drazil.homeautomation.smartdevices;
 public class BasicTemperatureDifferenceSensor extends BasicSmartDevice implements IBatteryPowered {
 
 	public Integer getSignalStrength() throws Throwable {
-		return getValue("RSSI_DEVICE");
+		return getValue(RSSI_DEVICE);
 	}
 
 	public Boolean hasLowBattery() throws Throwable {
-		return getValue("LOWBAT");
+		return getValue(LOWBAT);
 	}
 
 	public Boolean isUnreachable() throws Throwable {
-		return getValue("UNREACH");
+		return getValue(UNREACH);
 	}
 
 	public Double getBatteryValue() throws Throwable {
@@ -19,6 +19,6 @@ public class BasicTemperatureDifferenceSensor extends BasicSmartDevice implement
 	}
 
 	public Number getTemperature(Integer channel) throws Throwable {
-		return getValue("TEMPERATURE", channel);
+		return getValue(TEMPERATURE, channel);
 	}
 }
