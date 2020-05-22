@@ -18,12 +18,11 @@ public class SessionUtil
 		return getHttpServletRequest().getSession();
 	}
 
-	public static void setSessionAttribute(String key, Object value)
-	{
+	public static void setSessionAttribute(final String key, final Object value) {
 		getSession().setAttribute(key, value);
 	}
 
-	public static Object getSessionAttribute(String key)
+	public static Object getSessionAttribute(final String key)
 	{
 		return getSession().getAttribute(key);
 	}

@@ -16,6 +16,7 @@ public interface IHmAttributes {
     public static final String HUMIDITY = "HUMIDITY";
     public static final String VALVE_STATE = "VALVE_STATE";
     public static final String ERROR = "ERROR";
+    public static final String SHOW_HUMIDITY = "SHOW_HUMIDITY";
     public static final String BUTTON_RESPONSE_WITHOUT_BACKLIGHT = "BUTTON_RESPONSE_WITHOUT_BACKLIGHT";
     public static final String BACKLIGHT_ON_TIME = "BACKLIGHT_ON_TIME";
     public static final String CHANNEL0 = "CHANNEL0";
