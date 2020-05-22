@@ -27,12 +27,11 @@ public class BasicOneWireDevice
 		return true;
 	}
 
-	protected <ValueType> ValueType getValue(String valueName) throws Exception
-	{
+	protected <ValueType> ValueType getValue(final String valueName) throws Exception {
 		return null;
 	}
 
-	protected <ValueType> void setValue(String valueName, ValueType value) throws Exception
+	protected <ValueType> void setValue(final String valueName, final ValueType value) throws Exception
 	{
 
 	}

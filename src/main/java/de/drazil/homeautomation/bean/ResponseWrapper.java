@@ -1,8 +1,10 @@
 package de.drazil.homeautomation.bean;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class ResponseWrapper {
@@ -12,15 +14,7 @@ public class ResponseWrapper {
 	private Object data = null;
 	private int total = -1;
 
-	public ResponseWrapper(boolean successful, String message) {
+	public ResponseWrapper(final boolean successful, final String message) {
 		this(successful, message, null, 0);
-	}
-
-	public ResponseWrapper(boolean successful, String message, Object data,
-			int total) {
-		this.successful = successful;
-		this.message = message;
-		this.data = data;
-		this.total = total;
 	}
 }

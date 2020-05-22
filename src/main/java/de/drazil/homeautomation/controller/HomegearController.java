@@ -26,8 +26,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
@@ -83,7 +81,7 @@ public class HomegearController {
 	}
 
 	@GetMapping("/dashboard")
-	public String dashboard(Model model) {
+	public String dashboard(final Model model) {
 		model.addAttribute("cameraEntranceIp", cameraEntranceIp);
 		model.addAttribute("cameraCorridorIp", cameraCorridorIp);
 		return "dashboard";
@@ -101,12 +99,12 @@ public class HomegearController {
 
 	@GetMapping("/snapshot")
 	@ResponseBody
-	public ResponseWrapper snapshot(@RequestParam(value = "deviceName", required = true) String deviceName) {
-		ResponseWrapper rw = new ResponseWrapper(false, "snapshot successfully taken");
+	public ResponseWrapper snapshot(@RequestParam(value = "deviceName", required = true) final String deviceName) {
+		final ResponseWrapper rw = new ResponseWrapper(false, "snapshot successfully taken");
 
-		String pattern = "yyyyddMM-HHmmss";
-		DateFormat df = new SimpleDateFormat(pattern);
-		Date today = Calendar.getInstance().getTime();
+		final String pattern = "yyyyddMM-HHmmss";
+		final DateFormat df = new SimpleDateFormat(pattern);
+		final Date today = Calendar.getInstance().getTime();
 
 		basePath = basePath.replace("{userhome}", System.getProperty("user.home"));
 
@@ -122,20 +120,20 @@ public class HomegearController {
 			}
 		}
 
-		HttpClient client = HttpClientBuilder.create().build();
+		final HttpClient client = HttpClientBuilder.create().build();
 
-		HttpGet request = new HttpGet("http://" + ipAddress + "/axis-cgi/jpg/image.cgi");
+		final HttpGet request = new HttpGet("http://" + ipAddress + "/axis-cgi/jpg/image.cgi");
 		try {
-			HttpResponse response = client.execute(request);
-			int errorCode = response.getStatusLine().getStatusCode();
+			final HttpResponse response = client.execute(request);
+			final int errorCode = response.getStatusLine().getStatusCode();
 			if (errorCode == 200) {
-				HttpEntity entity = response.getEntity();
-				InputStream is = entity.getContent();
-				FileSystem fs = FileSystems.getDefault();
-				Path path = fs.getPath(basePath, snapshotPath);
-				Path imageName = Paths.get(path.toString(), deviceName + "_" + df.format(today) + ".jpg");
+				final HttpEntity entity = response.getEntity();
+				final InputStream is = entity.getContent();
+				final FileSystem fs = FileSystems.getDefault();
+				final Path path = fs.getPath(basePath, snapshotPath);
+				final Path imageName = Paths.get(path.toString(), deviceName + "_" + df.format(today) + ".jpg");
 				Files.createDirectories(imageName.getParent());
-				FileOutputStream fos = new FileOutputStream(imageName.toFile());
+				final FileOutputStream fos = new FileOutputStream(imageName.toFile());
 				int inByte;
 				while ((inByte = is.read()) != -1) {
 					fos.write(inByte);
@@ -143,7 +141,7 @@ public class HomegearController {
 				is.close();
 				fos.close();
 			}
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			log.error("error taking camera snapshot", e);
 		}
 		return rw;
@@ -151,12 +149,12 @@ public class HomegearController {
 
 	@GetMapping(value = "/getRemoteWallThermostatList")
 	public @ResponseBody Object getRemoteWallThermostatList() {
-		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
+		final ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
 		try {
 			rw.setData(homegearService.getRemoteWallThermostatList());
 			rw.setMessage("Succesfully got data");
 			rw.setSuccessful(true);
-		} catch (Throwable e) {
+		} catch (final Throwable e) {
 			log.error("error getting remote wall thermostat list", e);
 			rw.setData(null);
 			rw.setSuccessful(false);
@@ -167,12 +165,12 @@ public class HomegearController {
 
 	@GetMapping(value = "/getRemoteRadiatorThermostatList")
 	public @ResponseBody Object getRemoteRadiatorThermostatList() {
-		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
+		final ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
 		try {
 			rw.setData(homegearService.getRemoteRadiatorThermostatList());
 			rw.setMessage("Succesfully got data");
 			rw.setSuccessful(true);
-		} catch (Throwable e) {
+		} catch (final Throwable e) {
 			log.error("error getting remote radiator thermostat list", e);
 			rw.setData(null);
 			rw.setSuccessful(false);
@@ -181,14 +179,14 @@ public class HomegearController {
 		return rw;
 	}
 
-	@RequestMapping(value = "/getRemoteValveDriveList", method = RequestMethod.GET)
+	@GetMapping(value = "/getRemoteValveDriveList")
 	public @ResponseBody Object getRemoteValveDriveList() {
-		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
+		final ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
 		try {
 			rw.setData(homegearService.getRemoteValveDriveList());
 			rw.setMessage("Succesfully got data");
 			rw.setSuccessful(true);
-		} catch (Throwable e) {
+		} catch (final Throwable e) {
 			log.error("error getting remote valve drive list", e);
 			rw.setData(null);
 			rw.setSuccessful(false);
@@ -199,12 +197,12 @@ public class HomegearController {
 
 	@GetMapping(value = "/getRemoteOutdoorWeatherSensorList")
 	public @ResponseBody Object getRemoteOutdoorWeatherSensorList() {
-		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
+		final ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
 		try {
 			rw.setData(homegearService.getRemoteOutdoorWeatherSensorList());
 			rw.setMessage("Succesfully got data");
 			rw.setSuccessful(true);
-		} catch (Throwable e) {
+		} catch (final Throwable e) {
 			log.error("error getting remote outdoor weather sensor list", e);
 			rw.setData(null);
 			rw.setSuccessful(false);
@@ -215,17 +213,17 @@ public class HomegearController {
 
 	@GetMapping(value = "/floorPlan")
 	public ModelAndView showGroundFloorPlan() {
-		ModelAndView mv = new ModelAndView("floor_plan");
+		final ModelAndView mv = new ModelAndView("floor_plan");
 		return mv;
 	}
 
 	@GetMapping(value = "/getWeatherSensors")
 	public @ResponseBody List<Map<String, Object>> getWeatherSensors() {
-		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
+		final ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
 		List<Map<String, Object>> resultList = null;
 		try {
 			resultList = homegearService.getWeatherSensorList();
-		} catch (Throwable e) {
+		} catch (final Throwable e) {
 			log.error("error getting waether sensor list", e);
 			rw.setData(null);
 			rw.setSuccessful(false);
@@ -239,20 +237,20 @@ public class HomegearController {
 		List<Map<String, Object>> resultList = null;
 		try {
 			resultList = homegearService.getRemoteSwitchList();
-		} catch (Throwable e) {
+		} catch (final Throwable e) {
 			log.error("error getting switch list", e);
 		}
 		return resultList;
 	}
 
 	@GetMapping(value = "/boiler/{state}")
-	public @ResponseBody ResponseWrapper setBoiler(@PathVariable boolean state) {
-		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
+	public @ResponseBody ResponseWrapper setBoiler(@PathVariable final boolean state) {
+		final ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
 		try {
 			homegearService.setBoilerState(1, state);
 			rw.setMessage("Succesfully set state");
 			rw.setSuccessful(true);
-		} catch (Throwable e) {
+		} catch (final Throwable e) {
 			log.error("error getting boiler state", e);
 			rw.setData(null);
 			rw.setSuccessful(false);
@@ -262,13 +260,13 @@ public class HomegearController {
 	}
 
 	@GetMapping(value = "/boiler/temperature/{channel}")
-	public @ResponseBody ResponseWrapper getBoilerTemperature(@PathVariable Integer channel) {
-		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
+	public @ResponseBody ResponseWrapper getBoilerTemperature(@PathVariable final Integer channel) {
+		final ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
 		try {
-			Double value = homegearService.getBoilerTemperature(channel).doubleValue();
+			final Double value = homegearService.getBoilerTemperature(channel).doubleValue();
 			rw.setMessage("Succesfully get temperature of channel " + channel + " / " + value);
 			rw.setSuccessful(true);
-		} catch (Throwable e) {
+		} catch (final Throwable e) {
 			log.error("error getting boiler temperature channel", e);
 			rw.setData(null);
 			rw.setSuccessful(false);
@@ -278,13 +276,14 @@ public class HomegearController {
 	}
 
 	@GetMapping(value = "/light/{location}/{state}")
-	public @ResponseBody ResponseWrapper setLight(@PathVariable String location, @PathVariable boolean state) {
-		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
+	public @ResponseBody ResponseWrapper setLight(@PathVariable final String location,
+			@PathVariable final boolean state) {
+		final ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
 		try {
 			homegearService.setLight(location, state);
 			rw.setMessage("Succesfully set state");
 			rw.setSuccessful(true);
-		} catch (Throwable e) {
+		} catch (final Throwable e) {
 			log.error("error switchting light on location", e);
 			rw.setData(null);
 			rw.setSuccessful(false);
@@ -294,13 +293,13 @@ public class HomegearController {
 	}
 
 	@GetMapping(value = "/lightAll/{state}")
-	public @ResponseBody ResponseWrapper setLight(@PathVariable boolean state) {
-		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
+	public @ResponseBody ResponseWrapper setLight(@PathVariable final boolean state) {
+		final ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
 		try {
 			homegearService.setLight(state);
 			rw.setMessage("Succesfully set state");
 			rw.setSuccessful(true);
-		} catch (Throwable e) {
+		} catch (final Throwable e) {
 			log.error("error switchting all lights", e);
 			rw.setData(null);
 			rw.setSuccessful(false);
@@ -310,13 +309,13 @@ public class HomegearController {
 	}
 
 	@GetMapping(value = "/heatingmode/{type}")
-	public @ResponseBody ResponseWrapper setHeatingMode(@PathVariable String type) {
-		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
+	public @ResponseBody ResponseWrapper setHeatingMode(@PathVariable final String type) {
+		final ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
 		try {
 			homegearService.setHeating(type);
 			rw.setMessage("Succesfully set heating mode");
 			rw.setSuccessful(true);
-		} catch (Throwable e) {
+		} catch (final Throwable e) {
 			log.error("error setting heating mode", e);
 			rw.setData(null);
 			rw.setSuccessful(false);
@@ -326,15 +325,15 @@ public class HomegearController {
 	}
 
 	@GetMapping(value = "/setManualTemperature/{serialNo}/{temperature}")
-	public @ResponseBody ResponseWrapper setManualTemperture(@PathVariable String serialNo,
-			@PathVariable double temperature) {
-		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
+	public @ResponseBody ResponseWrapper setManualTemperture(@PathVariable final String serialNo,
+			@PathVariable final double temperature) {
+		final ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
 		try {
 			homegearService.getSmartDevicebySerialNo(serialNo, IRemoteWallThermostat.class)
 					.setControlMode(HeatingMode.MANUAL, (temperature / 10));
 			rw.setMessage("Succesfully set heating mode");
 			rw.setSuccessful(true);
-		} catch (Throwable e) {
+		} catch (final Throwable e) {
 			log.error("error setting temperature", e);
 			rw.setSuccessful(false);
 			rw.setMessage("setting new temperture of [" + serialNo + "] failed.");
@@ -344,14 +343,14 @@ public class HomegearController {
 	}
 
 	@GetMapping(value = "/unlockKey/{serialNo}")
-	public @ResponseBody ResponseWrapper unlockKey(@PathVariable String serialNo) {
-		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
+	public @ResponseBody ResponseWrapper unlockKey(@PathVariable final String serialNo) {
+		final ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
 		try {
 			homegearService.getSmartDevicebySerialNo(serialNo, HomematicRemoteRadiatorThermostat.class).setLocked(false,
 					false);
 			rw.setMessage("Succesfully set heating mode");
 			rw.setSuccessful(true);
-		} catch (Throwable e) {
+		} catch (final Throwable e) {
 			log.error("error unlocking thermosatat keys", e);
 			rw.setSuccessful(false);
 			rw.setMessage("setting new temperture of [" + serialNo + "] failed.");
@@ -361,23 +360,21 @@ public class HomegearController {
 
 	@GetMapping(value = "/motion_detection")
 	public String motionDetection() {
-
-		System.out.println("message received");
-
-		return new String("HTTP/1.0 200 OK\r\n\n" + "Content-Type: text/plain\n\n" + "\n");
+		log.debug("message received");
+		return "HTTP/1.0 200 OK\r\n\nContent-Type: text/plain\n\n\n";
 	}
 
 	@GetMapping(value = "/getMessages")
 	public @ResponseBody ResponseWrapper getMessages() {
 
-		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
+		final ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
 		try {
-			List<Message> list = messageService.getMessageList();
+			final List<Message> list = messageService.getMessageList();
 			rw.setData(list);
 			rw.setTotal(list.size());
 			rw.setMessage("Succesfully got messages");
 			rw.setSuccessful(true);
-		} catch (Throwable e) {
+		} catch (final Exception e) {
 			log.error("error getting event messages", e);
 			rw.setSuccessful(false);
 			rw.setMessage("getting event data failed.");
@@ -387,14 +384,14 @@ public class HomegearController {
 
 	@GetMapping("/getEvents")
 	public @ResponseBody ResponseWrapper getEvents() {
-		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
+		final ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
 		try {
-			List<Event> list = service.getUpcomingEventList(new String[] { "today", "tomorrow", "upcoming" });
+			final List<Event> list = service.getUpcomingEventList(new String[] { "today", "tomorrow", "upcoming" });
 			rw.setData(list);
 			rw.setTotal(list.size());
 			rw.setMessage("Succesfully got events");
 			rw.setSuccessful(true);
-		} catch (Throwable e) {
+		} catch (final Exception e) {
 			log.error("error getting upcoming events", e);
 			rw.setSuccessful(false);
 			rw.setMessage("getting event data failed.");
@@ -403,8 +400,8 @@ public class HomegearController {
 	}
 
 	@GetMapping("/tasmotaresponse/{button}")
-	public @ResponseBody ResponseWrapper tasmotaresponse(@PathVariable String button) {
-		ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
+	public @ResponseBody ResponseWrapper tasmotaresponse(@PathVariable final String button) {
+		final ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
 		log.info("tasmota button");
 		return rw;
 	}

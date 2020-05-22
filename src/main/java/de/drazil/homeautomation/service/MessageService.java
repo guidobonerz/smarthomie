@@ -17,8 +17,8 @@ public class MessageService {
 	}
 
 	public List<Message> getMessageList() {
-		List<Message> list = new ArrayList<>(messageList);
-		for (Message event : list) {
+		final List<Message> list = new ArrayList<>(messageList);
+		for (final Message event : list) {
 			messageList.remove(event);
 		}
 		return list;
@@ -28,7 +28,7 @@ public class MessageService {
 		return messageList.size();
 	}
 
-	public void addMessage(Message message) {
+	public void addMessage(final Message message) {
 		messageList.add(message);
 	}
 }

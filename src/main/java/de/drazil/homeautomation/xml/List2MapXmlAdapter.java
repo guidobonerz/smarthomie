@@ -16,29 +16,24 @@ public abstract class List2MapXmlAdapter<LP extends ListProvider<Value>, Value> 
 	protected abstract LP createListProvider();
 
 	@Override
-	public Map<String, Value> unmarshal(LP listProvider) throws Exception
-	{
-		if (null == listProvider)
-		{
+	public Map<String, Value> unmarshal(final LP listProvider) throws Exception {
+		if (null == listProvider) {
 			return null;
 		}
-		Map<String, Value> map = new LinkedHashMap<String, Value>(listProvider.getList().size());
-		for (Value value : listProvider.getList())
-		{
+		final Map<String, Value> map = new LinkedHashMap<>(listProvider.getList().size());
+		for (final Value value : listProvider.getList()) {
 			map.put(getKey(value), value);
 		}
 		return map;
 	}
 
 	@Override
-	public LP marshal(Map<String, Value> map) throws Exception
-	{
-		if (null == map)
-		{
+	public LP marshal(final Map<String, Value> map) throws Exception {
+		if (null == map) {
 			return null;
 		}
-		LP listProvider = createListProvider();
-		for (Entry<String, Value> entry : map.entrySet())
+		final LP listProvider = createListProvider();
+		for (final Entry<String, Value> entry : map.entrySet())
 		{
 			listProvider.getList().add(entry.getValue());
 		}

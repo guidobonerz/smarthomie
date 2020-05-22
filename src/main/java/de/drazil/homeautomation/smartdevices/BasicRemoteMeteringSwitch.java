@@ -2,49 +2,49 @@ package de.drazil.homeautomation.smartdevices;
 
 public class BasicRemoteMeteringSwitch extends BasicSmartDevice {
 	public Double getCurrent() throws Throwable {
-		return getValue("CURRENT");
+		return getValue(CURRENT);
 	}
 
 	public Double getFrequency() throws Throwable {
-		return getValue("FREQUENCY");
+		return getValue(FREQUENCY);
 	}
 
 	public Double getVoltage() throws Throwable {
-		return getValue("VOLTAGE");
+		return getValue(VOLTAGE);
 	}
 
 	public Double getPower() throws Throwable {
-		return getValue("POWER");
+		return getValue(POWER);
 	}
 
-	public void setState(Boolean state) throws Throwable {
-		setValue("STATE", state);
+	public void setState(final Boolean state) throws Throwable {
+		setValue(STATE, state);
 	}
 
-	public void setState(Integer channel, Boolean state) throws Throwable {
-		setValue("STATE", state, channel);
+	public void setState(final Integer channel, final Boolean state) throws Throwable {
+		setValue(STATE, state, channel);
 	}
 
 	public Boolean getState() throws Throwable {
-		return getValue("STATE");
+		return getValue(STATE);
 	}
 
-	public Boolean getState(Integer channel) throws Throwable {
-		return getValue("STATE", channel);
+	public Boolean getState(final Integer channel) throws Throwable {
+		return getValue(STATE, channel);
 	}
 
 	public Integer getSignalStrength() throws Throwable {
 
-		return getValue("RSSI_DEVICE");
+		return getValue(RSSI_DEVICE);
 	}
 
 	public Boolean hasLowBattery() throws Throwable {
 
-		return getValue("LOWBAT");
+		return getValue(LOWBAT);
 	}
 
 	public Boolean isUnreachable() throws Throwable {
 
-		return getValue("UNREACH");
+		return getValue(UNREACH);
 	}
 }

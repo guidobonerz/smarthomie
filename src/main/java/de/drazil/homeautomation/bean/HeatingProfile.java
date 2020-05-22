@@ -15,11 +15,11 @@ public class HeatingProfile {
 	private Day days[];
 	private List<HeatingPhase> heatingPhases;
 
-	public HeatingProfile(List<HeatingPhase> heatingPhases) {
+	public HeatingProfile(final List<HeatingPhase> heatingPhases) {
 		this(Day.ALL_DAYS, heatingPhases);
 	}
 
-	public HeatingProfile(Day day, List<HeatingPhase> heatingPhases) {
+	public HeatingProfile(final Day day, final List<HeatingPhase> heatingPhases) {
 		this.heatingPhases = heatingPhases;
 		days = new Day[] { day };
 	}

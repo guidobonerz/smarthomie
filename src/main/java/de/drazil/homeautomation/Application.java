@@ -8,16 +8,14 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableScheduling
-
 public class Application extends SpringBootServletInitializer {
 
-	public static void main(String[] args) {
-		// ApiContextInitializer.init();
-		SpringApplication.run(Application.class, args);
+	public static void main(final String[] args) {
+		SpringApplication.run(Application.class);
 	}
 
 	@Override
-	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+	protected SpringApplicationBuilder configure(final SpringApplicationBuilder application) {
 		return application.sources(Application.class);
 	}
 }

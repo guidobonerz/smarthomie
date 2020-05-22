@@ -23,7 +23,7 @@ public class TypeListAdapter extends List2MapXmlAdapter<TypeListProvider, Type> 
 	}
 
 	@Override
-	protected String getKey(Type value) {
+	protected String getKey(final Type value) {
 		return value.getId();
 	}
 }

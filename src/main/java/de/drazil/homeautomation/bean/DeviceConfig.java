@@ -15,20 +15,17 @@ import lombok.Data;
 @Data
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class DeviceConfig
-{
+public class DeviceConfig {
 
 	@XmlElement(name = "devices")
 	@XmlJavaTypeAdapter(DeviceListAdapter.class)
 	private Map<String, Device> deviceMap;
 
-	public DeviceConfig()
-	{
-		deviceMap = new LinkedHashMap<String, Device>();
+	public DeviceConfig() {
+		deviceMap = new LinkedHashMap<>();
 	}
 
-	public void add(Device device)
-	{
+	public void add(final Device device) {
 		deviceMap.put(device.getId(), device);
 	}
 }

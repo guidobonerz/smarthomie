@@ -24,7 +24,7 @@ public class DeviceFieldListAdapter extends
 	}
 
 	@Override
-	protected String getKey(DeviceField value) {
+	protected String getKey(final DeviceField value) {
 		return value.getId();
 	}
 }

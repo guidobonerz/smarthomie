@@ -64,7 +64,7 @@ public class ExternalScheduler {
 		return () -> {
 			try {
 				homegearDeviceService.getRemoteMeteringSwitchBySerialNo("LEQ0531814").setState(true);
-			} catch (Throwable e) {
+			} catch (final Throwable e) {
 				log.error("could not switch on floor lamp");
 			}
 		};
@@ -74,7 +74,7 @@ public class ExternalScheduler {
 		return () -> {
 			try {
 				homegearDeviceService.getRemoteMeteringSwitchBySerialNo("LEQ0531814").setState(false);
-			} catch (Throwable e) {
+			} catch (final Throwable e) {
 				log.error("could not switch off floor lamp");
 			}
 		};
@@ -84,7 +84,7 @@ public class ExternalScheduler {
 		return () -> {
 			try {
 				homegearDeviceService.getRemoteSwitchBySerialNo("OEQ0479803").setState(true);
-			} catch (Throwable e) {
+			} catch (final Throwable e) {
 				log.error("could not switch on livingroom lamp");
 			}
 		};
@@ -94,7 +94,7 @@ public class ExternalScheduler {
 		return () -> {
 			try {
 				homegearDeviceService.getRemoteSwitchBySerialNo("OEQ0479803").setState(false);
-			} catch (Throwable e) {
+			} catch (final Throwable e) {
 				log.error("could not switch off livingroom lamp");
 			}
 		};
@@ -107,24 +107,24 @@ public class ExternalScheduler {
 	}
 
 	private void buildScheduler() {
-		List<Event> eventList = service.getEventList();
-		for (Event event : eventList) {
+		final List<Event> eventList = service.getEventList();
+		for (final Event event : eventList) {
 			processEvent(event);
 			if (event.getDescription().equals("FloorLamp")) {
-				LocalDateTime start = LocalDateTime.parse(event.getStartRule(), dateTimeFormatter);
-				LocalDateTime end = LocalDateTime.parse(event.getEndRule(), dateTimeFormatter);
+				final LocalDateTime start = LocalDateTime.parse(event.getStartRule(), dateTimeFormatter);
+				final LocalDateTime end = LocalDateTime.parse(event.getEndRule(), dateTimeFormatter);
 				taskScheduler.schedule(floorlampOn(), ZonedDateTime.of(start, ZoneId.of(timezone)).toInstant());
 				taskScheduler.schedule(floorlampOff(), ZonedDateTime.of(end, ZoneId.of(timezone)).toInstant());
 			} else if (event.getDescription().equals("LivingRoomLamp")) {
-				LocalDateTime start = LocalDateTime.parse(event.getStartRule(), dateTimeFormatter);
-				LocalDateTime end = LocalDateTime.parse(event.getEndRule(), dateTimeFormatter);
+				final LocalDateTime start = LocalDateTime.parse(event.getStartRule(), dateTimeFormatter);
+				final LocalDateTime end = LocalDateTime.parse(event.getEndRule(), dateTimeFormatter);
 				taskScheduler.schedule(livingroolLampOn(), ZonedDateTime.of(start, ZoneId.of(timezone)).toInstant());
 				taskScheduler.schedule(livingroolLampOff(), ZonedDateTime.of(end, ZoneId.of(timezone)).toInstant());
 			}
 		}
 	}
 
-	private void processEvent(Event event) {
+	private void processEvent(final Event event) {
 		if (event.getStartRule() != null) {
 			event.setStartRule(getPatchedRule(event.getStartRule()));
 		}
@@ -133,9 +133,9 @@ public class ExternalScheduler {
 		}
 	}
 
-	private String getPatchedRule(String rule) {
+	private String getPatchedRule(final String rule) {
 		String patchedRule = rule;
-		DynamicEvent de = service.getDynamicEventById(rule);
+		final DynamicEvent de = service.getDynamicEventById(rule);
 
 		if (de != null) {
 			patchedRule = LocalDateTime.parse(de.getTargetDate(), dateTimeFormatter).format(dateTimeFormatter);
@@ -156,21 +156,21 @@ public class ExternalScheduler {
 		// service.readCalender("http://api.openweathermap.org/data/2.5/weather?q=Dinslaken,de&units=metric&APPID=cce438ee0049647cc63adb6598fd65c4");
 		// sunrise/set
 		// ---------------------------------------------------------------------
-		String sunrise = service.readDataFromUrl("https://api.sunrise-sunset.org/json?lat=51.56838&lng=6.72703");
+		final String sunrise = service.readDataFromUrl("https://api.sunrise-sunset.org/json?lat=51.56838&lng=6.72703");
 		if (sunrise != null) {
-			LinkedHashMap<String, ?> sunsetMap = JsonPath.parse(sunrise).read("$.results");
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-			for (String id : sunsetMap.keySet()) {
-				String value = (String) sunsetMap.get(id);
+			final LinkedHashMap<String, ?> sunsetMap = JsonPath.parse(sunrise).read("$.results");
+			final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+			for (final String id : sunsetMap.keySet()) {
+				final String value = (String) sunsetMap.get(id);
 				if (!id.equals("day_length")) {
-					LocalTime lt = LocalTime.parse(value, DateTimeFormatter.ofPattern("h:m:s a"));
+					final LocalTime lt = LocalTime.parse(value, DateTimeFormatter.ofPattern("h:m:s a"));
 					// LocalTime lt = LocalTime.parse(value, DateTimeFormatter.ofPattern("H:m:s"));
 					LocalDateTime ldt = LocalDate.now().atTime(lt);
 
-					ZonedDateTime utcTimeZoned = ZonedDateTime.of(ldt, ZoneId.of("UTC"));
+					final ZonedDateTime utcTimeZoned = ZonedDateTime.of(ldt, ZoneId.of("UTC"));
 					ldt = utcTimeZoned.withZoneSameInstant(ZoneId.of("CET")).toLocalDateTime();
 
-					boolean isDST = utcTimeZoned.getZone().getRules()
+					final boolean isDST = utcTimeZoned.getZone().getRules()
 							.isDaylightSavings(ldt.toInstant(utcTimeZoned.getOffset()));
 					ldt = ldt.plusHours(isDST ? 1 : 0);
 					service.addOrUpdateDynamicEvent(id, ldt.format(formatter));
@@ -198,10 +198,10 @@ public class ExternalScheduler {
 	@Scheduled(cron = "0 0 0 1 1 *")
 	private void readYearlyEvents() {
 
-		LocalDate localDate = LocalDate.now();
-		int year = localDate.getYear();
+		final LocalDate localDate = LocalDate.now();
+		final int year = localDate.getYear();
 
-		TypeRef<List<LinkedHashMap<Object, String>>> typeRef = new TypeRef<List<LinkedHashMap<Object, String>>>() {
+		final TypeRef<List<LinkedHashMap<Object, String>>> typeRef = new TypeRef<List<LinkedHashMap<Object, String>>>() {
 		};
 
 		Configuration.setDefaults(new Configuration.Defaults() {
@@ -229,13 +229,13 @@ public class ExternalScheduler {
 		// ---------------------------------------------------------------------
 		groupId = "Müllkalender" + year;
 		if (!service.checkGroup(groupId)) {
-			String waste = service.readDataFromUrl(
+			final String waste = service.readDataFromUrl(
 					"https://www.dinslaken.de/www/web_io.nsf/index.xsp?rule=neu&path=%2Fsys%2Fdienstleistungslayout-abfallservice-ausgabe-2%2F&Bezirk=Rilkeweg&AS_Rest=14+t%C3%A4gige+Leerung");
 			if (waste != null) {
-				List<ICalendar> icals = Biweekly.parse(waste).all();
-				for (ICalendar ic : icals) {
-					for (VEvent event : ic.getEvents()) {
-						String description = event.getSummary().getValue();
+				final List<ICalendar> icals = Biweekly.parse(waste).all();
+				for (final ICalendar ic : icals) {
+					for (final VEvent event : ic.getEvents()) {
+						final String description = event.getSummary().getValue();
 						service.addEvent(groupId,
 								new Date(event.getDateStart().getValue().getTime()).toString() + " 00:00:00",
 								new Date(event.getDateEnd().getValue().getTime()).toString() + " 00:00:00", description,
@@ -250,13 +250,13 @@ public class ExternalScheduler {
 		// ---------------------------------------------------------------------
 		groupId = "Ferien" + year;
 		if (!service.checkGroup(groupId)) {
-			String schoolVacation = service.readDataFromUrl("https://ferien-api.de/api/v1/holidays/NW/" + year);
+			final String schoolVacation = service.readDataFromUrl("https://ferien-api.de/api/v1/holidays/NW/" + year);
 			if (schoolVacation != null) {
-				List<LinkedHashMap<Object, String>> schoolVacationList = JsonPath.parse(schoolVacation).read("$.*",
-						typeRef);
-				for (LinkedHashMap<Object, String> map : schoolVacationList) {
-					String start = map.get("start");
-					String end = map.get("end");
+				final List<LinkedHashMap<Object, String>> schoolVacationList = JsonPath.parse(schoolVacation)
+						.read("$.*", typeRef);
+				for (final LinkedHashMap<Object, String> map : schoolVacationList) {
+					final String start = map.get("start");
+					final String end = map.get("end");
 					service.addEvent(groupId, LocalDateTime.parse(start).toString(),
 							LocalDateTime.parse(end).toString(), map.get("name"), true, 13, -1);
 				}
