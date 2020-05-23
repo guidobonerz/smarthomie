@@ -9,12 +9,12 @@ import de.drazil.homeautomation.smartdevices.IHeatingDevice.HeatingMode;
 
 public abstract class BasicRemoteThermostat extends BasicSmartDevice {
 	public Number getBatteryValue() throws Throwable {
-		return getValue(BATTERY_STATE);
+		return getValue(HmAttributes.BATTERY_STATE);
 	}
 
 	public Integer getControlMode() throws Throwable {
 
-		return getValue(CONTROL_MODE);
+		return getValue(HmAttributes.CONTROL_MODE);
 	}
 
 	public void setControlMode(final HeatingMode mode) throws Throwable {
@@ -24,39 +24,39 @@ public abstract class BasicRemoteThermostat extends BasicSmartDevice {
 	public void setControlMode(final HeatingMode mode, final Double temperature) throws Throwable {
 		switch (mode) {
 			case AUTO:
-				setValue(AUTO_MODE, Boolean.TRUE);
+				setValue(HmAttributes.AUTO_MODE, Boolean.TRUE);
 				break;
 			case MANUAL:
-				setValue(MANU_MODE, temperature);
+				setValue(HmAttributes.MANU_MODE, temperature);
 				break;
 			case PARTY:
-				setValue(AUTO_MODE, Boolean.TRUE);
+				setValue(HmAttributes.AUTO_MODE, Boolean.TRUE);
 				break;
 			case BOOST:
-				setValue(BOOST_MODE, Boolean.TRUE);
+				setValue(HmAttributes.BOOST_MODE, Boolean.TRUE);
 				break;
 		}
 
 	}
 
 	public Number getCurrentTemperature() throws Throwable {
-		return getValue(ACTUAL_TEMPERATURE);
+		return getValue(HmAttributes.ACTUAL_TEMPERATURE);
 	}
 
 	public Number getDesiredTemperature() throws Throwable {
-		return getValue(SET_TEMPERATURE);
+		return getValue(HmAttributes.SET_TEMPERATURE);
 	}
 
 	public Integer getSignalStrength() throws Throwable {
-		return getValue(RSSI_DEVICE);
+		return getValue(HmAttributes.RSSI_DEVICE);
 	}
 
 	public Boolean hasLowBattery() throws Throwable {
-		return getValue(LOWBAT);
+		return getValue(HmAttributes.LOWBAT);
 	}
 
 	public Boolean isUnreachable() throws Throwable {
-		return getValue(UNREACH);
+		return getValue(HmAttributes.UNREACH);
 	}
 
 	public void setHeatingProfile(final HeatingProfile... profiles) throws Throwable {
@@ -89,16 +89,16 @@ public abstract class BasicRemoteThermostat extends BasicSmartDevice {
 			if (isWallThermostat()) {
 				switch (weekProgram) {
 					case WEEK_PROGRAM_1:
-						prefix = PREFIX_P1;
+						prefix = HmAttributes.PREFIX_P1.getName();
 						break;
 					case WEEK_PROGRAM_2:
-						prefix = PREFIX_P2;
+						prefix = HmAttributes.PREFIX_P2.getName();
 						break;
 					case WEEK_PROGRAM_3:
-						prefix = PREFIX_P3;
+						prefix = HmAttributes.PREFIX_P3.getName();
 						break;
 				}
-				parameterSet.put(WEEK_PROGRAM_POINTER, weekProgram.getName());
+				parameterSet.put(HmAttributes.WEEK_PROGRAM_POINTER.getName(), weekProgram.getName());
 			}
 
 			for (final Day day : days) {
@@ -113,19 +113,22 @@ public abstract class BasicRemoteThermostat extends BasicSmartDevice {
 							+ Integer.valueOf(startTimeArray[1]);
 					final int endTimeMinutes = 1440; // 24:00
 
-					parameterSet.put(prefix + STARTTIME_PART + day.getName() + "_" + i, startTimeMinutes);
-					parameterSet.put(prefix + ENDTIME_PART + day.getName() + "_" + i, endTimeMinutes);
-					parameterSet.put(prefix + TEMPERATURE_PART + day.getName() + "_" + i,
+					parameterSet.put(prefix + HmAttributes.STARTTIME_PART.getName() + day.getName() + "_" + i,
+							startTimeMinutes);
+					parameterSet.put(prefix + HmAttributes.ENDTIME_PART.getName() + day.getName() + "_" + i,
+							endTimeMinutes);
+					parameterSet.put(prefix + HmAttributes.TEMPERATURE_PART.getName() + day.getName() + "_" + i,
 							phase.getDesiredTemperature());
 					if (lastPhase != null) {
-						parameterSet.put(prefix + ENDTIME_PART + day.getName() + "_" + (i - 1), startTimeMinutes);
+						parameterSet.put(prefix + HmAttributes.ENDTIME_PART.getName() + day.getName() + "_" + (i - 1),
+								startTimeMinutes);
 					}
 					lastPhase = phase;
 					i++;
 				}
 			}
 
-			putParamset(CHANNEL0, "master", parameterSet);
+			putParamset(HmAttributes.CHANNEL0, "master", parameterSet);
 
 			if (activateProfile) {
 				setControlMode(HeatingMode.AUTO);
@@ -145,13 +148,14 @@ public abstract class BasicRemoteThermostat extends BasicSmartDevice {
 
 	public void setLocked(final Boolean state, final Boolean global) throws Throwable {
 		final Map<String, Object> parameterSet = new LinkedHashMap<>();
-		parameterSet.put(global ? GLOBAL_BUTTON_LOCK : BUTTON_LOCK, state);
-		putParamset(CHANNEL0, "master", parameterSet);
+		parameterSet.put(global ? HmAttributes.GLOBAL_BUTTON_LOCK.getName() : HmAttributes.BUTTON_LOCK.getName(),
+				state);
+		putParamset(HmAttributes.CHANNEL0, "master", parameterSet);
 	}
 
 	public void setWakeOnRadioEnabled(final Boolean state) throws Throwable {
 		final Map<String, Object> parameterSet = new LinkedHashMap<>();
-		parameterSet.put(BURST_RX, state);
-		putParamset(CHANNEL0, "master", parameterSet);
+		parameterSet.put(HmAttributes.BURST_RX.getName(), state);
+		putParamset(HmAttributes.CHANNEL0, "master", parameterSet);
 	}
 }

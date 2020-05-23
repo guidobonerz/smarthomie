@@ -9,7 +9,7 @@ import de.drazil.homeautomation.util.VentilationCalcUtil;
 public class BasicRemoteWallThermostat extends BasicRemoteThermostat {
 
 	public Integer getHumidity() throws Throwable {
-		return getValue(HUMIDITY);
+		return getValue(HmAttributes.HUMIDITY);
 	}
 
 	@Override
@@ -23,8 +23,8 @@ public class BasicRemoteWallThermostat extends BasicRemoteThermostat {
 
 	public void setWeekProgram(final WeekProgram weekProgram, final boolean activateProfile) throws Throwable {
 		final Map<String, Object> parameterSet = new LinkedHashMap<>();
-		parameterSet.put(WEEK_PROGRAM_POINTER, weekProgram.getName());
-		putParamset(CHANNEL0, "master", parameterSet);
+		parameterSet.put(HmAttributes.WEEK_PROGRAM_POINTER.getName(), weekProgram.getName());
+		putParamset(HmAttributes.CHANNEL0, "master", parameterSet);
 
 		if (activateProfile) {
 			setControlMode(HeatingMode.AUTO);
@@ -33,8 +33,8 @@ public class BasicRemoteWallThermostat extends BasicRemoteThermostat {
 
 	public void setWakeOnRadioEnabled(final Boolean state) throws Throwable {
 		final Map<String, Object> parameterSet = new LinkedHashMap<>();
-		parameterSet.put(BURST_RX, state);
-		putParamset(CHANNEL0, "master", parameterSet);
+		parameterSet.put(HmAttributes.BURST_RX.getName(), state);
+		putParamset(HmAttributes.CHANNEL0, "master", parameterSet);
 	}
 
 	public Number getHumidityLevel() throws Throwable {
@@ -42,6 +42,6 @@ public class BasicRemoteWallThermostat extends BasicRemoteThermostat {
 	}
 
 	public void setWindowState(final Boolean state) throws Throwable {
-		setValue(WINDOW_STATE, state);
+		setValue(HmAttributes.WINDOW_STATE, state);
 	}
 }

@@ -9,5 +9,5 @@ public interface ISmartDevice {
 
 	public String getLocation() throws Throwable;
 
-	public void setHomegearDeviceFactory(HomegearDeviceService factory);
+	public void setHomegearDeviceService(HomegearDeviceService service);
 }

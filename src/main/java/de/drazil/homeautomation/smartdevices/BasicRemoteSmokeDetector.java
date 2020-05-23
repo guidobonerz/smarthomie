@@ -2,31 +2,31 @@ package de.drazil.homeautomation.smartdevices;
 
 public class BasicRemoteSmokeDetector extends BasicSmartDevice {
 	public Integer getSignalStrength() throws Throwable {
-		return getValue(RSSI_DEVICE);
+		return getValue(HmAttributes.RSSI_DEVICE);
 	}
 
 	public Boolean hasLowBattery() throws Throwable {
-		return getValue(LOWBAT);
+		return getValue(HmAttributes.LOWBAT);
 	}
 
 	public Boolean isUnreachable() throws Throwable {
-		return getValue(UNREACH);
+		return getValue(HmAttributes.UNREACH);
 	}
 
 	public Boolean getState() throws Throwable {
-		return getValue(STATE);
+		return getValue(HmAttributes.STATE);
 	}
 
 	public Boolean hasSmokeChamberError() throws Throwable {
-		return getValue(ERROR_SMOKE_CHAMBER);
+		return getValue(HmAttributes.ERROR_SMOKE_CHAMBER);
 	}
 
 	public Boolean hasAlarmTestError() throws Throwable {
-		return getValue(ERROR_ALARM_TEST);
+		return getValue(HmAttributes.ERROR_ALARM_TEST);
 	}
 
 	public Boolean getInstallTest() throws Throwable {
-		return getValue(INSTALL_TEST);
+		return getValue(HmAttributes.INSTALL_TEST);
 	}
 
 }
