@@ -2,49 +2,49 @@ package de.drazil.homeautomation.smartdevices;
 
 public class BasicRemoteSwitch extends BasicSmartDevice {
 	public Double getCurrent() throws Throwable {
-		return getValue(CURRENT);
+		return getValue(HmAttributes.CURRENT);
 	}
 
 	public Double getFrequency() throws Throwable {
-		return getValue(FREQUENCY);
+		return getValue(HmAttributes.FREQUENCY);
 	}
 
 	public Double getVoltage() throws Throwable {
-		return getValue(VOLTAGE);
+		return getValue(HmAttributes.VOLTAGE);
 	}
 
 	public Double getPower() throws Throwable {
-		return getValue(POWER);
+		return getValue(HmAttributes.POWER);
 	}
 
 	public void setState(final Boolean state) throws Throwable {
-		setValue(STATE, state);
+		setValue(HmAttributes.STATE, state);
 	}
 
 	public void setState(final Integer channel, final Boolean state) throws Throwable {
-		setValue(STATE, state, channel);
+		setValue(HmAttributes.STATE, state, channel);
 	}
 
 	public Boolean getState() throws Throwable {
-		return getValue(STATE);
+		return getValue(HmAttributes.STATE);
 	}
 
 	public Boolean getState(final Integer channel) throws Throwable {
-		return getValue(STATE, channel);
+		return getValue(HmAttributes.STATE, channel);
 	}
 
 	public Integer getSignalStrength() throws Throwable {
 
-		return getValue(RSSI_DEVICE);
+		return getValue(HmAttributes.RSSI_DEVICE);
 	}
 
 	public Boolean hasLowBattery() throws Throwable {
 
-		return getValue(LOWBAT);
+		return getValue(HmAttributes.LOWBAT);
 	}
 
 	public Boolean isUnreachable() throws Throwable {
 
-		return getValue(UNREACH);
+		return getValue(HmAttributes.UNREACH);
 	}
 }
