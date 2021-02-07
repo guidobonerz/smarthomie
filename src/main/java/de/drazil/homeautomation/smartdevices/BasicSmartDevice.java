@@ -48,7 +48,8 @@ public class BasicSmartDevice {
 	protected <ValueType> ValueType getValue(final HmAttributes valueName, final Integer channel) throws Throwable {
 		final Device device = homegearDeviceService.getDeviceBySerialNo(getSerialNo());
 		final Type type = device.getTypeMap().get("value");
-		final DeviceField field = type.getDeviceFieldMap().get(valueName.getName());
+		final String fieldName = valueName.getName();
+		final DeviceField field = type.getDeviceFieldMap().get(fieldName);
 
 		final Object o = homegearDeviceService.executeMethod("getValue",
 				new Object[] { device.getPeerId(), channel == null ? field.getChannel() : channel, valueName });
