@@ -150,12 +150,7 @@ public class ExternalScheduler {
 
 	@Scheduled(cron = "0 0 0 * * *")
 	private void readDailyEvents() {
-		// openweathermap
-		// ---------------------------------------------------------------------
-		// String openweathermap =
-		// service.readCalender("http://api.openweathermap.org/data/2.5/weather?q=Dinslaken,de&units=metric&APPID=cce438ee0049647cc63adb6598fd65c4");
-		// sunrise/set
-		// ---------------------------------------------------------------------
+
 		final String sunrise = service.readDataFromUrl("https://api.sunrise-sunset.org/json?lat=51.56838&lng=6.72703");
 		if (sunrise != null) {
 			final LinkedHashMap<String, ?> sunsetMap = JsonPath.parse(sunrise).read("$.results");
@@ -176,23 +171,10 @@ public class ExternalScheduler {
 					service.addOrUpdateDynamicEvent(id, ldt.format(formatter));
 				}
 			}
-
-			// darksky weather
-			// ---------------------------------------------------------------------
-			// String darkSkyWeather =
-			// service.readDataFromUrl("https://api.darksky.net/forecast/22f4b40c5eebd547bf007fb1bd247287/51.56838,%206.72703?lang=de&units=auto");
-			// LinkedHashMap<String, ?> currently =
-			// JsonPath.parse(darkSkyWeather).read("$.currently");
-			// LinkedHashMap<String, ?> hourly =
-			// JsonPath.parse(darkSkyWeather).read("$.hourly");
-			// LinkedHashMap<String, ?> daily =
-			// JsonPath.parse(darkSkyWeather).read("$.daily");
-			// Object alters = JsonPath.parse(darkSkyWeather).read("$.alerts");
 			buildScheduler();
 		} else {
 			log.error("can't get sunrise/set from remote server");
 		}
-
 	}
 
 	@Scheduled(cron = "0 0 0 1 1 *")
@@ -255,8 +237,8 @@ public class ExternalScheduler {
 				final List<LinkedHashMap<Object, String>> schoolVacationList = JsonPath.parse(schoolVacation)
 						.read("$.*", typeRef);
 				for (final LinkedHashMap<Object, String> map : schoolVacationList) {
-					final String start = map.get("start");
-					final String end = map.get("end");
+					String start = map.get("start");
+					String end = map.get("end");
 					service.addEvent(groupId, LocalDateTime.parse(start).toString(),
 							LocalDateTime.parse(end).toString(), map.get("name"), true, 13, -1);
 				}

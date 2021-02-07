@@ -11,6 +11,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class Application extends SpringBootServletInitializer {
 
 	public static void main(final String[] args) {
+		System.setProperty("java.locale.providers", "COMPAT,CLDR");
 		SpringApplication.run(Application.class);
 	}
 

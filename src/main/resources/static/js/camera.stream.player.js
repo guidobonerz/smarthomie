@@ -1,6 +1,9 @@
 
 $(document).ready(function () {
 
+	let pipeline;
+	let cameraId;
+
 	var spinnerOptions = {
 		lines: 10, // The number of lines to draw
 		length: 22, // The length of each line
@@ -46,48 +49,58 @@ $(document).ready(function () {
 
 	const play = (host, encoding, videoId) => {
 
-		let Pipeline = pipelines.Html5VideoPipeline;
+		//let VideoPipeline = pipelines.Html5VideoPipeline;
 		let mediaElement = document.getElementById(videoId);
 
 		var target = document.getElementById('videoContainer');
 		var spinner = new Spinner(spinnerOptions).spin(target);
 
 		// Setup a new pipeline
-		const pipeline = new Pipeline({
+		const pl = new pipelines.Html5VideoPipeline({
 			ws: { uri: `ws://${host}/rtsp-over-websocket` },
 			rtsp: { uri: `rtsp://${host}/axis-media/media.amp?videocodec=${encoding}` },
 			mediaElement,
 		})
-		pipeline.ready.then(() => {
-			pipeline.rtsp.play();
+		pl.ready.then(() => {
+			pl.rtsp.play();
 			window.setInterval(e => { spinner.stop(); }, 2000);
 		})
 
 		return pipeline;
 	}
 
-	let pipeline;
-	let cameraId;
 
 
+
+	$('#collapse1').on('show.bs.collapse', e => {
+		showEntrance();
+	});
 
 	$('#collapse1').on('hide.bs.collapse', async e => {
 		pipeline && pipeline.rtsp.stop();
 	});
 
-	$('#showEntryVideo').click(async e => {
+	$('#showCorridorVideo').click(e => {
+		showCorridor();
+	});
+
+	$('#showEntryVideo').click(e => {
+		showEntrance();
+	});
+
+	const showEntrance = async () => {
 		cameraId = 'entry';
 		pipeline && pipeline.close();
 		await authorize(cameraEntranceIp);
 		pipeline = play(cameraEntranceIp, 'h264', 'video');
-	});
+	}
 
-	$('#showCorridorVideo').click(async e => {
+	const showCorridor = async () => {
 		cameraId = 'corridor';
 		pipeline && pipeline.close();
 		await authorize(cameraCorridorIp);
 		pipeline = play(cameraCorridorIp, 'h264', 'video');
-	});
+	}
 
 	$('#makeSnapshot').on('click', e => {
 		makeScreenshot(cameraId);
