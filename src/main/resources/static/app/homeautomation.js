@@ -1,5 +1,13 @@
 var app = angular.module("Homeautomation", []);
 
+var sse = new EventSource('http://localhost:8081/homeautomation/sse');
+sse.onmessage = function (evt) {
+
+	console.log(evt.data);
+
+};
+
+/*
 app.factory('Poller', function ($http, $timeout) {
 	var pollerData = {
 		response: {},
@@ -31,9 +39,9 @@ app.factory('Poller', function ($http, $timeout) {
 		stop: stop
 	};
 });
-
-app.controller("GridController", function ($scope, Poller, $http) {
-	Poller.init();
+*/
+app.controller("GridController", function ($scope, $http) {
+	//Poller.init();
 	$http({
 		method: "GET",
 		url: '/homeautomation/getRemoteWallThermostatList'

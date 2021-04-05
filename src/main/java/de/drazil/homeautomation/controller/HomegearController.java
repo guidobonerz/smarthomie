@@ -34,8 +34,6 @@ import de.drazil.homeautomation.bean.ResponseWrapper;
 import de.drazil.homeautomation.dto.Event;
 import de.drazil.homeautomation.service.ExternalSchedulerService;
 import de.drazil.homeautomation.service.HomegearService;
-import de.drazil.homeautomation.service.Message;
-import de.drazil.homeautomation.service.MessageService;
 import de.drazil.homeautomation.smartdevices.IHeatingDevice.HeatingMode;
 import de.drazil.homeautomation.smartdevices.IRemoteWallThermostat;
 import de.drazil.homeautomation.smartdevicesimpl.homematic.HomematicRemoteRadiatorThermostat;
@@ -46,9 +44,6 @@ import lombok.extern.slf4j.Slf4j;
 public class HomegearController {
 	@Autowired
 	private HomegearService homegearService;
-
-	@Autowired
-	MessageService messageService;
 
 	@Autowired
 	private ExternalSchedulerService service;
@@ -110,14 +105,14 @@ public class HomegearController {
 
 		String ipAddress = null;
 		switch (deviceName) {
-			case "entry": {
-				ipAddress = cameraEntranceIp;
-				break;
-			}
-			case "corridor": {
-				ipAddress = cameraCorridorIp;
-				break;
-			}
+		case "entry": {
+			ipAddress = cameraEntranceIp;
+			break;
+		}
+		case "corridor": {
+			ipAddress = cameraCorridorIp;
+			break;
+		}
 		}
 
 		final HttpClient client = HttpClientBuilder.create().build();
@@ -362,24 +357,6 @@ public class HomegearController {
 	public String motionDetection() {
 		log.debug("message received");
 		return "HTTP/1.0 200 OK\r\n\nContent-Type: text/plain\n\n\n";
-	}
-
-	@GetMapping(value = "/getMessages")
-	public @ResponseBody ResponseWrapper getMessages() {
-
-		final ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
-		try {
-			final List<Message> list = messageService.getMessageList();
-			rw.setData(list);
-			rw.setTotal(list.size());
-			rw.setMessage("Succesfully got messages");
-			rw.setSuccessful(true);
-		} catch (final Exception e) {
-			log.error("error getting event messages", e);
-			rw.setSuccessful(false);
-			rw.setMessage("getting event data failed.");
-		}
-		return rw;
 	}
 
 	@GetMapping("/getEvents")
