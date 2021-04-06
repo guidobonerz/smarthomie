@@ -1,6 +1,6 @@
 var app = angular.module("Homeautomation", []);
 
-var sse = new EventSource('http://10.100.200.4:50080/homeautomation/sse');
+var sse = new EventSource('http://localhost:8081/homeautomation/sse');
 sse.onmessage = function (evt) {
 
 	console.log(evt.data);
