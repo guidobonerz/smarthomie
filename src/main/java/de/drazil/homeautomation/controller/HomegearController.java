@@ -48,6 +48,9 @@ public class HomegearController {
 	@Autowired
 	private ExternalSchedulerService service;
 
+	@Autowired
+	private TelegramBot bot;
+
 	@Value("${app.base-path}")
 	private String basePath;
 
@@ -382,13 +385,19 @@ public class HomegearController {
 		log.info("tasmota button");
 		return rw;
 	}
-	/*
-	 * @GetMapping("/bot") public @ResponseBody ResponseWrapper
-	 * bot(@RequestParam("message") String message) { ResponseWrapper rw = new
-	 * ResponseWrapper(false, "Failed to get data");
-	 * System.out.println("send message to bot :" + message);
-	 * bot.sendMessage(message); return rw; }
-	 */
+
+	@GetMapping("/bot")
+	public @ResponseBody ResponseWrapper bot(@RequestParam("message") String message) {
+		ResponseWrapper rw = new ResponseWrapper(true, "Successfully send Telegram message");
+		try {
+			bot.sendMessage(message);
+		} catch (Exception ex) {
+			rw.setMessage("Failed to send Telegram message");
+			rw.setSuccessful(false);
+		}
+		return rw;
+	}
+
 	// shelly 1 rule
 	// rule1 on Power1#State=1 do websend [10.100.200.205:50081]
 	// /homeautomation/tasmotaresponse/entry endon
