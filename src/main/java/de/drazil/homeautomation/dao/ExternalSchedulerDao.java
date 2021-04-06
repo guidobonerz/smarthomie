@@ -2,6 +2,7 @@ package de.drazil.homeautomation.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Arrays;
 import java.util.List;
 
@@ -26,8 +27,8 @@ public class ExternalSchedulerDao {
 	private NamedParameterJdbcTemplate namedJdbcTemplate;
 
 	public boolean checkGroup(final String groupId) {
-		return jdbcTemplate.queryForObject("select count(*) from calendar.event where group_id=?",
-				new Object[] { groupId }, Integer.class) > 0;
+		return jdbcTemplate.queryForObject("select count(*) from calendar.event where group_id=?", Integer.class,
+				new Object[] { groupId }) > 0;
 	}
 
 	public void removeEventByCalenderName(final String calenderName) {
@@ -44,7 +45,7 @@ public class ExternalSchedulerDao {
 
 	public void addOrUpdateDynamicEvent(final String id, final String target_date) {
 		final int result = jdbcTemplate.queryForObject("select count(*) from calendar.dynamic_event where id=?",
-				new Object[] { id }, Integer.class);
+				Integer.class, new Object[] { id });
 		if (result == 0) {
 			jdbcTemplate.update("insert into calendar.dynamic_event(id,target_date) values (?,?)", id, target_date);
 		} else {
@@ -55,7 +56,7 @@ public class ExternalSchedulerDao {
 	public DynamicEvent getDynamicEventById(final String id) {
 		DynamicEvent dynamicEvent = null;
 		try {
-			dynamicEvent = jdbcTemplate.queryForObject("select * from  calendar.dynamic_event where id=?",
+			dynamicEvent = jdbcTemplate.queryForObject("select * from calendar.dynamic_event where id=?",
 					new RowMapper<DynamicEvent>() {
 						@Override
 						public DynamicEvent mapRow(final ResultSet rs, final int rowNum) throws SQLException {
@@ -67,37 +68,36 @@ public class ExternalSchedulerDao {
 
 					}, new Object[] { id });
 		} catch (final EmptyResultDataAccessException e) {
-			log.error("no data found");
+			log.debug("no data found");
 		}
 		return dynamicEvent;
 
 	}
 
 	public List<Event> getEventList() {
-		final List<Event> list = jdbcTemplate.query("select * from calendar.event", (Object[]) null,
-				new RowMapper<Event>() {
-					@Override
-					public Event mapRow(final ResultSet rs, final int rowNum) throws SQLException {
-						final Event event = new Event();
-						event.setGroupId(rs.getString("group_id"));
-						event.setStartRule(rs.getString("start_rule"));
-						event.setEndRule(rs.getString("end_rule"));
-						event.setDescription(rs.getString("description"));
-						event.setActionId(rs.getLong("action_id"));
-						event.setCategoryId(rs.getLong("category_id"));
-						event.setAllDayEvent(rs.getBoolean("all_day_event"));
-						// event.setDiff(rs.getLong("diff"));
-						// event.setOccurrence(rs.getString("occurrence"));
-						return event;
-					}
-				});
+		final List<Event> list = jdbcTemplate.query("select * from calendar.event", new RowMapper<Event>() {
+			@Override
+			public Event mapRow(final ResultSet rs, final int rowNum) throws SQLException {
+				final Event event = new Event();
+				event.setGroupId(rs.getString("group_id"));
+				event.setStartRule(rs.getString("start_rule"));
+				event.setEndRule(rs.getString("end_rule"));
+				event.setDescription(rs.getString("description"));
+				event.setActionId(rs.getLong("action_id"));
+				event.setCategoryId(rs.getLong("category_id"));
+				event.setAllDayEvent(rs.getBoolean("all_day_event"));
+				// event.setDiff(rs.getLong("diff"));
+				// event.setOccurrence(rs.getString("occurrence"));
+				return event;
+			}
+		});
 		return list;
 	}
 
 	public List<Event> getUpcomingEventList(final int from, final int to) {
 
 		final List<Event> list = jdbcTemplate.query("select * from calendar.event_view where diff between ? and ?",
-				new Object[] { from, to }, new RowMapper<Event>() {
+				new Object[] { from, to }, new int[] { Types.INTEGER, Types.INTEGER }, new RowMapper<Event>() {
 					@Override
 					public Event mapRow(final ResultSet rs, final int rowNum) throws SQLException {
 						final Event event = new Event();
@@ -120,9 +120,8 @@ public class ExternalSchedulerDao {
 		final List<String> eventList = Arrays.asList(events);
 		final MapSqlParameterSource parameters = new MapSqlParameterSource();
 		parameters.addValue("occurrences", eventList);
-		final List<Event> list = namedJdbcTemplate.query(
-				"select * from calendar.event_view where occurrence in (:occurrences)", parameters,
-				new RowMapper<Event>() {
+		final List<Event> list = namedJdbcTemplate
+				.query("select * from calendar.event_view where occurrence in (:occurrences)", new RowMapper<Event>() {
 					@Override
 					public Event mapRow(final ResultSet rs, final int rowNum) throws SQLException {
 						final Event event = new Event();
@@ -142,12 +141,15 @@ public class ExternalSchedulerDao {
 
 	public List<Event> getUpcomingEventActionList(final String events[]) {
 
-		final List<String> eventList = Arrays.asList(events);
-		final MapSqlParameterSource parameters = new MapSqlParameterSource();
-		parameters.addValue("occurrences", eventList);
+		// final List<String> eventList = Arrays.asList(events);
+		// final MapSqlParameterSource parameters = new MapSqlParameterSource();
+		// parameters.addValue("occurrences", eventList);
+		int[] eta = new int[events.length];
+		Arrays.fill(eta, Types.VARCHAR);
+
 		final List<Event> list = namedJdbcTemplate.query(
 				"select * from calendar.event_view where occurrence in (:occurrences) and action_command is not null",
-				parameters, new RowMapper<Event>() {
+				events, eta, new RowMapper<Event>() {
 					@Override
 					public Event mapRow(final ResultSet rs, final int rowNum) throws SQLException {
 						final Event event = new Event();
@@ -159,7 +161,6 @@ public class ExternalSchedulerDao {
 						event.setAllDayEvent(rs.getBoolean("all_day_event"));
 						event.setDiff(rs.getLong("diff"));
 						event.setOccurrence(rs.getString("occurrence"));
-
 						return event;
 					}
 				});
