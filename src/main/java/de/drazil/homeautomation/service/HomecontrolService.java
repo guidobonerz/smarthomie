@@ -29,22 +29,22 @@ public class HomecontrolService {
 			final Object value) {
 		log.debug("InterfaceId:" + interfaceId + "   PeerId:" + peerId + "   Channel:" + channel + "   ParameterName:"
 				+ parameterName);
-		if (peerId == 46 && channel == 1 && parameterName.equals("TEMPERATURE")) {
-			final Number n = ((Number) value);
-			log.debug("current boiler temperature is " + n.doubleValue());
+		try {
+			if (peerId == 46 && channel == 1 && parameterName.equals("TEMPERATURE")
+					&& homegearService.getBoilerState(1)) {
+				final Number n = ((Number) value);
+				log.debug("current boiler temperature is " + n.doubleValue());
 
-			final DayOfWeek dow = LocalDate.now().getDayOfWeek();
-			final double boilerTemp = (dow.compareTo(DayOfWeek.SATURDAY) == 0) ? weekendTemp : workdayTemp;
-			if (n.doubleValue() > boilerTemp) {
-				try {
-					if (homegearService.getBoilerState(1)) {
-						homegearService.setBoilerState(1, false);
-						log.info("boiler reached max temperature -> switch it off");
-					}
-				} catch (final Throwable e) {
-					log.error("error setting boiler state", e);
+				final DayOfWeek dow = LocalDate.now().getDayOfWeek();
+				final double boilerTemp = (dow.compareTo(DayOfWeek.SATURDAY) == 0) ? weekendTemp : workdayTemp;
+
+				if (n.doubleValue() > boilerTemp) {
+					homegearService.setBoilerState(1, false);
+					log.info("boiler reached max temperature -> switch it off");
 				}
 			}
+		} catch (final Throwable e) {
+			log.error("error setting boiler state", e);
 		}
 	}
 }

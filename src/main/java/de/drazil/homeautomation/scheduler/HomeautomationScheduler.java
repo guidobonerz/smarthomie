@@ -18,11 +18,11 @@ public class HomeautomationScheduler {
 	@Autowired
 	HomegearService service;
 
-	@Value("${boiler.valveState1}")
+	//@Value("${boiler.valveState1}")
 	private String valveState1;
-	@Value("${boiler.valveState2}")
+	//@Value("${boiler.valveState2}")
 	private String valveState2;
-	@Value("${boiler.control}")
+	//@Value("${boiler.control}")
 	private String boilerControl;
 
 	@Scheduled(cron = "${boiler.heating1.on}")
