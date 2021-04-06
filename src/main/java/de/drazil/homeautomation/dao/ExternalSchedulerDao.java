@@ -120,8 +120,9 @@ public class ExternalSchedulerDao {
 		final List<String> eventList = Arrays.asList(events);
 		final MapSqlParameterSource parameters = new MapSqlParameterSource();
 		parameters.addValue("occurrences", eventList);
-		final List<Event> list = namedJdbcTemplate
-				.query("select * from calendar.event_view where occurrence in (:occurrences)", new RowMapper<Event>() {
+		final List<Event> list = namedJdbcTemplate.query(
+				"select * from calendar.event_view where occurrence in (:occurrences)", parameters,
+				new RowMapper<Event>() {
 					@Override
 					public Event mapRow(final ResultSet rs, final int rowNum) throws SQLException {
 						final Event event = new Event();
@@ -141,15 +142,13 @@ public class ExternalSchedulerDao {
 
 	public List<Event> getUpcomingEventActionList(final String events[]) {
 
-		// final List<String> eventList = Arrays.asList(events);
-		// final MapSqlParameterSource parameters = new MapSqlParameterSource();
-		// parameters.addValue("occurrences", eventList);
-		int[] eta = new int[events.length];
-		Arrays.fill(eta, Types.VARCHAR);
+		final List<String> eventList = Arrays.asList(events);
+		final MapSqlParameterSource parameters = new MapSqlParameterSource();
+		parameters.addValue("occurrences", eventList);
 
 		final List<Event> list = namedJdbcTemplate.query(
 				"select * from calendar.event_view where occurrence in (:occurrences) and action_command is not null",
-				events, eta, new RowMapper<Event>() {
+				parameters, new RowMapper<Event>() {
 					@Override
 					public Event mapRow(final ResultSet rs, final int rowNum) throws SQLException {
 						final Event event = new Event();
