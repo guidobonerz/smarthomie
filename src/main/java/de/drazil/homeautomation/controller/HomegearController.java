@@ -33,6 +33,7 @@ import org.springframework.web.servlet.ModelAndView;
 import de.drazil.homeautomation.bean.ResponseWrapper;
 import de.drazil.homeautomation.dto.Event;
 import de.drazil.homeautomation.service.ExternalSchedulerService;
+import de.drazil.homeautomation.service.HomecontrolService;
 import de.drazil.homeautomation.service.HomegearService;
 import de.drazil.homeautomation.smartdevices.IHeatingDevice.HeatingMode;
 import de.drazil.homeautomation.smartdevices.IRemoteWallThermostat;
@@ -47,6 +48,9 @@ public class HomegearController {
 
 	@Autowired
 	private ExternalSchedulerService service;
+
+	@Autowired
+	private HomecontrolService homecontrol;
 
 	@Autowired
 	private TelegramBot bot;
@@ -246,6 +250,22 @@ public class HomegearController {
 		final ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
 		try {
 			homegearService.setBoilerState(1, state);
+			rw.setMessage("Succesfully set state");
+			rw.setSuccessful(true);
+		} catch (final Throwable e) {
+			log.error("error getting boiler state", e);
+			rw.setData(null);
+			rw.setSuccessful(false);
+			rw.setMessage(e.getMessage());
+		}
+		return rw;
+	}
+
+	@GetMapping(value = "/boiler/heat/{temperature}")
+	public @ResponseBody ResponseWrapper setBoilerHeatTemperature(@PathVariable final Double temperature) {
+		final ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
+		try {
+			homecontrol.setTemporaryTemperture(temperature);
 			rw.setMessage("Succesfully set state");
 			rw.setSuccessful(true);
 		} catch (final Throwable e) {

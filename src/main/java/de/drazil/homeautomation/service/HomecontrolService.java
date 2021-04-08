@@ -25,6 +25,15 @@ public class HomecontrolService {
 	@Value("${boiler.weekendTemp}")
 	private Double weekendTemp;
 
+	private Double temporaryTemperature;
+
+	private boolean temporaryMode;
+
+	public void setTemporaryTemperture(Double temperature) {
+		temporaryMode = true;
+		temporaryTemperature = temperature;
+	}
+
 	public void control(final String interfaceId, final int peerId, final int channel, final String parameterName,
 			final Object value) {
 		log.debug("InterfaceId:" + interfaceId + "   PeerId:" + peerId + "   Channel:" + channel + "   ParameterName:"
@@ -36,9 +45,12 @@ public class HomecontrolService {
 				log.debug("current boiler temperature is " + n.doubleValue());
 
 				final DayOfWeek dow = LocalDate.now().getDayOfWeek();
-				final double boilerTemp = (dow.compareTo(DayOfWeek.SATURDAY) == 0) ? weekendTemp : workdayTemp;
-
+				double boilerTemp = (dow.compareTo(DayOfWeek.SATURDAY) == 0) ? weekendTemp : workdayTemp;
+				if (temporaryMode) {
+					boilerTemp = temporaryTemperature;
+				}
 				if (n.doubleValue() > boilerTemp) {
+					temporaryMode = false;
 					homegearService.setBoilerState(1, false);
 					log.info("boiler reached max temperature -> switch it off");
 				}
