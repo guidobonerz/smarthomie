@@ -30,7 +30,8 @@ CREATE TABLE calendar.event (
   description varchar(200),
   all_day_event bool ,
   category_id numeric(11) NOT NULL,
-  action_id numeric(11)
+  action_id numeric(11),
+  payload varchar(500)
 );
 
 drop table calendar.reminder;
@@ -68,17 +69,22 @@ select
     (case   when date_part('day',cast (case when des.target_date is not null then des.target_date else replace(e.start_rule,'{TODAY}',to_char(now(),'YYYY-MM-DD')) end as date)-now())= 0 then 'today'
             when date_part('day',cast (case when des.target_date is not null then des.target_date else replace(e.start_rule,'{TODAY}',to_char(now(),'YYYY-MM-DD')) end as date)-now() )= 1 then 'tomorrow'
             when date_part('day',cast (case when des.target_date is not null then des.target_date else replace(e.start_rule,'{TODAY}',to_char(now(),'YYYY-MM-DD')) end as date)-now() )> 1 and date_part('day',to_date( replace(e.start_rule,'{TODAY}',to_char(now(),'YYYY-MM-DD')), 'YYYY-MM-DD' )-now() ) < 15 then 'upcoming'
-            when date_part('day',cast (case when des.target_date is not null then des.target_date else replace(e.start_rule,'{TODAY}',to_char(now(),'YYYY-MM-DD')) end as date)-now() )< 0 then 'over' else 'sometime'   end ) AS occurrence
-      
+            when date_part('day',cast (case when des.target_date is not null then des.target_date else replace(e.start_rule,'{TODAY}',to_char(now(),'YYYY-MM-DD')) end as date)-now() )< 0 then 'over' else 'sometime'   end ) AS occurrence,
+     e.payload 
  	
 from (calendar.event e  left join calendar.dynamic_event des on (e.start_rule = des.id) 
 						left join calendar.dynamic_event dee on (e.end_rule = dee.id)
 						left join calendar."action" a on (e.action_id=a.id)) 
 order by cast (case when des.target_date is not null then des.target_date else replace(e.start_rule,'{TODAY}',to_char(now(),'YYYY-MM-DD')) end as date) asc;
 
-insert into calendar.event (group_id,start_rule,end_rule,description,all_day_event,category_id,action_id) values ('Licht','{TODAY} 05:00:00','sunrise','FloorLamp',false,-1,-1);
-insert into calendar.event (group_id,start_rule,end_rule,description,all_day_event,category_id,action_id) values ('Licht','sunset','{TODAY} 23:59:59','FloorLamp',false,-1,-1);
-insert into calendar.event (group_id,start_rule,end_rule,description,all_day_event,category_id,action_id) values ('Licht','sunset','{TODAY} 23:59:59','LivingroomLamp',false,-1,-1);
+insert into calendar.event (group_id,start_rule,end_rule,description,all_day_event,category_id,action_id,payload) values ('Licht','{TODAY} 05:00:00','{SUNRISE}','FloorLamp',false,-1,-1,null);
+insert into calendar.event (group_id,start_rule,end_rule,description,all_day_event,category_id,action_id,payload) values ('Licht','{SUNSET}','{TODAY} 23:59:59','FloorLamp',false,-1,-1,null);
+insert into calendar.event (group_id,start_rule,end_rule,description,all_day_event,category_id,action_id,payload) values ('Licht','{SUNSET}','{TODAY} 23:59:59','LivingroomLamp',false,-1,-1,null);
+insert into calendar.event (group_id,start_rule,end_rule,description,all_day_event,category_id,action_id,payload) values ('Boiler','{WORKDAY} 06:30:00',null,'Boiler',false,-1,-1,'50.0');
+insert into calendar.event (group_id,start_rule,end_rule,description,all_day_event,category_id,action_id,payload) values ('Boiler','{WORKDAY} 16:30:00',null,'Boiler',false,-1,-1,'50.0');
+insert into calendar.event (group_id,start_rule,end_rule,description,all_day_event,category_id,action_id,payload) values ('Boiler','{WEEKEND} 07:30:00',null,'Boiler',false,-1,-1,'50.0');
+insert into calendar.event (group_id,start_rule,end_rule,description,all_day_event,category_id,action_id,payload) values ('Boiler','{WEEKEND} 16:30:00',null,'Boiler',false,-1,-1,'50.0');
+insert into calendar.event (group_id,start_rule,end_rule,description,all_day_event,category_id,action_id,payload) values ('Boiler','{CLEANING} 01:00:00',null,'Boiler',false,-1,-1,'70.0');
 
 INSERT INTO calendar.category (cid,description,color,icon,can_have_reminder) VALUES (4,'Rote Tonne (Restmüll)','#ff0000',NULL,NULL);
 INSERT INTO calendar.category (cid,description,color,icon,can_have_reminder) VALUES (5,'Braune Tonne (Biomüll)','#ffff00',NULL,NULL);

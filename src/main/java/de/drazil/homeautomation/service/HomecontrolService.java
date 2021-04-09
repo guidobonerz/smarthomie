@@ -1,10 +1,6 @@
 package de.drazil.homeautomation.service;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
@@ -19,19 +15,10 @@ public class HomecontrolService {
 	@Autowired
 	MessageService messageService;
 
-	@Value("${boiler.workdayTemp}")
-	private Double workdayTemp;
+	private Double temperature;
 
-	@Value("${boiler.weekendTemp}")
-	private Double weekendTemp;
-
-	private Double temporaryTemperature;
-
-	private boolean temporaryMode;
-
-	public void setTemporaryTemperture(Double temperature) {
-		temporaryMode = true;
-		temporaryTemperature = temperature;
+	public void setTemperture(Double temperature) {
+		this.temperature = temperature;
 	}
 
 	public void control(final String interfaceId, final int peerId, final int channel, final String parameterName,
@@ -44,13 +31,7 @@ public class HomecontrolService {
 				final Number n = ((Number) value);
 				log.debug("current boiler temperature is " + n.doubleValue());
 
-				final DayOfWeek dow = LocalDate.now().getDayOfWeek();
-				double boilerTemp = (dow.compareTo(DayOfWeek.SATURDAY) == 0) ? weekendTemp : workdayTemp;
-				if (temporaryMode) {
-					boilerTemp = temporaryTemperature;
-				}
-				if (n.doubleValue() > boilerTemp) {
-					temporaryMode = false;
+				if (n.doubleValue() > temperature) {
 					homegearService.setBoilerState(1, false);
 					log.info("boiler reached max temperature -> switch it off");
 				}

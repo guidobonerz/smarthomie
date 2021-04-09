@@ -265,7 +265,7 @@ public class HomegearController {
 	public @ResponseBody ResponseWrapper setBoilerHeatTemperature(@PathVariable final Double temperature) {
 		final ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
 		try {
-			homecontrol.setTemporaryTemperture(temperature);
+			homecontrol.setTemperture(temperature);
 			rw.setMessage("Succesfully set state");
 			rw.setSuccessful(true);
 		} catch (final Throwable e) {
