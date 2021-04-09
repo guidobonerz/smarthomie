@@ -148,35 +148,35 @@ public class ExternalScheduler {
 
 	private String getPatchedRule(final String rule) {
 		String patchedRule = rule;
-		if (rule.startsWith("{SUNRISE}")) {
+		if (rule.startsWith(":SUNRISE")) {
 			final DynamicEvent de = service.getDynamicEventById("sunrise");
 			patchedRule = LocalDateTime.parse(de.getTargetDate(), dateTimeFormatter).format(dateTimeFormatter);
-		} else if (rule.startsWith("{SUNSET}")) {
+		} else if (rule.startsWith(":SUNSET")) {
 			final DynamicEvent de = service.getDynamicEventById("sunset");
 			patchedRule = LocalDateTime.parse(de.getTargetDate(), dateTimeFormatter).format(dateTimeFormatter);
-		} else if (rule.startsWith("{TODAY}")) {
-			patchedRule = patchedRule.replace("{TODAY}", LocalDate.now().format(dateFormatter));
-		} else if (rule.startsWith("{TOMORROW}")) {
-			patchedRule = patchedRule.replace("{TOMORROW}", LocalDate.now().plusDays(1).format(dateFormatter));
-		} else if (rule.startsWith("{WORKDAY}")) {
+		} else if (rule.startsWith(":TODAY")) {
+			patchedRule = patchedRule.replace(":TODAY", LocalDate.now().format(dateFormatter));
+		} else if (rule.startsWith(":TOMORROW")) {
+			patchedRule = patchedRule.replace(":TOMORROW", LocalDate.now().plusDays(1).format(dateFormatter));
+		} else if (rule.startsWith(":WORKDAY")) {
 			LocalDate date = LocalDate.now();
 			if (Arrays.asList(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY,
 					DayOfWeek.FRIDAY).contains(date.getDayOfWeek())) {
-				patchedRule = patchedRule.replace("{WORKDAY}", date.format(dateFormatter));
+				patchedRule = patchedRule.replace(":WORKDAY", date.format(dateFormatter));
 			} else {
 				patchedRule = null;
 			}
-		} else if (rule.startsWith("{WEEKEND}")) {
+		} else if (rule.startsWith(":WEEKEND")) {
 			LocalDate date = LocalDate.now();
 			if (Arrays.asList(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY).contains(date.getDayOfWeek())) {
-				patchedRule = patchedRule.replace("{WEEKEND}", date.format(dateFormatter));
+				patchedRule = patchedRule.replace(":WEEKEND", date.format(dateFormatter));
 			} else {
 				patchedRule = null;
 			}
-		} else if (rule.startsWith("{CLEANING}")) {
+		} else if (rule.startsWith(":BOOST")) {
 			LocalDate date = LocalDate.now();
 			if (date.getDayOfWeek() == DayOfWeek.SATURDAY) {
-				patchedRule = patchedRule.replace("{CLEANING}", date.format(dateFormatter));
+				patchedRule = patchedRule.replace(":BOOST", date.format(dateFormatter));
 			} else {
 				patchedRule = null;
 			}
