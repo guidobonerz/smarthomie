@@ -33,6 +33,7 @@ import org.springframework.web.servlet.ModelAndView;
 import de.drazil.homeautomation.bean.ResponseWrapper;
 import de.drazil.homeautomation.dto.Event;
 import de.drazil.homeautomation.service.ExternalSchedulerService;
+import de.drazil.homeautomation.service.HomecontrolService;
 import de.drazil.homeautomation.service.HomegearService;
 import de.drazil.homeautomation.smartdevices.IHeatingDevice.HeatingMode;
 import de.drazil.homeautomation.smartdevices.IRemoteWallThermostat;
@@ -47,6 +48,12 @@ public class HomegearController {
 
 	@Autowired
 	private ExternalSchedulerService service;
+
+	@Autowired
+	private HomecontrolService homecontrol;
+
+	@Autowired
+	private TelegramBot bot;
 
 	@Value("${app.base-path}")
 	private String basePath;
@@ -254,6 +261,22 @@ public class HomegearController {
 		return rw;
 	}
 
+	@GetMapping(value = "/boiler/heat/{temperature}")
+	public @ResponseBody ResponseWrapper setBoilerHeatTemperature(@PathVariable final Double temperature) {
+		final ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
+		try {
+			homecontrol.setTemperture(temperature);
+			rw.setMessage("Succesfully set state");
+			rw.setSuccessful(true);
+		} catch (final Throwable e) {
+			log.error("error getting boiler state", e);
+			rw.setData(null);
+			rw.setSuccessful(false);
+			rw.setMessage(e.getMessage());
+		}
+		return rw;
+	}
+
 	@GetMapping(value = "/boiler/temperature/{channel}")
 	public @ResponseBody ResponseWrapper getBoilerTemperature(@PathVariable final Integer channel) {
 		final ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
@@ -382,13 +405,19 @@ public class HomegearController {
 		log.info("tasmota button");
 		return rw;
 	}
-	/*
-	 * @GetMapping("/bot") public @ResponseBody ResponseWrapper
-	 * bot(@RequestParam("message") String message) { ResponseWrapper rw = new
-	 * ResponseWrapper(false, "Failed to get data");
-	 * System.out.println("send message to bot :" + message);
-	 * bot.sendMessage(message); return rw; }
-	 */
+
+	@GetMapping("/bot")
+	public @ResponseBody ResponseWrapper bot(@RequestParam("message") String message) {
+		ResponseWrapper rw = new ResponseWrapper(true, "Successfully send Telegram message");
+		try {
+			bot.sendMessage(message);
+		} catch (Exception ex) {
+			rw.setMessage("Failed to send Telegram message");
+			rw.setSuccessful(false);
+		}
+		return rw;
+	}
+
 	// shelly 1 rule
 	// rule1 on Power1#State=1 do websend [10.100.200.205:50081]
 	// /homeautomation/tasmotaresponse/entry endon

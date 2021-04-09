@@ -192,11 +192,6 @@ public class HomegearService {
 		return resultList;
 	}
 
-	/*
-	 * public void setBoiler(boolean state) throws Throwable {
-	 * homegearDeviceService.getRemoteValveDriveBySerialNo("HEQ0134004").
-	 * setValveState(state ? 70 : 0); }
-	 */
 	public Number getBoilerTemperature(final Integer channel) throws Throwable {
 		return homegearDeviceService.getTemperatureDifferenceSensorBySerialNo("OEQ0676279").getTemperature(channel);
 	}
@@ -235,14 +230,14 @@ public class HomegearService {
 	public void setLight(final String location, final boolean state) throws Throwable {
 		switch (location) {
 
-			case "corridor": {
-				homegearDeviceService.getRemoteMeteringSwitchBySerialNo("LEQ0531814").setState(state);
-				break;
-			}
-			case "livingroom": {
-				homegearDeviceService.getRemoteSwitchBySerialNo("OEQ0479803").setState(state);
-				break;
-			}
+		case "corridor": {
+			homegearDeviceService.getRemoteMeteringSwitchBySerialNo("LEQ0531814").setState(state);
+			break;
+		}
+		case "livingroom": {
+			homegearDeviceService.getRemoteSwitchBySerialNo("OEQ0479803").setState(state);
+			break;
+		}
 		}
 	}
 

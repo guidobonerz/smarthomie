@@ -86,6 +86,8 @@ public class ExternalSchedulerDao {
 				event.setActionId(rs.getLong("action_id"));
 				event.setCategoryId(rs.getLong("category_id"));
 				event.setAllDayEvent(rs.getBoolean("all_day_event"));
+				event.setPayload(rs.getString("payload"));
+
 				// event.setDiff(rs.getLong("diff"));
 				// event.setOccurrence(rs.getString("occurrence"));
 				return event;

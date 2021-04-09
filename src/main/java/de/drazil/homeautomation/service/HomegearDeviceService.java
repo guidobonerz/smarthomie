@@ -79,8 +79,7 @@ public class HomegearDeviceService {
 
 	public IRemoteRadiatorThermostat getRemoteRadiatorThermostatBySerialNo(final String serialNo) throws Throwable {
 		final Device device = getDeviceBySerialNo(serialNo);
-		final IRemoteRadiatorThermostat smartDevice = (IRemoteRadiatorThermostat) Class
-				.forName(device.getAdapterClassName()).getDeclaredConstructor().newInstance();
+		final IRemoteRadiatorThermostat smartDevice = (IRemoteRadiatorThermostat) getDeviceInstance(device);
 		smartDevice.setSerialNo(device.getSerialNo());
 		smartDevice.setHomegearDeviceService(this);
 		return smartDevice;
@@ -88,8 +87,7 @@ public class HomegearDeviceService {
 
 	public IRemoteWallThermostat getRemoteWallThermostatBySerialNo(final String serialNo) throws Throwable {
 		final Device device = getDeviceBySerialNo(serialNo);
-		final IRemoteWallThermostat smartDevice = (IRemoteWallThermostat) Class.forName(device.getAdapterClassName())
-				.getDeclaredConstructor().newInstance();
+		final IRemoteWallThermostat smartDevice = (IRemoteWallThermostat) getDeviceInstance(device);
 		smartDevice.setSerialNo(device.getSerialNo());
 		smartDevice.setHomegearDeviceService(this);
 		return smartDevice;
@@ -97,8 +95,7 @@ public class HomegearDeviceService {
 
 	public IRemoteOutdoorWeatherSensor getRemoteOutdoorWeatherSensorBySerialNo(final String serialNo) throws Throwable {
 		final Device device = getDeviceBySerialNo(serialNo);
-		final IRemoteOutdoorWeatherSensor smartDevice = (IRemoteOutdoorWeatherSensor) Class
-				.forName(device.getAdapterClassName()).getDeclaredConstructor().newInstance();
+		final IRemoteOutdoorWeatherSensor smartDevice = (IRemoteOutdoorWeatherSensor) getDeviceInstance(device);
 		smartDevice.setSerialNo(device.getSerialNo());
 		smartDevice.setHomegearDeviceService(this);
 		return smartDevice;
@@ -106,8 +103,7 @@ public class HomegearDeviceService {
 
 	public IRemoteValveDrive getRemoteValveDriveBySerialNo(final String serialNo) throws Throwable {
 		final Device device = getDeviceBySerialNo(serialNo);
-		final IRemoteValveDrive smartDevice = (IRemoteValveDrive) Class.forName(device.getAdapterClassName())
-				.getDeclaredConstructor().newInstance();
+		final IRemoteValveDrive smartDevice = (IRemoteValveDrive) getDeviceInstance(device);
 		smartDevice.setSerialNo(device.getSerialNo());
 		smartDevice.setHomegearDeviceService(this);
 		return smartDevice;
@@ -115,8 +111,7 @@ public class HomegearDeviceService {
 
 	public IRemoteMeteringSwitch getRemoteMeteringSwitchBySerialNo(final String serialNo) throws Throwable {
 		final Device device = getDeviceBySerialNo(serialNo);
-		final IRemoteMeteringSwitch smartDevice = (IRemoteMeteringSwitch) Class.forName(device.getAdapterClassName())
-				.getDeclaredConstructor().newInstance();
+		final IRemoteMeteringSwitch smartDevice = (IRemoteMeteringSwitch) getDeviceInstance(device);
 		smartDevice.setSerialNo(device.getSerialNo());
 		smartDevice.setHomegearDeviceService(this);
 		return smartDevice;
@@ -125,8 +120,8 @@ public class HomegearDeviceService {
 	public HomematicTemperatureDifferenceSensor getTemperatureDifferenceSensorBySerialNo(final String serialNo)
 			throws Throwable {
 		final Device device = getDeviceBySerialNo(serialNo);
-		final HomematicTemperatureDifferenceSensor smartDevice = (HomematicTemperatureDifferenceSensor) Class
-				.forName(device.getAdapterClassName()).getDeclaredConstructor().newInstance();
+		final HomematicTemperatureDifferenceSensor smartDevice = (HomematicTemperatureDifferenceSensor) getDeviceInstance(
+				device);
 		smartDevice.setSerialNo(device.getSerialNo());
 		smartDevice.setHomegearDeviceService(this);
 		return smartDevice;
@@ -134,8 +129,7 @@ public class HomegearDeviceService {
 
 	public IRemoteSwitch getRemoteSwitchBySerialNo(final String serialNo) throws Throwable {
 		final Device device = getDeviceBySerialNo(serialNo);
-		final IRemoteSwitch smartDevice = (IRemoteSwitch) Class.forName(device.getAdapterClassName())
-				.getDeclaredConstructor().newInstance();
+		final IRemoteSwitch smartDevice = (IRemoteSwitch) getDeviceInstance(device);
 		smartDevice.setSerialNo(device.getSerialNo());
 		smartDevice.setHomegearDeviceService(this);
 		return smartDevice;
@@ -143,21 +137,18 @@ public class HomegearDeviceService {
 
 	public IRemoteSmokeDetector getRemoteRemoteSmokeDetectorBySerialNo(final String serialNo) throws Throwable {
 		final Device device = getDeviceBySerialNo(serialNo);
-		final IRemoteSmokeDetector smartDevice = (IRemoteSmokeDetector) Class.forName(device.getAdapterClassName())
-				.getDeclaredConstructor().newInstance();
+		final IRemoteSmokeDetector smartDevice = (IRemoteSmokeDetector) getDeviceInstance(device);
 		smartDevice.setSerialNo(device.getSerialNo());
 		smartDevice.setHomegearDeviceService(this);
 		return smartDevice;
 	}
 
-	@SuppressWarnings("unchecked")
 	public <D extends ISmartDevice> List<D> getSmartDeviceList(final Class<? super D> deviceClass) throws Throwable {
 		final List<D> deviceList = new ArrayList<>();
 		final List<DeviceId> deviceIdList = getDeviceIdList(deviceClass);
 		for (final DeviceId deviceId : deviceIdList) {
 			final Device device = getDeviceBySerialNo(deviceId.getAddress());
-			final D smartDevice = (D) Class.forName(device.getAdapterClassName()).getDeclaredConstructor()
-					.newInstance();
+			final D smartDevice = getDeviceInstance(device);
 			smartDevice.setSerialNo(device.getSerialNo());
 			smartDevice.setHomegearDeviceService(this);
 			deviceList.add(smartDevice);
@@ -165,26 +156,30 @@ public class HomegearDeviceService {
 		return deviceList;
 	}
 
-	@SuppressWarnings("unchecked")
 	public <D extends ISmartDevice> D getSmartDeviceBySerialNo(final String serialNo,
 			final Class<? super D> deviceClass) throws Throwable {
 		final Device device = getDeviceBySerialNo(serialNo);
-		final D smartDevice = (D) Class.forName(device.getAdapterClassName()).newInstance();
+		final D smartDevice = getDeviceInstance(device);
 		smartDevice.setSerialNo(device.getSerialNo());
 		smartDevice.setHomegearDeviceService(this);
 		return smartDevice;
 
 	}
 
+	@SuppressWarnings("unchecked")
+	private <D extends ISmartDevice> D getDeviceInstance(Device device) throws Throwable {
+		return (D) Class.forName(device.getAdapterClassName()).getDeclaredConstructor().newInstance();
+	}
+
 	public String getControlModeText(final Integer mode) {
 		String controlModeName = "unkown";
 		switch (mode) {
-			case 0:
-				controlModeName = "automatic";
-				break;
-			case 1:
-				controlModeName = "manual";
-				break;
+		case 0:
+			controlModeName = "automatic";
+			break;
+		case 1:
+			controlModeName = "manual";
+			break;
 		}
 		return controlModeName;
 	}
@@ -215,7 +210,7 @@ public class HomegearDeviceService {
 	}
 
 	public Object getAllValues() throws Throwable {
-		return executeMethod("getAllValues", new Object[] { new Boolean(true) });
+		return executeMethod("getAllValues", new Object[] { Boolean.TRUE });
 	}
 
 	public DeviceId getDeviceIdBySerialNo(final String serialNo) {

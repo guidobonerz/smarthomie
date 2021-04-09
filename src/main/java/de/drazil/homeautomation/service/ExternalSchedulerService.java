@@ -20,8 +20,10 @@ import org.springframework.stereotype.Service;
 import de.drazil.homeautomation.dao.ExternalSchedulerDao;
 import de.drazil.homeautomation.dto.DynamicEvent;
 import de.drazil.homeautomation.dto.Event;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class ExternalSchedulerService {
 	private static final Logger log = LoggerFactory.getLogger(ExternalSchedulerService.class);
 	@Autowired
@@ -68,7 +70,11 @@ public class ExternalSchedulerService {
 
 		String result = null;
 		final HttpClient client = HttpClientBuilder.create().build();
+
 		final HttpGet request = new HttpGet(url);
+
+		request.setHeader("User-Agent",
+				"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36");
 		try {
 			final HttpResponse response = client.execute(request);
 			final int errorCode = response.getStatusLine().getStatusCode();
@@ -76,8 +82,9 @@ public class ExternalSchedulerService {
 				final HttpEntity entity = response.getEntity();
 				result = EntityUtils.toString(entity);
 			}
-			// log.info(result);
+
 		} catch (final IOException e) {
+			log.error("DOWNLOADERROR:", e);
 			e.printStackTrace();
 		}
 		return result;

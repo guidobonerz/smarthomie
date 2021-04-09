@@ -13,5 +13,6 @@ public class Event {
 	private long actionId;
 	private long diff;
 	private String occurrence;
+	private String payload;
 
 }
