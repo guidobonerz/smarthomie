@@ -2,6 +2,7 @@ package de.drazil.homeautomation.scheduler;
 
 import java.sql.Date;
 import java.time.DayOfWeek;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -113,25 +114,24 @@ public class ExternalScheduler {
 		importYearlyEvents();
 	}
 
+	private void addSchedule(String dateTime, Runnable r) {
+		final LocalDateTime ldt = LocalDateTime.parse(dateTime, dateTimeFormatter);
+		taskScheduler.schedule(r, ZonedDateTime.of(ldt, ZoneId.of(timezone)).toInstant());
+	}
+
 	private void buildScheduler() {
 		final List<Event> eventList = service.getEventList();
 		for (final Event event : eventList) {
 			processEvent(event);
 			if (event.getDescription().equals("FloorLamp")) {
-				final LocalDateTime start = LocalDateTime.parse(event.getStartRule(), dateTimeFormatter);
-				final LocalDateTime end = LocalDateTime.parse(event.getEndRule(), dateTimeFormatter);
-				taskScheduler.schedule(floorlampOn(), ZonedDateTime.of(start, ZoneId.of(timezone)).toInstant());
-				taskScheduler.schedule(floorlampOff(), ZonedDateTime.of(end, ZoneId.of(timezone)).toInstant());
+				addSchedule(event.getStartRule(), floorlampOn());
+				addSchedule(event.getEndRule(), floorlampOff());
 			} else if (event.getDescription().equals("LivingRoomLamp")) {
-				final LocalDateTime start = LocalDateTime.parse(event.getStartRule(), dateTimeFormatter);
-				final LocalDateTime end = LocalDateTime.parse(event.getEndRule(), dateTimeFormatter);
-				taskScheduler.schedule(livingroolLampOn(), ZonedDateTime.of(start, ZoneId.of(timezone)).toInstant());
-				taskScheduler.schedule(livingroolLampOff(), ZonedDateTime.of(end, ZoneId.of(timezone)).toInstant());
+				addSchedule(event.getStartRule(), livingroolLampOn());
+				addSchedule(event.getEndRule(), livingroolLampOff());
 			} else if (event.getDescription().equals("Boiler")) {
 				if (event.getStartRule() != null) {
-					final LocalDateTime start = LocalDateTime.parse(event.getStartRule(), dateTimeFormatter);
-					taskScheduler.schedule(boilerOn(Double.valueOf(event.getPayload())),
-							ZonedDateTime.of(start, ZoneId.of(timezone)).toInstant());
+					addSchedule(event.getStartRule(), boilerOn(Double.valueOf(event.getPayload())));
 				}
 			}
 		}
