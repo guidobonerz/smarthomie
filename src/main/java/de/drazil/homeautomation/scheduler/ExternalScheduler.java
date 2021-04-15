@@ -2,7 +2,6 @@ package de.drazil.homeautomation.scheduler;
 
 import java.sql.Date;
 import java.time.DayOfWeek;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -29,16 +28,12 @@ import biweekly.component.VEvent;
 import de.drazil.homeautomation.dto.DynamicEvent;
 import de.drazil.homeautomation.dto.Event;
 import de.drazil.homeautomation.service.ExternalSchedulerService;
-import de.drazil.homeautomation.service.HomecontrolService;
 import de.drazil.homeautomation.service.HomegearService;
 import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
 public class ExternalScheduler {
-
-	@Autowired
-	HomecontrolService controlService;
 
 	@Autowired
 	HomegearService homegearService;
@@ -57,59 +52,37 @@ public class ExternalScheduler {
 	DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-	private Runnable floorlampOn() {
+	private Runnable controlLight(String location, boolean state) {
 		return () -> {
 			try {
-				homegearService.setLight("corridor", true);
+				homegearService.setLight(location, state);
 			} catch (final Throwable e) {
-				log.error("could not switch on floor lamp", e);
+				log.error("could not switch on {} light {}", location, (state ? "on" : "off"));
 			}
 		};
 	}
 
-	private Runnable floorlampOff() {
+	private Runnable controlBoiler(boolean state, Double temperature) {
 		return () -> {
 			try {
-				homegearService.setLight("corridor", false);
+				homegearService.setTemperture(temperature);
+				homegearService.setBoilerState(1, state);
+				log.info("start boiler heating to {} ", temperature);
 			} catch (final Throwable e) {
-				log.error("could not switch off floor lamp", e);
-			}
-		};
-	}
-
-	private Runnable livingroolLampOn() {
-		return () -> {
-			try {
-				homegearService.setLight("livingroom", false);
-			} catch (final Throwable e) {
-				log.error("could not switch on livingroom lamp", e);
-			}
-		};
-	}
-
-	private Runnable livingroolLampOff() {
-		return () -> {
-			try {
-				homegearService.setLight("livingroom", false);
-			} catch (final Throwable e) {
-				log.error("could not switch off livingroom lamp", e);
-			}
-		};
-	}
-
-	private Runnable boilerOn(Double temperature) {
-		return () -> {
-			try {
-				controlService.setTemperture(temperature);
-				homegearService.setBoilerState(1, true);
-			} catch (final Throwable e) {
-				log.error("could not switch on boiler", e);
+				log.error("could not switch boiler heating {}", (state ? "on" : "off"));
 			}
 		};
 	}
 
 	@PostConstruct
 	public void init() {
+		/*
+		 * final GregorianCalendar dateTime = new GregorianCalendar();
+		 * 
+		 * AzimuthZenithAngle position = SPA.calculateSolarPosition(dateTime, 51.56838,
+		 * // latitude (degrees) 6.72703, // longitude (degrees) 30, // elevation (m)
+		 * DeltaT.estimate(dateTime)); System.out.println("SPA: " + position);
+		 */
 		readDailyEvents();
 		importYearlyEvents();
 	}
@@ -122,66 +95,60 @@ public class ExternalScheduler {
 	private void buildScheduler() {
 		final List<Event> eventList = service.getEventList();
 		for (final Event event : eventList) {
-			processEvent(event);
+			event.setStartRule(getPatchedRule(event.getStartRule()));
+			event.setEndRule(getPatchedRule(event.getEndRule()));
 			if (event.getDescription().equals("FloorLamp")) {
-				addSchedule(event.getStartRule(), floorlampOn());
-				addSchedule(event.getEndRule(), floorlampOff());
+				addSchedule(event.getStartRule(), controlLight("corridor", true));
+				addSchedule(event.getEndRule(), controlLight("corridor", false));
 			} else if (event.getDescription().equals("LivingRoomLamp")) {
-				addSchedule(event.getStartRule(), livingroolLampOn());
-				addSchedule(event.getEndRule(), livingroolLampOff());
+				addSchedule(event.getStartRule(), controlLight("livingroom", true));
+				addSchedule(event.getEndRule(), controlLight("livingroom", false));
 			} else if (event.getDescription().equals("Boiler")) {
 				if (event.getStartRule() != null) {
-					addSchedule(event.getStartRule(), boilerOn(Double.valueOf(event.getPayload())));
+					addSchedule(event.getStartRule(), controlBoiler(true, Double.valueOf(event.getPayload())));
 				}
 			}
 		}
 	}
 
-	private void processEvent(final Event event) {
-		if (event.getStartRule() != null) {
-			event.setStartRule(getPatchedRule(event.getStartRule()));
-		}
-		if (event.getEndRule() != null) {
-			event.setEndRule(getPatchedRule(event.getEndRule()));
-		}
-	}
-
 	private String getPatchedRule(final String rule) {
 		String patchedRule = rule;
-		if (rule.startsWith(":SUNRISE")) {
-			final DynamicEvent de = service.getDynamicEventById("sunrise");
-			patchedRule = LocalDateTime.parse(de.getTargetDate(), dateTimeFormatter).format(dateTimeFormatter);
-		} else if (rule.startsWith(":SUNSET")) {
-			final DynamicEvent de = service.getDynamicEventById("sunset");
-			patchedRule = LocalDateTime.parse(de.getTargetDate(), dateTimeFormatter).format(dateTimeFormatter);
-		} else if (rule.startsWith(":TODAY")) {
-			patchedRule = patchedRule.replace(":TODAY", LocalDate.now().format(dateFormatter));
-		} else if (rule.startsWith(":TOMORROW")) {
-			patchedRule = patchedRule.replace(":TOMORROW", LocalDate.now().plusDays(1).format(dateFormatter));
-		} else if (rule.startsWith(":WORKDAY")) {
-			LocalDate date = LocalDate.now();
-			if (Arrays.asList(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY,
-					DayOfWeek.FRIDAY).contains(date.getDayOfWeek())) {
-				patchedRule = patchedRule.replace(":WORKDAY", date.format(dateFormatter));
-			} else {
-				patchedRule = null;
-			}
-		} else if (rule.startsWith(":WEEKEND")) {
-			LocalDate date = LocalDate.now();
-			if (Arrays.asList(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY).contains(date.getDayOfWeek())) {
-				patchedRule = patchedRule.replace(":WEEKEND", date.format(dateFormatter));
-			} else {
-				patchedRule = null;
-			}
-		} else if (rule.startsWith(":BOOST")) {
-			LocalDate date = LocalDate.now();
-			if (date.getDayOfWeek() == DayOfWeek.SATURDAY) {
-				patchedRule = patchedRule.replace(":BOOST", date.format(dateFormatter));
-			} else {
-				patchedRule = null;
+		if (rule != null) {
+			if (rule.startsWith(":SUNRISE")) {
+				final DynamicEvent de = service.getDynamicEventById("sunrise");
+				patchedRule = LocalDateTime.parse(de.getTargetDate(), dateTimeFormatter).format(dateTimeFormatter);
+			} else if (rule.startsWith(":SUNSET")) {
+				final DynamicEvent de = service.getDynamicEventById("sunset");
+				patchedRule = LocalDateTime.parse(de.getTargetDate(), dateTimeFormatter).minusHours(1)
+						.format(dateTimeFormatter);
+			} else if (rule.startsWith(":TODAY")) {
+				patchedRule = patchedRule.replace(":TODAY", LocalDate.now().format(dateFormatter));
+			} else if (rule.startsWith(":TOMORROW")) {
+				patchedRule = patchedRule.replace(":TOMORROW", LocalDate.now().plusDays(1).format(dateFormatter));
+			} else if (rule.startsWith(":WORKDAY")) {
+				LocalDate date = LocalDate.now();
+				if (Arrays.asList(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY,
+						DayOfWeek.FRIDAY).contains(date.getDayOfWeek())) {
+					patchedRule = patchedRule.replace(":WORKDAY", date.format(dateFormatter));
+				} else {
+					patchedRule = null;
+				}
+			} else if (rule.startsWith(":WEEKEND")) {
+				LocalDate date = LocalDate.now();
+				if (Arrays.asList(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY).contains(date.getDayOfWeek())) {
+					patchedRule = patchedRule.replace(":WEEKEND", date.format(dateFormatter));
+				} else {
+					patchedRule = null;
+				}
+			} else if (rule.startsWith(":BOOST")) {
+				LocalDate date = LocalDate.now();
+				if (date.getDayOfWeek() == DayOfWeek.SATURDAY) {
+					patchedRule = patchedRule.replace(":BOOST", date.format(dateFormatter));
+				} else {
+					patchedRule = null;
+				}
 			}
 		}
-
 		return patchedRule;
 	}
 

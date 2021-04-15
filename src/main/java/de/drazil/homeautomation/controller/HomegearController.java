@@ -33,7 +33,6 @@ import org.springframework.web.servlet.ModelAndView;
 import de.drazil.homeautomation.bean.ResponseWrapper;
 import de.drazil.homeautomation.dto.Event;
 import de.drazil.homeautomation.service.ExternalSchedulerService;
-import de.drazil.homeautomation.service.HomecontrolService;
 import de.drazil.homeautomation.service.HomegearService;
 import de.drazil.homeautomation.smartdevices.IHeatingDevice.HeatingMode;
 import de.drazil.homeautomation.smartdevices.IRemoteWallThermostat;
@@ -48,9 +47,6 @@ public class HomegearController {
 
 	@Autowired
 	private ExternalSchedulerService service;
-
-	@Autowired
-	private HomecontrolService homecontrol;
 
 	@Autowired
 	private TelegramBot bot;
@@ -265,7 +261,7 @@ public class HomegearController {
 	public @ResponseBody ResponseWrapper setBoilerHeatTemperature(@PathVariable final Double temperature) {
 		final ResponseWrapper rw = new ResponseWrapper(false, "Failed to get data");
 		try {
-			homecontrol.setTemperture(temperature);
+			homegearService.setTemperture(temperature);
 			rw.setMessage("Succesfully set state");
 			rw.setSuccessful(true);
 		} catch (final Throwable e) {

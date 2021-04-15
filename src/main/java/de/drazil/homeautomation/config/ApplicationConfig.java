@@ -11,7 +11,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 public class ApplicationConfig {
 
 	@Bean
-	public static AutoJsonRpcServiceImplExporter autoJsonRpcServiceImplExporter() {
+	public AutoJsonRpcServiceImplExporter autoJsonRpcServiceImplExporter() {
 		return new AutoJsonRpcServiceImplExporter();
 	}
 

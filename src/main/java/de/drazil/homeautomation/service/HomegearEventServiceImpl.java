@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 public class HomegearEventServiceImpl implements IHomegearEventService {
 
 	@Autowired
-	HomecontrolService homecontrolService;
+	HomegearService homegearService;
 	@Autowired
 	MessageService messageService;
 	@Autowired
@@ -37,7 +37,7 @@ public class HomegearEventServiceImpl implements IHomegearEventService {
 	@JsonRpcMethod("event")
 	public void event(final String interfaceId, final int peerId, final int channel, final String parameterName,
 			final Object value) {
-		homecontrolService.control(interfaceId, peerId, channel, parameterName, value);
+		homegearService.event(interfaceId, peerId, channel, parameterName, value);
 		if (messageService.getMessageCount() < 100) {
 			final DeviceId id = homegearDeviceService.getDeviceId(Integer.toString(peerId));
 			messageService.addMessage(new Message("EVENT", new SmartDeviceEvent(id.getLocation(), id.getAddress(),

@@ -26,6 +26,12 @@ public class HomegearService {
 	@Autowired
 	HomegearDeviceService homegearDeviceService;
 
+	private Double temperature;
+
+	public void setTemperture(Double temperature) {
+		this.temperature = temperature;
+	}
+
 	public List<Map<String, Object>> getRemoteRadiatorThermostatList() throws Throwable {
 		final List<Map<String, Object>> resultList = new ArrayList<>();
 
@@ -205,8 +211,8 @@ public class HomegearService {
 	}
 
 	public void setLight(final boolean state) throws Throwable {
-		homegearDeviceService.getRemoteMeteringSwitchBySerialNo("LEQ0531814").setState(state);
-		homegearDeviceService.getRemoteSwitchBySerialNo("OEQ0479803").setState(state);
+		setLight("corridor", state);
+		setLight("livingroom", state);
 	}
 
 	public void setHeating(final String state) throws Throwable {
@@ -239,10 +245,30 @@ public class HomegearService {
 			break;
 		}
 		}
+		log.info("{} light {}", location, (state ? "on" : "off"));
 	}
 
 	public <D extends ISmartDevice> D getSmartDevicebySerialNo(final String serialNo,
 			final Class<? super D> deviceClass) throws Throwable {
 		return homegearDeviceService.getSmartDeviceBySerialNo(serialNo, deviceClass);
+	}
+
+	public void event(final String interfaceId, final int peerId, final int channel, final String parameterName,
+			final Object value) {
+		log.debug("InterfaceId:" + interfaceId + "   PeerId:" + peerId + "   Channel:" + channel + "   ParameterName:"
+				+ parameterName);
+		try {
+			if (peerId == 46 && channel == 1 && parameterName.equals("TEMPERATURE") && getBoilerState(1)) {
+				final Number n = ((Number) value);
+				log.debug("current boiler temperature is " + n.doubleValue());
+
+				if (n.doubleValue() > temperature) {
+					setBoilerState(1, false);
+					log.info("boiler reached max temperature -> switch it off");
+				}
+			}
+		} catch (final Throwable e) {
+			log.error("error setting boiler state", e);
+		}
 	}
 }
