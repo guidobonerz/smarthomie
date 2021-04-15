@@ -1,0 +1,77 @@
+<!DOCTYPE html [ <!ENTITY trade "&#x02122;">
+<!ENTITY nbsp "&#x000A0;">
+    ]>
+    <html>
+
+    <head>
+        <!--
+        <style>
+            .tkTextColor {
+                color: #00a0f0 !important;
+            }
+
+            @font-face {
+                font-family: "TKType";
+                src: url("../fonts/tktyperegular.eot");
+                src: url("../fonts/tktyperegular.eot?#iefix") format("embedded-opentype"),
+                    url("../fonts/tktyperegular.woff") format("woff"),
+                    url("../fonts/tktyperegular.ttf") format("truetype"),
+                    url("../fonts/tktyperegular.svg#tktyperegular") format("svg");
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            @font-face {
+                font-family: "TKType";
+                src: url("../fonts/tktypebold.eot");
+                src: url("../fonts/tktypebold.eot?#iefix") format("embedded-opentype"),
+                    url("../fonts/tktypebold.woff") format("woff"),
+                    url("../fonts/tktypebold.ttf") format("truetype"),
+                    url("../fonts/tktypebold.svg#tktyperegular") format("svg");
+                font-weight: bold;
+                font-style: normal;
+            }
+
+            body {
+                font-family: "TKType", sans-serif;
+            }
+        </style>
+        -->
+    </head>
+
+    <body>
+        <h2>Trainingsübersicht für den <span th:utext="${createDate}"></span></h2>
+        <h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th> Bahn </th>
+                        <th> Zeit </th>
+                        <th> Name </th>
+                        <th> Unterschrift </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${list.empty}">
+                        <td colspan="4">Keine Trainingszeiten vorhanden</td>
+                    </tr>
+                    <tr th:each="slot : ${list}">
+                        <td>
+                            <span th:utext="${slot.line}"></span>
+                        </td>
+                        <td>
+                            <span th:utext="${slot.timeslot}"></span>
+                        </td>
+                        <td>
+                            <span th:utext="${slot.ownerName}"></span>
+                        </td>
+                        <td>
+                            <span>______________________________</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </h2>
+    </body>
+
+    </html>

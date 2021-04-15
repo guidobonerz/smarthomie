@@ -1,7 +1,11 @@
 package de.drazil.homeautomation.controller;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,12 +14,18 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring5.SpringTemplateEngine;
+import org.xhtmlrenderer.pdf.ITextRenderer;
 
 import de.drazil.homeautomation.bean.ActivityState;
 import de.drazil.homeautomation.bean.Module;
@@ -34,16 +44,20 @@ public class TelegramBot extends TelegramLongPollingBot {
 	@Value("${app.telegram-bot.chat-id}")
 	private String chatId;
 
+	@Autowired
+	private SpringTemplateEngine templateEngine;
+
 	private Map<String, ActivityState> userActivityStateMap = null;
 	private Map<String, String> userMap = null;
 	private List<TrainingSlot> trainingList = null;
 
 	private static final String BOT_USERNAME = "/Benutzername";
 	private static final String BOT_BOOKING = "/Buchen";
-	private static final String BOT_REPORT = "/Trainingsplan";
+	private static final String BOT_PERSONAL_PLAN = "/Trainingsplan";
 	private static final String BOT_BACK = "/Zurueck";
 	private static final String BOT_RELEASE = "/Freigeben";
 	private static final String BOT_OVERVIEW = "/Uebersicht";
+	private static final String BOT_DAILY_REPORT = "/Tagesplan";
 
 	@PostConstruct
 	public void init() {
@@ -120,11 +134,13 @@ public class TelegramBot extends TelegramLongPollingBot {
 
 	private void runBot(Update update, ActivityState activityState) throws Exception {
 		SendMessage sendMessage = new SendMessage();
+
 		sendMessage.setChatId(String.valueOf(activityState.getChatId()));
 		sendMessage.setParseMode("Markdown");
 		String message = update.getMessage().getText();
 		if (message.equals(BOT_OVERVIEW)) {
 			activityState.setModule(Module.Overview);
+			activityState.setMainStage(Stage.Greeting);
 		} else if (message.equals(BOT_BOOKING)) {
 			if (activityState.getModule() == Module.Overview) {
 				activityState.setModule(Module.Booking);
@@ -133,7 +149,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 				if (trainigSlot != null) {
 					trainigSlot.setBooked(true);
 					trainigSlot.setOwnerId(activityState.getUserId());
-					trainigSlot.setOnwerName(activityState.getUserName());
+					trainigSlot.setOwnerName(activityState.getUserName());
 					activityState.setBookingStage(Stage.Timeslot);
 				}
 			}
@@ -143,21 +159,24 @@ public class TelegramBot extends TelegramLongPollingBot {
 				if (trainigSlot != null) {
 					trainigSlot.setBooked(false);
 					trainigSlot.setOwnerId(-1);
-					trainigSlot.setOnwerName(null);
+					trainigSlot.setOwnerName(null);
 					activityState.setBookingStage(Stage.Timeslot);
-					for (ActivityState state : userActivityStateMap.values()) {
-						SendMessage sendGroupMessage = new SendMessage();
-						sendMessage.setChatId(String.valueOf(activityState.getChatId()));
-						sendMessage.setParseMode("Markdown");
-					}
+					/*
+					 * for (ActivityState state : userActivityStateMap.values()) { SendMessage
+					 * sendGroupMessage = new SendMessage();
+					 * sendMessage.setChatId(String.valueOf(activityState.getChatId()));
+					 * sendMessage.setParseMode("Markdown"); }
+					 */
 				}
 			}
 		} else if (message.equals(BOT_USERNAME)) {
 			if (activityState.getModule() == Module.Overview) {
 				activityState.setMainStage(Stage.SetUserName);
 			}
-		} else if (message.equals(BOT_REPORT)) {
+		} else if (message.equals(BOT_PERSONAL_PLAN)) {
 			activityState.setModule(Module.Reservations);
+		} else if (message.equals(BOT_DAILY_REPORT)) {
+			activityState.setModule(Module.DailyReport);
 		} else if (message.equals(BOT_BACK)) {
 			if (activityState.getBookingStage() == Stage.Result) {
 				activityState.setBookingStage(Stage.Timeslot);
@@ -193,7 +212,9 @@ public class TelegramBot extends TelegramLongPollingBot {
 		String response = null;
 		if (activityState.getModule() == Module.Overview) {
 			if (activityState.getMainStage() == Stage.Greeting) {
-				response = "*BSV Eppinghoven 1743 e.V.*\nWillkommen beim\nBogensport ChatBot\n\nFolgende Kommandos sind möglich:\n/Benutzername\n/Trainingsplan\n/Buchen\n";
+				response = String.format(
+						"*BSV Eppinghoven 1743 e.V.*\nWillkommen beim\nBogensport ReservierungsBot\n\n\n%s - anpassen\n%s - Meine Übersicht\n%s - Trainingsplan erstellen\n%s - Tagesplan\n",
+						BOT_USERNAME, BOT_PERSONAL_PLAN, BOT_BOOKING, BOT_DAILY_REPORT);
 			} else if (activityState.getMainStage() == Stage.SetUserName) {
 				response = "Bitte gebe einen Benutzernamen ein.";
 			} else if (activityState.getMainStage() == Stage.ShowUserName) {
@@ -213,6 +234,9 @@ public class TelegramBot extends TelegramLongPollingBot {
 			}
 		} else if (activityState.getModule() == Module.Reservations) {
 			response = getReservations(activityState);
+		} else if (activityState.getModule() == Module.DailyReport) {
+			sendDailyreport(LocalDate.now(), activityState);
+			activityState.setModule(Module.Overview);
 		}
 		if (null != response) {
 			sendMessage.setText(response);
@@ -221,10 +245,8 @@ public class TelegramBot extends TelegramLongPollingBot {
 	}
 
 	private String getDateList(ActivityState activityState) {
-		List<LocalDate> dateList = trainingList.stream()
-				/* .filter(t -> !t.isBooked() || activityState.getUserId() == t.getOwnerId()) */.map(
-						TrainingSlot::getDate)
-				.distinct().collect(Collectors.toList());
+		List<LocalDate> dateList = trainingList.stream().map(TrainingSlot::getDate).distinct()
+				.collect(Collectors.toList());
 		activityState.setDateList(dateList);
 		StringBuilder sb = new StringBuilder();
 		sb.append("Datum wählen\n");
@@ -237,9 +259,8 @@ public class TelegramBot extends TelegramLongPollingBot {
 
 	private String getLineList(ActivityState activityState) {
 		List<String> lineList = trainingList.stream().filter(
-				t -> t.getDate().compareTo(activityState.getDateList().get(activityState.getSelectedDate())) == 0
-		/* && (!t.isBooked() || activityState.getUserId() == t.getOwnerId()) */).map(TrainingSlot::getLine).distinct()
-				.collect(Collectors.toList());
+				t -> t.getDate().compareTo(activityState.getDateList().get(activityState.getSelectedDate())) == 0)
+				.map(TrainingSlot::getLine).distinct().collect(Collectors.toList());
 		activityState.setLineList(lineList);
 		StringBuilder sb = new StringBuilder();
 		sb.append("Bahn wählen\n");
@@ -254,8 +275,8 @@ public class TelegramBot extends TelegramLongPollingBot {
 	private String getTimeslotList(ActivityState activityState) {
 		List<TrainingSlot> trainingSlotList = trainingList.stream().filter(
 				t -> t.getDate().compareTo(activityState.getDateList().get(activityState.getSelectedDate())) == 0
-						&& t.getLine().equals(activityState.getLineList().get(activityState.getSelectedLine()))
-		/* && (!t.isBooked() || activityState.getUserId() == t.getOwnerId()) */).collect(Collectors.toList());
+						&& t.getLine().equals(activityState.getLineList().get(activityState.getSelectedLine())))
+				.collect(Collectors.toList());
 		activityState.setTimeslotList(trainingSlotList);
 		StringBuilder sb = new StringBuilder();
 		sb.append("Trainingszeit wählen\n");
@@ -264,7 +285,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 			sb.append(String.format("%s%02d - %s - (%s)\n",
 					(slot.isBooked() && activityState.getUserId() == slot.getOwnerId() || !slot.isBooked() ? "/" : ""),
 					i, slot.getTimeslot(),
-					slot.getOwnerId() == -1 ? "---" : userMap.get(String.valueOf(slot.getOwnerId()))));
+					slot.getOwnerId() == -1 ? "*frei*" : userMap.get(String.valueOf(slot.getOwnerId()))));
 		}
 		sb.append("/Zurueck\n");
 		sb.append("/Uebersicht\n");
@@ -293,13 +314,12 @@ public class TelegramBot extends TelegramLongPollingBot {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Gebuchte Trainingszeit(en)\n");
 		for (int i = 0; i < trainingSlotList.size(); i++) {
-			sb.append(String.format("Datum: %s\n",
-					activityState.getDateList().get(activityState.getSelectedDate()).toString()));
-			sb.append(String.format("Bahn: %s\n", activityState.getLineList().get(activityState.getSelectedLine())));
-			sb.append(String.format("Zeit: %s\n",
-					activityState.getTimeslotList().get(activityState.getSelectedTimeslot()).getTimeslot()));
+			TrainingSlot slot = trainingSlotList.get(i);
+			sb.append(String.format("Datum: %s\n", slot.getDate().toString()));
+			sb.append(String.format("Bahn: %s\n", slot.getLine()));
+			sb.append(String.format("Zeit: %s\n", slot.getTimeslot()));
 			if (i < trainingSlotList.size() - 1) {
-				sb.append("------------------------");
+				sb.append("------------------------\n");
 			}
 		}
 		sb.append("/Uebersicht\n");
@@ -321,5 +341,33 @@ public class TelegramBot extends TelegramLongPollingBot {
 						&& d.getTimeslot().equals(
 								activityState.getTimeslotList().get(activityState.getSelectedTimeslot()).getTimeslot()))
 				.findFirst().orElse(null);
+	}
+
+	public void sendDailyreport(LocalDate date, ActivityState activityState) {
+		SendDocument sendDocument = new SendDocument();
+		List<TrainingSlot> trainingSlotList = trainingList.stream().filter(t -> t.getDate().compareTo(date) == 0)
+				.collect(Collectors.toList());
+		final Context context = new Context();
+		context.setVariable("createDate", date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
+		context.setVariable("list", trainingSlotList);
+
+		final String html = templateEngine.process("daily_report", context);
+		try {
+			final ITextRenderer renderer = new ITextRenderer();
+			renderer.setDocumentFromString(html);
+			renderer.layout();
+			ByteArrayOutputStream os = new ByteArrayOutputStream();
+			renderer.createPDF(os);
+			byte[] bytes = os.toByteArray();
+			InputFile inputFile = new InputFile();
+			InputStream is = new ByteArrayInputStream(bytes);
+			inputFile.setMedia(is, String.format("Tagesplan_%tF.pdf", date));
+			sendDocument.setChatId(String.valueOf(activityState.getChatId()));
+			sendDocument.setDocument(inputFile);
+			execute(sendDocument);
+		} catch (final Exception e) {
+			log.error("Failed to render pdf report", e);
+		}
+
 	}
 }

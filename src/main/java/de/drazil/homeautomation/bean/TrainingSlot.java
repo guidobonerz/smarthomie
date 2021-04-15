@@ -14,7 +14,7 @@ public class TrainingSlot {
     private String line;
     private String timeslot;
     private LocalDate date;
-    private String onwerName;
+    private String ownerName;
     private long ownerId;
     private boolean booked;
     private boolean supervision;
