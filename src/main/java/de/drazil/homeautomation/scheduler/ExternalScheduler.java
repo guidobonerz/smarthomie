@@ -89,6 +89,9 @@ public class ExternalScheduler {
 
 	private void addSchedule(String dateTime, Runnable r) {
 		final LocalDateTime ldt = LocalDateTime.parse(dateTime, dateTimeFormatter);
+
+		// taskScheduler.schedule(r, ZonedDateTime.of(ldt,
+		// ZoneId.of("UTC")).toInstant());
 		taskScheduler.schedule(r, ZonedDateTime.of(ldt, ZoneId.of(timezone)).toInstant());
 	}
 
